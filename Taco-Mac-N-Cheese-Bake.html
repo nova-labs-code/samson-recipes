@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+.tm { font-family: "Segoe UI", Arial, sans-serif; font-size: 0.6em; vertical-align: super; color: black; }
+.Navigation { color: black; text-align: center; }
+.center { text-align: center; align-items: center; }
+h1 { text-align: center; font-family: "Comic Sans MS"; font-size: 26px; }
+p { text-align: center; }
+li { font-size: 21px; }
+.fixed-button {
+  position: fixed; bottom: 2vmin; right: 2vmin; z-index: 1000;
+  padding: 1.5vmin 2.5vmin; font-size: clamp(1rem,1.5vmin,1.5rem);
+  border-radius: 0.8vmin; background-color: #B5B5B5; color: black;
+  border: none; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+</style>
+</head>
+<body>
+<div class="center" id="Title">
+<title>Taco Mac N Cheese Bake - Samson Recipes</title>
+<h1>Taco Mac N Cheese Bake</h1>
+<p style="font-size:20px;"><strong><b>Mild | Uses Biscuit Base | Makes 6–8 Servings</b></strong></p>
+<img id="Results1" src="Taco-Mac-N-Cheese-Bake1.png" style="border-radius:25px;">
+<img id="Results2" src="Taco-Mac-N-Cheese-Bake2.png" style="border-radius:25px;">
+</div>
+
+<hr>
+<nav>
+<h1>Navigation</h1>
+<h2 class="Navigation">
+<a href="#Time" class="Navigation">Time Breakdown</a>
+<a href="#Ingredients" class="Navigation">Ingredients</a>
+<a href="#Instructions" class="Navigation">Instructions</a>
+<a href="#Serving-Suggestions" class="Navigation">Serving Suggestions</a>
+<a href="#Storage" class="Navigation">Storage</a>
+</h2>
+</nav>
+<hr>
+
+<div id="Time">
+<h1>🕒 Time Breakdown:</h1>
+<footer style="margin-left:110px;">
+<ul>
+<li><b>Prep Time:</b> 20 minutes</li>
+<li><b>Cook Time:</b> 30 minutes</li>
+<li><b>Total Time:</b> 50 minutes</li>
+</ul>
+</footer>
+</div>
+<hr>
+
+<div id="Ingredients">
+<h1>🛒 Ingredients:</h1>
+<footer style="margin-left:110px;">
+<h2 style="font-size:20px;"><b>Main:</b></h2>
+<ul>
+<li>1 can refrigerated biscuits (8 biscuits)</li>
+<li>2 cups cooked macaroni</li>
+<li>1 lb ground turkey or beef</li>
+<li>1 tsp mild taco seasoning (or garlic powder + smoked paprika)</li>
+<li>1 cup shredded cheddar or Monterey Jack cheese</li>
+<li>½ cup cream cheese or ricotta</li>
+<li>1 cup sweet corn (fresh or frozen)</li>
+<li>½ cup finely diced red bell pepper</li>
+<li>¼ cup milk</li>
+<li>Salt and pepper to taste</li>
+<li>Optional: chopped parsley for garnish</li>
+</ul>
+</footer>
+</div>
+<hr>
+
+<div id="Instructions">
+<h1>🍳 Instructions:</h1>
+<footer style="margin-left:110px;">
+<ol>
+<li><b>Preheat oven</b> to 375°F (190°C) and grease a 9×13-inch baking pan.</li><br>
+<li><b>Make the biscuit base:</b> Flatten biscuits and press them together into the bottom and slightly up the sides of the baking pan. Bake 5–7 minutes until slightly firm.</li><br>
+<li><b>Cook the meat:</b> Brown ground meat in a skillet. Drain fat and stir in taco seasoning, corn, bell pepper, and milk.</li><br>
+<li><b>Mix mac n cheese filling:</b> Combine cooked macaroni, shredded cheese, and cream cheese/ricotta until creamy.</li><br>
+<li><b>Combine filling with meat:</b> Fold the cooked meat mixture into the mac n cheese filling.</li><br>
+<li><b>Assemble the bake:</b> Pour filling into the pre-baked biscuit base. Sprinkle extra cheese on top if desired.</li><br>
+<li><b>Bake:</b> 20–25 minutes until the biscuit base is golden and the filling is bubbly.</li><br>
+<li><b>Serve:</b> Slice and garnish with parsley if desired.</li>
+</ol>
+</footer>
+</div>
+<hr>
+
+<div id="Serving-Suggestions">
+<h1>🍽️ Serving Suggestions:</h1>
+<footer style="margin-left:110px;">
+<ul>
+<li>Serve warm, straight from the baking pan</li>
+<li>Optional: drizzle mild sour cream or cheese sauce</li>
+<li>Pair with a simple side salad or roasted veggies</li>
+</ul>
+</footer>
+</div>
+<hr>
+
+<div id="Storage">
+<h1>🗃️ Storage:</h1>
+<footer style="margin-left:110px;">
+<ul>
+<li>Store leftovers in fridge (up to 4 days)</li>
+<li>Freeze slices individually (up to 2 months)</li>
+<li>Reheat at 325°F (oven) or microwave until hot</li>
+</ul>
+</footer>
+</div>
+<hr>
+
+<h1>Recipe by Elisha Samson</h1>
+<button onclick="window.location.hash='Title';" class="fixed-button">Back to start</button>
+
+<script>
+const ImageSize=285;
+for(let i=1;i<=2;i++){
+  const img=document.getElementById('Results'+i);
+  if(img){ img.style.display='inline-block'; img.style.width=ImageSize+'px'; img.style.height=ImageSize+'px'; img.style.margin='0 5px'; }
+}
+(function(){function scrollToHash(){const hash=window.location.hash;if(hash){setTimeout(()=>{const el=document.getElementById(hash.substring(1));if(el){el.scrollIntoView({behavior:'instant'});}},50);}}if(document.readyState==='complete'){scrollToHash();}else{window.addEventListener('load',scrollToHash);}})();
+window.addEventListener('hashchange',()=>{if(window.location.hash==='#Title'){history.replaceState(null,'',window.location.pathname+window.location.search);}});
+</script>
+<script src="Bottom-bar.js"></script>
+</body>
+</html>

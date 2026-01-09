@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App Info</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 650px;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2.2em;
+      letter-spacing: 1px;
+    }
+
+    p {
+      font-size: 1.05em;
+      line-height: 1.6;
+      margin: 12px 0;
+      opacity: 0.95;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #4fd1c5;
+    }
+
+    ul {
+      text-align: left;
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    a {
+      color: #4fd1c5;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 28px;
+      background-color: #4fd1c5;
+      color: #1e1e1e;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+
+    .button:hover {
+      background-color: #38b2ac;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      opacity: 0.7;
+    }
+  </style>
+
+  <script>
+    function returnToApp() {
+      const ref = document.referrer;
+
+      // Only allow returning to your site; otherwise fallback to index.html
+      if (ref && ref.includes(window.location.hostname)) {
+        window.location.href = ref;
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Samson Recipes App</h1>
+
+    <p class="highlight">Version: beta 1.3.2</p>
+    <p>Last Updated: December 2025</p>
+    <p>Author: Brick Valley Productions</p>
+
+    <p>This application provides embedded access to Samson Recipes without using a web browser.</p>
+
+    <p class="highlight">Current Platform:</p>
+    <p>Windows Desktop</p>
+
+    <p class="highlight">Key Features:</p>
+    <ul>
+      <li>Quick access to recipes without opening a browser</li>
+      <li>Future support for additional platforms</li>
+      <li>Lightweight and offline-friendly</li>
+      <li>Planned updates with seasonal themes</li>
+    </ul>
+
+    <p class="highlight">Support & Contact:</p>
+    <p>Email: <a href="mailto:alezandbvp@gmail.com">alezandbvp@gmail.com</a></p>
+    <p>Website: <a href="https://samson-recipes.neocities.org" target="_blank">samson-recipes.neocities.org</a></p>
+
+    <!-- Return to App button -->
+    <button class="button" onclick="returnToApp()">Return to App</button>
+
+    <p class="footer">© 2025 Brick Valley Productions | Unauthorized hacking or redistribution is prohibited.</p>
+  </div>
+
+</body>
+</html>

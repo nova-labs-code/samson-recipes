@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samson Recipes Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+    --primary-color: #1c52b9;
+    --accent-color: #4CAF50;
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --shadow-light: rgba(0,0,0,0.05);
+    --shadow-dark: rgba(0,0,0,0.15);
+    --glow-color: rgba(28,82,185,0.5);
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: #333;
+    padding: 40px 20px;
+}
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--primary-color);
+}
+.data-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+}
+.data-item {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 30px 25px;
+    box-shadow: 0 10px 30px var(--shadow-light), 0 0 15px rgba(28,82,185,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.data-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px var(--shadow-dark), 0 0 20px var(--glow-color);
+}
+.data-item .key {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 4px rgba(28,82,185,0.3);
+}
+.data-item .value {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #222;
+    line-height: 1.2;
+    text-shadow: 0 0 6px rgba(28,82,185,0.2);
+}
+.data-item.date .value {
+    color: var(--accent-color);
+    text-shadow: 0 0 6px rgba(76,175,80,0.3);
+}
+.data-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+.chart-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-light), 0 0 15px rgba(28,82,185,0.15);
+}
+.goal-label {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #ff3f61;
+    text-shadow: 0 0 4px rgba(255,63,97,0.6);
+}
+@media (max-width: 600px) {
+    h1 { font-size: 2rem; margin-bottom: 30px; }
+    .data-item .value { font-size: 1.6rem; }
+    .goal-label { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+<h1>Samson Recipes Analytics</h1>
+<div id="data-display" class="data-container"></div>
+<div id="goalLabel" class="goal-label"></div>
+<div class="chart-container">
+    <canvas id="progressChart"></canvas>
+</div>
+
+<script>
+const displayElement = document.getElementById('data-display');
+const goalLabel = document.getElementById('goalLabel');
+const YOUR_SITE_NAME = "samson-recipes";
+const VIEWS_GOAL_INPUT = "100k";
+
+function parseNumber(str) {
+    if (typeof str === 'number') return str;
+    str = str.toString().trim().toLowerCase();
+    if (str.endsWith('k')) return parseFloat(str)*1e3;
+    if (str.endsWith('m')) return parseFloat(str)*1e6;
+    if (str.endsWith('b')) return parseFloat(str)*1e9;
+    return parseFloat(str);
+}
+const VIEWS_GOAL = parseNumber(VIEWS_GOAL_INPUT);
+
+function formatNumber(n) {
+    if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,'')+'B';
+    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'')+'k';
+    return n.toString();
+}
+
+function animateToValue(element, newValue, duration=1000) {
+    const start = parseNumber(element.getAttribute("data-value") || 0);
+    const end = newValue;
+    element.setAttribute("data-value", newValue);
+    const startTime = performance.now();
+    function animate(t) {
+        const progress = Math.min((t - startTime) / duration, 1);
+        const value = Math.floor(start + (end - start) * progress);
+        element.textContent = formatNumber(value);
+        if (progress < 1) requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+}
+
+function updateOrCreateDataItem(key, value, isDate=false, icon='') {
+    let itemDiv = [...document.querySelectorAll('.data-item')]
+        .find(div => div.querySelector('.key')?.textContent?.includes(key));
+    if (!itemDiv) {
+        itemDiv = document.createElement('div');
+        itemDiv.className = 'data-item';
+        if (isDate) itemDiv.classList.add('date');
+        const keySpan = document.createElement('span');
+        keySpan.className = 'key';
+        keySpan.innerHTML = icon ? `<span class="icon">${icon}</span> ${key}` : key;
+        const valueSpan = document.createElement('span');
+        valueSpan.className = 'value';
+        valueSpan.textContent = isDate ? value : formatNumber(value);
+        valueSpan.setAttribute("data-value", parseNumber(value));
+        itemDiv.append(keySpan, valueSpan);
+        displayElement.appendChild(itemDiv);
+    } else {
+        const valueSpan = itemDiv.querySelector('.value');
+        if (isDate) valueSpan.textContent = value;
+        else animateToValue(valueSpan, value);
+    }
+}
+
+const ctx = document.getElementById('progressChart').getContext('2d');
+let chart = new Chart(ctx,{
+    type:'bar',
+    data:{
+        labels:['Views','Hits'],
+        datasets:[
+            {
+                label:'Progress',
+                data:[0,0],
+                backgroundColor:['rgba(28,82,185,0.7)','rgba(76,175,80,0.7)'],
+                borderColor:['rgba(28,82,185,1)','rgba(76,175,80,1)'],
+                borderWidth:1,
+                borderRadius:8
+            },
+            {
+                label:'Views Goal',
+                data:[VIEWS_GOAL,null],
+                type:'line',
+                borderColor:'rgba(255,99,132,0.8)',
+                borderWidth:2,
+                fill:false,
+                tension:0.3,
+                pointRadius:5,
+                pointBackgroundColor:'rgba(255,99,132,1)'
+            }
+        ]
+    },
+    options:{
+        responsive:true,
+        plugins:{ legend:{position:'top'}, tooltip:{enabled:true} },
+        scales:{ y:{ beginAtZero:true, suggestedMax:VIEWS_GOAL*1.1 } }
+    }
+});
+
+// Fetch with retries
+function fetchWithRetry(url, retries=3, delay=3000){
+    return new Promise((resolve, reject)=>{
+        const attempt = (n)=>{
+            fetch(url)
+            .then(r=>r.json())
+            .then(resolve)
+            .catch(err=>{
+                if(n>0) attempt(n-1);
+                else setTimeout(()=>attempt(3), delay); // wait then retry
+            });
+        }
+        attempt(retries);
+    });
+}
+
+function updateStats(){
+    const cacheBuster = `&_=${Date.now()}`;
+    const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://neocities.org/api/info?sitename=${YOUR_SITE_NAME}`)}${cacheBuster}`;
+    fetchWithRetry(apiUrl)
+    .then(data=>{
+        const info = JSON.parse(data.contents).info;
+        const options = { month:'numeric', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true };
+        const created = new Date(info.created_at).toLocaleString(undefined, options).replace(',', ' ');
+        const updated = new Date(info.last_updated).toLocaleString(undefined, options).replace(',', ' ');
+
+        updateOrCreateDataItem('Date Created', created, true, '🗓️');
+        updateOrCreateDataItem('Last Updated', updated, true, '⏱️');
+        updateOrCreateDataItem('Views', info.views, false, '👁️');
+        updateOrCreateDataItem('Hits', info.hits, false, '📄');
+
+        chart.data.datasets[0].data = [info.views, info.hits];
+        chart.data.datasets[1].data = [VIEWS_GOAL, null];
+        chart.options.scales.y.suggestedMax = Math.max(VIEWS_GOAL, info.views, info.hits)*1.1;
+        chart.data.datasets[1].pointRadius = info.views >= VIEWS_GOAL ? 0 : 5;
+        chart.update();
+
+        goalLabel.textContent = info.views >= VIEWS_GOAL
+            ? `Views Goal: ${formatNumber(VIEWS_GOAL)} - Goal Reached`
+            : `Views Goal: ${formatNumber(VIEWS_GOAL)}`;
+    })
+    .catch(err=>{
+        goalLabel.textContent = 'Error fetching stats, retrying...';
+    });
+}
+
+// Initial and periodic update every 3 sec
+updateStats();
+setInterval(updateStats, 3000);
+</script>
+</body>
+</html>

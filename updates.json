@@ -1,0 +1,28 @@
+{
+  "updateLogs": [
+    {
+      "version": "1.13",
+      "date": "2025-12-16",
+      "sections": [
+        {
+          "title": "🎉 New Features",
+          "items": [
+            {
+              "name": "Enhanced Update Log",
+              "description": "Implemented a comprehensive update log system."
+            }
+          ]
+        },
+        {
+          "title": "🐛 Bug Fixes",
+          "items": [
+            {
+              "name": "Fixed minor bug",
+              "description": "Corrected display issue."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

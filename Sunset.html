@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timers & Holidays</title>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2em;
+    color: #222;
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    color: #444;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+  }
+
+  .timer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9fafc;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .timer-label { font-size: 1.1em; font-weight: 600; color: #555; }
+  .countdown { font-size: 1.8em; font-weight: 700; color: #007bff; font-family: 'Courier New', monospace; }
+
+  .holiday { margin-top: 30px; }
+  .holiday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1em;
+  }
+  .holiday-name { flex: 1; }
+  .holiday-date-countdown { display: flex; gap: 40px; min-width: 250px; justify-content: flex-end; font-family: 'Courier New', monospace; font-weight: 600; }
+  .holiday-date-countdown div:first-child { width: 140px; text-align: right; }
+
+  /* Holiday Gradients */
+  .veterans { background: linear-gradient(135deg, #34495E, #1A74C4); }
+  .thanksgiving { background: linear-gradient(135deg, #D2691E, #FFA500, #FFD700); }
+  .christmas { background: linear-gradient(135deg, #FF3B3F, #28A745, #FFFFFF); }
+  .newyear { background: linear-gradient(135deg, #FFD700, #F0F0F0); }
+  .mlkday { background: linear-gradient(135deg, #6B4226, #000000); }
+  .presidents { background: linear-gradient(135deg, #2C3E50, #5D6D7E); }
+  .goodfriday { background: linear-gradient(135deg, #FF0000, #4B0000); }
+  .memorial { background: linear-gradient(135deg, #FF4500, #FFC0CB); }
+  .juneteenth { background: linear-gradient(135deg, #FF0000, #009900, #0000FF); }
+  .independence { background: linear-gradient(135deg, #FF0000, #FFFFFF, #3C3B6E); }
+  .labor { background: linear-gradient(135deg, #FF7F00, #FFD700); }
+  .columbus { background: linear-gradient(135deg, #2E8B57, #00FF7F); }
+  .indigenous { background: linear-gradient(135deg, #A0522D, #F4A460); }
+
+  @media (max-width: 600px) {
+    .timer-container { flex-direction: column; text-align: center; }
+    .countdown { margin-top: 10px; }
+    .holiday-item { flex-direction: column; align-items: flex-start; }
+    .holiday-date-countdown { margin-top: 5px; min-width: 0; gap: 15px; }
+    .holiday-date-countdown div:first-child { width: auto; text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Current Time & Upcoming Holidays</h1>
+
+  <div class="timer-container">
+    <div class="timer-label">Time to Sunset</div>
+    <div id="sunsetCountdown" class="countdown">Loading...</div>
+  </div>
+
+  <div class="timer-container">
+    <div class="timer-label">Time to Sunrise</div>
+    <div id="sunriseCountdown" class="countdown">Loading...</div>
+  </div>
+
+  <div class="holiday">
+    <h2>Upcoming Holidays</h2>
+    <div id="holidaysList">Loading...</div>
+  </div>
+</div>
+
+<script>
+  function timeDiff(target) {
+    const now = new Date();
+    const diff = target - now;
+    if (diff <= 0) return "00d 00h 00m 00s";
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hrs = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    return `${days.toString().padStart(2,"0")}d ${hrs.toString().padStart(2,"0")}h ${mins.toString().padStart(2,"0")}m ${secs.toString().padStart(2,"0")}s`;
+  }
+
+  async function fetchSunData(lat, lon, dateStr="") {
+    // Use CORS proxy
+    const base = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0${dateStr ? "&date="+dateStr : ""}`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(base)}`;
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    return JSON.parse(data.contents);
+  }
+
+  async function initSunTimes() {
+    const sunEl = { sunrise: document.getElementById("sunriseCountdown"), sunset: document.getElementById("sunsetCountdown") };
+    if (!navigator.geolocation) { 
+      sunEl.sunrise.textContent="Location not supported"; 
+      sunEl.sunset.textContent="Location not supported"; 
+      return; 
+    }
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude, longitude } = pos.coords;
+      let sunData = await fetchSunData(latitude, longitude);
+      let sunrise = new Date(sunData.results.sunrise);
+      let sunset = new Date(sunData.results.sunset);
+
+      async function updateNextDayIfPassed() {
+        const now = new Date();
+        if (now>sunrise) { const t=new Date(now); t.setDate(now.getDate()+1); const tStr=t.toISOString().split("T")[0]; sunData = await fetchSunData(latitude, longitude, tStr); sunrise=new Date(sunData.results.sunrise); }
+        if (now>sunset) { const t=new Date(now); t.setDate(now.getDate()+1); const tStr=t.toISOString().split("T")[0]; sunData = await fetchSunData(latitude, longitude, tStr); sunset=new Date(sunData.results.sunset); }
+      }
+
+      async function tick() { await updateNextDayIfPassed(); sunEl.sunrise.textContent=timeDiff(sunrise); sunEl.sunset.textContent=timeDiff(sunset); }
+
+      tick();
+      setInterval(tick, 1000);
+    }, ()=>{ sunEl.sunrise.textContent="Location denied"; sunEl.sunset.textContent="Location denied"; });
+  }
+
+  async function loadHolidays() {
+    try {
+      const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://date.nager.at/api/v3/NextPublicHolidays/US');
+      const res = await fetch(proxy);
+      const data = await res.json();
+      const holidays = JSON.parse(data.contents);
+      const list = document.getElementById("holidaysList");
+
+      const holidayMap = {
+        "veterans day": "veterans",
+        "thanksgiving day": "thanksgiving",
+        "christmas day": "christmas",
+        "new year's day": "newyear",
+        "martin luther king, jr. day": "mlkday",
+        "washington's birthday": "presidents",
+        "good friday": "goodfriday",
+        "memorial day": "memorial",
+        "juneteenth national independence day": "juneteenth",
+        "independence day": "independence",
+        "labor day": "labor",
+        "columbus day": "columbus",
+        "indigenous peoples' day": "indigenous"
+      };
+
+      const Theholidays = holidays.map(h => {
+        const [y,m,d] = h.date.split("-").map(Number);
+        return { name:h.localName, date:new Date(y,m-1,d,0,0,0) };
+      });
+
+      list.innerHTML = Theholidays.map((h,i) => {
+        const key = h.name.toLowerCase();
+        const themeClass = holidayMap[key] || 'default-theme';
+        return `
+          <div class="holiday-item ${themeClass}" id="holiday-${i}">
+            <div class="holiday-name">${h.name}</div>
+            <div class="holiday-date-countdown">
+              <div>${h.date.toDateString()}</div>
+              <div id="holidayCountdown-${i}">Loading...</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      function updateHolidayCountdowns() {
+        Theholidays.forEach((h,i)=> {
+          const el = document.getElementById(`holidayCountdown-${i}`);
+          if(el) el.textContent = timeDiff(h.date);
+        });
+      }
+
+      updateHolidayCountdowns();
+      setInterval(updateHolidayCountdowns,1000);
+
+    } catch {
+      document.getElementById("holidaysList").textContent="Could not load holidays.";
+    }
+  }
+
+  initSunTimes();
+  loadHolidays();
+</script>
+<script>
+// Detect if inside an iframe
+if (window.self !== window.top) {
+  const warn = document.createElement("div");
+  warn.innerHTML = `
+    <div style="
+      background:#ffcc00;
+      padding:15px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      font-family: 'Inter', sans-serif;
+      border-bottom:3px solid #d4a300;
+      position:sticky;
+      top:0;
+      z-index:999999;
+    ">
+      ⚠️ Some features may not work while embeded — 
+      <a href="${window.location.href}" target="_blank" style="color:#000; text-decoration:underline;">
+        Open the full version
+      </a>
+    </div>
+  `;
+  document.body.prepend(warn);
+}
+</script>
+
+</body>
+</html>
