@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meal Plan Builder - Samson Recipes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #fffdf7;
+      color: #1f1f1f;
+    }
+
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 18px 40px;
+    }
+
+    h1, h2, p {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 6px;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+    }
+
+    .subtitle {
+      margin-top: 0;
+      color: #4d4d4d;
+    }
+
+    .planner {
+      background: #ffffff;
+      border: 2px solid #ececec;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .day-row label {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .day-row select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #bbb;
+      font-size: 1rem;
+      background: #fefefe;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #build-plan {
+      background: #222;
+      color: #fff;
+    }
+
+    #clear-plan {
+      background: #e6e6e6;
+      color: #111;
+    }
+
+    .meal-plan-output {
+      margin-top: 28px;
+    }
+
+    .plan-card {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-card strong {
+      min-width: 120px;
+    }
+
+    .plan-card a {
+      color: #0056c7;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .plan-card a:hover {
+      text-decoration: underline;
+    }
+
+    .home-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      .day-row {
+        grid-template-columns: 1fr;
+      }
+
+      .plan-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrapper">
+    <h1>Meal Plan Builder</h1>
+    <p class="subtitle">Pick recipes from Samson Recipes and build a simple weekly plan.</p>
+
+    <section class="planner" aria-label="Meal planner">
+      <div class="day-row">
+        <label for="monday">Monday</label>
+        <select id="monday"></select>
+      </div>
+      <div class="day-row">
+        <label for="tuesday">Tuesday</label>
+        <select id="tuesday"></select>
+      </div>
+      <div class="day-row">
+        <label for="wednesday">Wednesday</label>
+        <select id="wednesday"></select>
+      </div>
+      <div class="day-row">
+        <label for="thursday">Thursday</label>
+        <select id="thursday"></select>
+      </div>
+      <div class="day-row">
+        <label for="friday">Friday</label>
+        <select id="friday"></select>
+      </div>
+      <div class="day-row">
+        <label for="saturday">Saturday</label>
+        <select id="saturday"></select>
+      </div>
+      <div class="day-row">
+        <label for="sunday">Sunday</label>
+        <select id="sunday"></select>
+      </div>
+
+      <div class="button-row">
+        <button id="build-plan" type="button">Create Meal Plan</button>
+        <button id="clear-plan" type="button">Clear</button>
+      </div>
+    </section>
+
+    <section class="meal-plan-output" aria-live="polite">
+      <h2>Your Week at a Glance</h2>
+      <div id="plan-output"></div>
+    </section>
+
+    <p><a class="home-link" href="index.html">← Back to Samson Recipes</a></p>
+  </main>
+
+  <script>
+    const recipes = [
+      { name: 'Boneless Wings', href: 'Boneless-Wings.html' },
+      { name: 'Cheesy Sausage Casserole', href: 'Cheesy-Sausage-Casserole.html' },
+      { name: 'Gala Apple Pie', href: 'Gala-Apple-Pie.html' },
+      { name: 'Monster Junk Feast Bake', href: 'Monster-Junk-Feast-Bake.html' },
+      { name: 'Taco Mac N Cheese Bake', href: 'Taco-Mac-N-Cheese-Bake.html' },
+      { name: 'Velveeta Slow-Cooker Chicken Melt', href: 'Velveeta-Slow-Cooker-Chicken-Melt.html' }
+    ];
+
+    const dayIds = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const output = document.getElementById('plan-output');
+
+    function populateDropdowns() {
+      dayIds.forEach((id) => {
+        const select = document.getElementById(id);
+
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Choose a recipe';
+        select.appendChild(emptyOption);
+
+        recipes.forEach((recipe) => {
+          const option = document.createElement('option');
+          option.value = recipe.href;
+          option.textContent = recipe.name;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    function createPlan() {
+      output.innerHTML = '';
+
+      dayIds.forEach((id) => {
+        const select = document.getElementById(id);
+        const selectedRecipe = recipes.find((recipe) => recipe.href === select.value);
+
+        const card = document.createElement('article');
+        card.className = 'plan-card';
+
+        const dayLabel = document.createElement('strong');
+        dayLabel.textContent = id.charAt(0).toUpperCase() + id.slice(1);
+        card.appendChild(dayLabel);
+
+        if (selectedRecipe) {
+          const link = document.createElement('a');
+          link.href = selectedRecipe.href;
+          link.textContent = selectedRecipe.name;
+          card.appendChild(link);
+        } else {
+          const noSelection = document.createElement('span');
+          noSelection.textContent = 'No meal selected';
+          card.appendChild(noSelection);
+        }
+
+        output.appendChild(card);
+      });
+    }
+
+    function clearPlan() {
+      dayIds.forEach((id) => {
+        const select = document.getElementById(id);
+        select.selectedIndex = 0;
+      });
+      output.innerHTML = '';
+    }
+
+    document.getElementById('build-plan').addEventListener('click', createPlan);
+    document.getElementById('clear-plan').addEventListener('click', clearPlan);
+
+    populateDropdowns();
+    createPlan();
+  </script>
+  <script src="Bottom-bar.js"></script>
+</body>
+</html>
