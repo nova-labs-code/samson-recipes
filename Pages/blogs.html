@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Samson Blogs</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&display=swap');
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  #search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+
+  .blog {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .blog:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 24px rgba(0,0,0,0.12);
+  }
+
+  .blog-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .blog-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 5px;
+  }
+
+  .blog-author {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 5px;
+  }
+
+  .blog-date {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 15px;
+  }
+
+  .blog-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    display: none; /* 👈 start minimized */
+  }
+
+  .blog-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .toggle-btn {
+    border: none;
+    background: transparent; /* 👈 no background */
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+  }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Samson Blogs</h1>
+  <input type="text" id="search" placeholder="Search blogs by title, author, or content...">
+  <div id="blogs"></div>
+</div>
+
+<script>
+let blogData = [];
+
+async function loadBlogs() {
+  try {
+    const res = await fetch('/json/blogs.json');
+    const data = await res.json();
+    blogData = data;
+
+    blogData.sort((a, b) => b.id - a.id);
+
+    renderBlogs(blogData);
+  } catch (err) {
+    console.warn('blogs.json not loaded:', err);
+  }
+}
+
+function renderBlogs(blogs) {
+  const container = document.getElementById('blogs');
+  container.innerHTML = '';
+
+  blogs.forEach(blog => {
+    const div = document.createElement('div');
+    div.className = 'blog';
+
+    div.innerHTML = `
+      <div class="blog-actions">
+        <button class="toggle-btn" onclick="toggleBlog(this)">Maximize</button>
+      </div>
+
+      <div class="blog-header">
+        <div>
+          <div class="blog-title">${blog.title}</div>
+          <div class="blog-author">By ${blog.author}</div>
+        </div>
+        <div class="blog-date">${blog.date}</div>
+      </div>
+
+      <div class="blog-content">
+        ${blog.content}
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function toggleBlog(btn) {
+  const blog = btn.closest('.blog');
+  const content = blog.querySelector('.blog-content');
+
+  const isOpen = content.style.display === 'block';
+
+  if (isOpen) {
+    content.style.display = 'none';
+    btn.textContent = 'Maximize';
+  } else {
+    content.style.display = 'block';
+    btn.textContent = 'Minimize';
+  }
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+
+  const filtered = blogData.filter(blog =>
+    blog.title.toLowerCase().includes(term) ||
+    blog.author.toLowerCase().includes(term) ||
+    blog.content.toLowerCase().includes(term)
+  );
+
+  renderBlogs(filtered);
+});
+
+loadBlogs();
+</script>
+
+<script src="/js/disable-zoom.js"></script>
+
+</body>
+</html>

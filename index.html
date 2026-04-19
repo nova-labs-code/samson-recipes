@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samson Recipes</title>
+
+<meta name="description" content="Samson Recipes offers delicious, family-loved meals for every occasion. Explore simple breakfasts, comforting dinners, and sweet treats your whole family will enjoy.">
+<meta property="og:site_name" content="Samson Recipes">
+
+<link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/icons/favicon.ico" sizes="180x180">
+
+<style>
+body { font-family: "Segoe UI", Arial, sans-serif; margin: 1rem; color: black; text-align: center; }
+.text1 { text-decoration: none; font-size: 40px; color: black; }
+.subtext { font-size: 25px; margin-bottom: 1.5rem; }
+.image img { border-radius: 25px; max-width: 100%; height: auto; margin-bottom: 1.5rem; }
+.recipe-thumb { width: 100%; max-width: 200px; max-height: 350px; border-radius: 12px; display: block; margin: 0.5rem auto 0.75rem auto; }
+.recipe-item { margin-bottom: 2rem; }
+.recipe-meta { font-size: 0.9rem; color: #555; margin-top: 0.75rem; margin-bottom: 1rem; }
+#search-bar { font-size: 1rem; padding: 0.5rem; width: 60%; max-width: 300px; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #ccc; }
+select { box-sizing: border-box; border: 2px solid #d4af37; border-radius: 8px; background-color: #222; color: inherit; font-weight: bold; font-family: inherit; padding: 0.5rem 1rem; }
+@media(max-width:600px){
+  .text1 { font-size: 30px; }
+  .subtext { font-size: 20px; }
+  #search-bar { width: 80%; }
+  select { width: 40%; margin-bottom: 0.5rem; }
+}
+</style>
+</head>
+
+<body>
+
+<h1 class="text1">Samson Recipes</h1>
+<p class="subtext"><b>Delicious, family-loved meals for every occasion—breakfast, dinner, and sweet treats everyone will enjoy!</b></p>
+
+<div class="image">
+  <img src="Images/Samson-family.png" width="442" height="332" alt="Samson Family">
+</div>
+
+<input type="text" id="search-bar" placeholder="Search recipes or ingredients">
+
+<select id="category-filter">
+  <option value="">All Categories</option>
+  <option value="appetizer">Appetizer</option>
+  <option value="breakfast">Breakfast</option>
+  <option value="dessert">Dessert</option>
+  <option value="dinner">Dinner</option>
+  <option value="drink">Drink</option>
+  <option value="lunch">Lunch</option>
+</select>
+
+<select id="difficulty-filter">
+  <option value="">All Difficulties</option>
+  <option value="mild">Mild</option>
+  <option value="easy">Easy</option>
+  <option value="intermediate">Intermediate</option>
+  <option value="medium">Medium</option>
+  <option value="hard">Hard</option>
+</select>
+
+<select id="sort-by">
+  <option value="name-asc" selected>Name A→Z</option>
+  <option value="name-desc">Name Z→A</option>
+</select>
+
+<hr>
+
+<div id="recipes-container"></div>
+
+<script>
+const container = document.getElementById("recipes-container");
+const searchBar = document.getElementById("search-bar");
+const categoryFilter = document.getElementById("category-filter");
+const difficultyFilter = document.getElementById("difficulty-filter");
+const sortBy = document.getElementById("sort-by");
+
+const pageContents = {};
+const pageDifficulties = {};
+const pageImages = {};
+const difficultiesOrder = ["mild","easy","intermediate","medium","hard"];
+let recipesList = [];
+
+// 🔧 FORCE Recipes/ for pages
+function resolveRecipeUrl(url) {
+  if (!url) return "";
+
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("Recipes/")) return url;
+
+  return "Recipes/" + url.replace(/^\/+/, "");
+}
+
+// 🖼️ FORCE Images/ for images
+function resolveImagePath(src) {
+  if (!src) return null;
+
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+
+  const fileName = src.split("/").pop();
+  return "Images/" + fileName;
+}
+
+// Load recipes JSON
+async function loadRecipesJSON() {
+  try {
+    const res = await fetch('/json/recipes.json');
+    const data = await res.json();
+    recipesList = data.recipes || [];
+    preloadPages();
+  } catch (e) {
+    container.innerHTML = "<p>Failed to load recipes.</p>";
+    console.error(e);
+  }
+}
+
+// Fetch recipe pages
+async function preloadPages() {
+  for (let recipe of recipesList) {
+    const fixedUrl = resolveRecipeUrl(recipe.url);
+
+    try {
+      const res = await fetch(fixedUrl);
+      const text = await res.text();
+      const doc = new DOMParser().parseFromString(text, "text/html");
+
+      const ingredients = Array.from(doc.querySelectorAll("ul")).map(u => u.textContent).join(" ");
+      const instructions = Array.from(doc.querySelectorAll("ol")).map(o => o.textContent).join(" ");
+      pageContents[fixedUrl] = (ingredients + " " + instructions).toLowerCase();
+
+      // Detect difficulty
+      const bodyText = doc.body.textContent.toLowerCase();
+      let detected = "unknown";
+      for (let d of difficultiesOrder) {
+        if (bodyText.includes(d)) { detected = d; break; }
+      }
+      pageDifficulties[fixedUrl] = detected;
+
+      // Get first image
+      let chosenImage = null;
+      for (let img of doc.querySelectorAll("img")) {
+        let src = img.getAttribute("src");
+        if (!src) continue;
+        if (src.toLowerCase().includes("no-image")) continue;
+
+        chosenImage = resolveImagePath(src);
+        break;
+      }
+
+      pageImages[fixedUrl] = chosenImage;
+
+    } catch {
+      pageContents[fixedUrl] = "";
+      pageDifficulties[fixedUrl] = "unknown";
+      pageImages[fixedUrl] = null;
+    }
+  }
+
+  renderRecipes();
+}
+
+// Render recipes
+function renderRecipes() {
+  const search = searchBar.value.toLowerCase();
+  const category = categoryFilter.value;
+  const difficulty = difficultyFilter.value;
+
+  let filtered = recipesList.filter(r => {
+    const fixedUrl = resolveRecipeUrl(r.url);
+
+    return (
+      (r.name.toLowerCase().includes(search) || (pageContents[fixedUrl]||"").includes(search)) &&
+      (category === "" || r.categories.includes(category)) &&
+      (difficulty === "" || pageDifficulties[fixedUrl] === difficulty)
+    );
+  });
+
+  filtered.sort((a,b)=>
+    sortBy.value === "name-desc"
+      ? b.name.localeCompare(a.name)
+      : a.name.localeCompare(b.name)
+  );
+
+  container.innerHTML = filtered.length ? "" : "<p>No recipes found.</p>";
+
+  filtered.forEach(r => {
+    const fixedUrl = resolveRecipeUrl(r.url);
+
+    const div = document.createElement("div");
+    div.className = "recipe-item";
+
+    const imgHTML = pageImages[fixedUrl]
+      ? `<img src="${pageImages[fixedUrl]}" class="recipe-thumb" alt="${r.name}" loading="lazy">`
+      : "";
+
+    div.innerHTML = `
+      <a href="${fixedUrl}" class="text1">${r.name}</a>
+      ${imgHTML}
+      <p class="recipe-meta">
+        Categories: ${r.categories.join(", ")} | Difficulty: ${pageDifficulties[fixedUrl]}
+      </p>
+      <hr>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+searchBar.addEventListener("input", renderRecipes);
+categoryFilter.addEventListener("change", renderRecipes);
+difficultyFilter.addEventListener("change", renderRecipes);
+sortBy.addEventListener("change", renderRecipes);
+
+loadRecipesJSON();
+</script>
+
+<script src="/js/disable-zoom.js"></script>
+<script src="/js/gold.js" defer></script>
+<script src="/js/Bottom-bar.js"></script>
+<script src="/js/trust-pilot.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Not Found</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #fff1e6, #ffe3e3, #fff8dc);
+      background-size: 300% 300%;
+      animation: bgShift 10s ease-in-out infinite;
+      text-align: center;
+    }
+
+    @keyframes bgShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      font-size: 100px;
+      margin: 0;
+      color: #ff4d4d;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    p {
+      max-width: 520px;
+      font-size: 18px;
+      color: #444;
+      margin-top: 10px;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    a {
+      margin-top: 20px;
+      color: tomato;
+      font-weight: bold;
+      text-decoration: none;
+      animation: fadeIn 3s ease forwards;
+    }
+
+    /* floating kitchen chaos */
+    .float {
+      position: absolute;
+      bottom: -50px;
+      font-size: 30px;
+      animation: rise linear infinite;
+      opacity: 0.75;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .f1 { left: 10%; animation-duration: 8s; }
+    .f2 { left: 25%; animation-duration: 6s; font-size: 36px; }
+    .f3 { left: 40%; animation-duration: 10s; }
+    .f4 { left: 60%; animation-duration: 7s; font-size: 34px; }
+    .f5 { left: 75%; animation-duration: 9s; }
+    .f6 { left: 90%; animation-duration: 11s; font-size: 38px; }
+
+    /* drifting steam waves */
+    .steam {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255,255,255,0.35);
+      filter: blur(80px);
+      border-radius: 50%;
+      animation: steamMove 6s ease-in-out infinite;
+    }
+
+    @keyframes steamMove {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.1); }
+    }
+
+    .s1 { top: 10%; left: 20%; }
+    .s2 { top: 30%; right: 15%; animation-delay: 2s; }
+    .s3 { bottom: 20%; left: 50%; animation-delay: 4s; }
+
+    /* subtle sparkle overlay */
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="steam s1"></div>
+  <div class="steam s2"></div>
+  <div class="steam s3"></div>
+
+  <h1>404</h1>
+
+  <p>
+    This recipe drifted out of the cookbook and is currently floating somewhere between the spice rack and imagination.
+    The kitchen is still warm… something was just here.
+  </p>
+
+  <a href="/">← Return to the kitchen</a>
+
+  <!-- floating ingredients -->
+  <div class="float f1">🍞</div>
+  <div class="float f2">🍳</div>
+  <div class="float f3">🧄</div>
+  <div class="float f4">🍪</div>
+  <div class="float f5">🥕</div>
+  <div class="float f6">🧂</div>
+
+  <!-- tiny sparkles -->
+  <script>
+    for (let i = 0; i < 25; i++) {
+      let s = document.createElement("div");
+      s.className = "sparkle";
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.top = Math.random() * 100 + "vh";
+      s.style.animationDuration = (2 + Math.random() * 3) + "s";
+      document.body.appendChild(s);
+    }
+  </script>
+
+</body>
+</html>

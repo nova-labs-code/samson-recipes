@@ -1,0 +1,67 @@
+{
+  "recipes": [
+    {
+      "name": "Boneless Wings",
+      "url": "boneless-Wings",
+      "categories": ["dinner", "appetizer"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Cheesy Sausage Casserole",
+      "url": "Cheesy-Sausage-Casserole",
+      "categories": ["breakfast", "dinner"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Gala Apple Pie",
+      "url": "Gala-Apple-Pie",
+      "categories": ["dessert"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Cheesy Veggie Quesadilla Bake",
+      "url": "cheesy-quesadilla-bake",
+      "categories": ["dinner", "lunch"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Protein Crunch Cereal",
+      "url": "protein-crunch-cereal",
+      "categories": ["breakfast"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Monster Junk Feast Bake",
+      "url": "Monster-Junk-Feast-Bake",
+      "categories": ["dinner"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Taco Mac N Cheese Bake",
+      "url": "Taco-Mac-N-Cheese-Bake",
+      "categories": ["dinner", "lunch"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Velveeta Slow-Cooker Chicken Melt",
+      "url": "Velveeta-Slow-Cooker-Chicken-Melt",
+      "categories": ["dinner"],
+      "difficulty": "",
+      "image": ""
+    },
+    {
+      "name": "Cinnamon Banana Chocolate Swirl Cheesecake",
+      "url": "cinnamon-banana-chocolate-swirl-cheesecake",
+      "categories": ["dessert"],
+      "difficulty": "",
+      "image": ""
+    }
+  ]
+}

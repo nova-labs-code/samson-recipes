@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form</title>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: #f4f6f8;
+    }
+
+    /* Container for iframe + overlay */
+    .iframe-wrapper {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Overlay to hide Tally branding */
+    .branding-cover {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px; /* adjust if necessary */
+      background: #f4f6f8; /* same as page background */
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="iframe-wrapper">
+    <iframe src="https://tally.so/r/VLJkzM" allowfullscreen></iframe>
+    <div class="branding-cover"></div>
+  </div>
+</body>
+
+<script src="/js/disable-zoom.js"></script>
+</html>

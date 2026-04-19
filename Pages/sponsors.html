@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sponsors</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<style>
+/* ====== Global Styles ====== */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #10141a, #1c2230);
+  font-family: 'VT323', monospace;
+  color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+  transition: background 0.3s;
+}
+
+.container {
+  max-width: 720px;
+  width: 100%;
+  background: rgba(28, 34, 48, 0.95);
+  border-radius: 16px;
+  padding: 40px;
+  border: 2px solid rgba(125, 211, 252, 0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  color: #7dd3fc;
+  text-shadow: 0 0 12px rgba(125,211,252,0.7);
+}
+
+.intro {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 50px;
+  color: #cfd8dc;
+  line-height: 1.8;
+}
+
+/* ====== Sponsor Cards ====== */
+.sponsor {
+  background: linear-gradient(180deg, rgba(125,211,252,0.05), rgba(125,211,252,0.01));
+  border: 1px solid rgba(125,211,252,0.3);
+  border-radius: 14px;
+  padding: 22px 28px;
+  margin-bottom: 40px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s;
+  position: relative;
+  cursor: pointer;
+}
+
+.sponsor:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(125,211,252,0.5);
+  background: linear-gradient(180deg, rgba(125,211,252,0.1), rgba(125,211,252,0.02));
+}
+
+.sponsor a {
+  color: #7dd3fc;
+  font-size: 1.35rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sponsor a:hover {
+  color: #00ffff;
+}
+
+.sponsor p {
+  margin: 10px 0 0;
+  color: #b0bec5;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* Tooltip */
+.sponsor::after {
+  content: attr(data-tooltip);
+  position: fixed;
+  left: 50%;
+  top: -30px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #7dd3fc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, top 0.25s;
+  z-index: 9999;
+}
+
+.sponsor:hover::after {
+  opacity: 0.95;
+  top: -50px;
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #90a4ae;
+  line-height: 1.5;
+}
+
+footer .credit {
+  display: block;
+  font-size: 0.85rem;
+  color: #7dd3fc;
+  margin-top: 4px;
+}
+
+/* ====== Bugs Container ====== */
+#bugs-container {
+  pointer-events: none;
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.bug {
+  position: absolute;
+  font-size: 22px;
+  opacity: 0;
+  animation: flyBug linear forwards;
+  will-change: transform, opacity;
+}
+
+/* Bug Animation Keyframes */
+@keyframes flyBug {
+  0% {
+    transform: translate(var(--startX), var(--startY)) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  30% {
+    transform: translate(var(--midX1), var(--midY1)) scale(1.1) rotate(45deg);
+  }
+  60% {
+    transform: translate(var(--midX2), var(--midY2)) scale(0.8) rotate(120deg);
+  }
+  100% {
+    transform: translate(var(--endX), var(--endY)) scale(0.5) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 480px) {
+  h1 { font-size: 2rem; }
+  .intro { font-size: 1rem; margin-bottom: 40px; }
+  .sponsor a { font-size: 1.2rem; }
+  .sponsor p { font-size: 0.95rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Sponsors</h1>
+
+  <div class="intro">
+    I sponsor independent creators whose work I genuinely enjoy.  
+    Some are educational, some are addictive, and some just make the web more fun.  
+    Hover over a card to see a note, or click to visit their site.
+  </div>
+
+  <!-- PandaDev Card -->
+  <div class="sponsor" id="panda-card" data-tooltip="Explore the fascinating world of insects! 🐞">
+    <a href="https://pandadev.neocities.org/Entomology" target="_blank">
+      PandaDev — Entomology
+    </a>
+    <p>
+      A fascinating educational project about insects.  
+      Beautifully presented, detailed, and a great resource for entomology enthusiasts.
+    </p>
+  </div>
+
+  <!-- Auths RNG Card -->
+  <div class="sponsor" id="auths-card" data-tooltip="Addictive chaos awaits 🎲">
+    <a href="https://authsrng.neocities.org" target="_blank">
+      Auths RNG
+    </a>
+    <p>
+      Addictive and endlessly creative — I’ve spent over 500 hours exploring it.  
+      A playful, random, and utterly captivating web project.
+    </p>
+  </div>
+
+  <!-- Mimo Card -->
+  <div class="sponsor" data-tooltip="Learn coding in a fun way! 💻">
+    <a href="https://mimo.org/" target="_blank">
+      Mimo
+    </a>
+    <p>
+      A playful coding platform to improve your programming skills.  
+      Interactive challenges and tutorials to level up your coding.
+    </p>
+  </div>
+  
+  <!-- ChatGPT Card -->
+  <div class="sponsor" data-tooltip="Powered by AI conversations 🤖">
+    <a href="https://chat.openai.com" target="_blank">
+      ChatGPT
+    </a>
+    <p>
+      An AI companion that helps with coding, writing, brainstorming, and much more.  
+      Always available for creative ideas, learning, or just having fun.
+    </p>
+  </div>  
+  <!-- Samson Grace acadamy Card -->
+  <div class="sponsor" data-tooltip="Coming soon">
+    <a href="https://samsongraceacademy.neocities.org" target="_blank">
+       Samson Grace Academy 
+    </a>
+    <p>
+      An AI companion that helps with coding, writing, brainstorming, and much more.  
+      Always available for creative ideas, learning, or just having fun.
+    </p>
+  </div>  
+  <footer>
+    Supported by Samson Recipes
+    <span class="credit">A project by Nova Labs Interactive — scripted and ran by a single creator.</span>
+  </footer>
+</div>
+
+<div id="bugs-container"></div>
+
+<script>
+console.log("%cWelcome, adventurer! 🕵️‍♂️ Keep exploring.", "color: #7dd3fc; font-size: 16px; font-family: VT323;");
+console.log("%cHover over the cards for hidden messages!", "color: #ff77aa; font-size: 14px; font-family: VT323;");
+
+// ====== Bugs Effect with Fixed Emoji Types ======
+const pandaCard = document.getElementById('panda-card');
+const bugsContainer = document.getElementById('bugs-container');
+let bugInterval;
+
+// Bug types with their emojis
+const bugTypes = [
+  { name: 'beetle', emoji: '🪲' },
+  { name: 'ladybug', emoji: '🐞' },
+  { name: 'butterfly', emoji: '🦋' },
+  { name: 'bee', emoji: '🐝' },
+  { name: 'fly', emoji: '🪰' },
+];
+
+// Pick a random bug type
+function getRandomBugType() {
+  const randomIndex = Math.floor(Math.random() * bugTypes.length);
+  return bugTypes[randomIndex];
+}
+
+function createBug() {
+  const bug = document.createElement('div');
+  bug.className = 'bug';
+
+  // Assign bug type
+  const bugType = getRandomBugType();
+  bug.dataset.type = bugType.name;
+  bug.textContent = bugType.emoji;
+
+  const cardRect = pandaCard.getBoundingClientRect();
+  const startX = cardRect.left + Math.random() * cardRect.width + 'px';
+  const startY = cardRect.top + Math.random() * cardRect.height + 'px';
+  const endX = Math.random() * window.innerWidth + 'px';
+  const endY = Math.random() * window.innerHeight + 'px';
+  const midX1 = (parseFloat(startX) + parseFloat(endX)) / 2 + (Math.random() * 200 - 100) + 'px';
+  const midY1 = (parseFloat(startY) + parseFloat(endY)) / 2 + (Math.random() * 200 - 100) + 'px';
+  const midX2 = (parseFloat(startX) + parseFloat(endX)) / 2 + (Math.random() * 200 - 100) + 'px';
+  const midY2 = (parseFloat(startY) + parseFloat(endY)) / 2 + (Math.random() * 200 - 100) + 'px';
+
+  bug.style.setProperty('--startX', startX);
+  bug.style.setProperty('--startY', startY);
+  bug.style.setProperty('--midX1', midX1);
+  bug.style.setProperty('--midY1', midY1);
+  bug.style.setProperty('--midX2', midX2);
+  bug.style.setProperty('--midY2', midY2);
+  bug.style.setProperty('--endX', endX);
+  bug.style.setProperty('--endY', endY);
+
+  const duration = 5000 + Math.random() * 2000;
+  bug.style.animationDuration = duration + 'ms';
+
+  bugsContainer.appendChild(bug);
+  setTimeout(() => bug.remove(), duration);
+}
+
+pandaCard.addEventListener('mouseenter', () => {
+  bugInterval = setInterval(createBug, 150);
+});
+
+pandaCard.addEventListener('mouseleave', () => {
+  clearInterval(bugInterval);
+});
+
+// ====== Click Handling ======
+document.querySelectorAll('.sponsor').forEach(card => {
+  card.addEventListener('click', () => {
+    const link = card.querySelector('a').href;
+    window.open(link, '_blank');
+  });
+});
+</script>
+<script src="/js/disable-zoom.js"></script>
+</body>
+</html>

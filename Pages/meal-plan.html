@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samson Recipes - Meal Planner</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 1rem;
+  color: #e0e0e0;
+  background-color: #4d4543;
+}
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #f1c40f;
+}
+#reset-btn {
+  display: block;
+  margin: 0 auto 1rem auto;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #f1c40f;
+  background-color: #3b3532;
+  color: white;
+  transition: background 0.2s, color 0.2s;
+}
+#reset-btn:hover {
+  background-color: #f1c40f;
+  color: #4d4543;
+}
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #4d4543; /* match body */
+  color: #e0e0e0;
+}
+th, td {
+  border: 1px solid #555;
+  padding: 0.6rem;
+  text-align: center;
+  vertical-align: top;
+  background-color: #4d4543; /* match body */
+}
+th {
+  background-color: #3b3532; /* header slightly darker for contrast */
+  font-weight: bold;
+  color: #f1c40f;
+}
+select {
+  width: 90%;
+  padding: 0.3rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+  background-color: #5a504a;
+  color: #e0e0e0;
+  border: 1px solid #777;
+  border-radius: 4px;
+}
+.recipe-info {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-top: 0.3rem;
+}
+.recipe-info img {
+  max-width: 100px;
+  border-radius: 8px;
+  display: block;
+  margin: 0.3rem auto;
+  border: 1px solid #555;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  table, thead, tbody, th, td, tr { display: block; width: 100%; }
+  thead tr { display: none; }
+  tbody tr {
+    border: 1px solid #555;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #4d4543; /* match body */
+    border-radius: 8px;
+  }
+  td {
+    text-align: left;
+    border: none;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+  }
+  td::before { content: attr(data-label); font-weight: bold; margin-bottom: 0.3rem; color: #f1c40f; }
+  select { width: 100%; }
+  .recipe-info img { max-width: 80px; }
+  html, body { background-color: #4d4543; }
+}
+</style>
+</head>
+<body>
+
+<h1>Weekly Meal Planner</h1>
+<button id="reset-btn">Reset Meal Plan</button>
+<div class="table-container">
+<table id="meal-table">
+<thead>
+<tr>
+<th>Day</th>
+<th>Breakfast</th>
+<th>Lunch</th>
+<th>Dinner</th>
+<th>Dessert</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<script>
+let recipesList = [];
+const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const mealTypes = ["breakfast","lunch","dinner","dessert"];
+const mealTableBody = document.querySelector("#meal-table tbody");
+const pageDifficulties = {};
+const pageImages = {};
+const difficultiesOrder = ["mild","easy","intermediate","medium","hard"];
+
+// Load recipes
+async function loadRecipes() {
+  try {
+    const res = await fetch("/json/recipes.json");
+    const data = await res.json();
+    recipesList = data.recipes || [];
+    await preloadPages();
+    renderMealPlanner();
+  } catch(e) {
+    mealTableBody.innerHTML = "<tr><td colspan='5'>Failed to load recipes.</td></tr>";
+    console.error(e);
+  }
+}
+
+// Fetch difficulty & image dynamically
+async function preloadPages() {
+  for (let recipe of recipesList) {
+    try {
+      const res = await fetch(recipe.url);
+      const text = await res.text();
+      const doc = new DOMParser().parseFromString(text,"text/html");
+      const bodyText = doc.body.textContent.toLowerCase();
+      let detected="unknown";
+      for(let d of difficultiesOrder) if(bodyText.includes(d)){ detected=d; break; }
+      pageDifficulties[recipe.url]=detected;
+
+      let chosenImage=null;
+      for(let img of doc.querySelectorAll("img")){
+        const src=img.getAttribute("src");
+        if(!src) continue;
+        if(src.toLowerCase().includes("no-image")) continue;
+        chosenImage=src; break;
+      }
+      pageImages[recipe.url]=chosenImage;
+    }catch{
+      pageDifficulties[recipe.url]="unknown";
+      pageImages[recipe.url]=null;
+    }
+  }
+}
+
+// Render meal planner
+function renderMealPlanner(){
+  const savedPlan = JSON.parse(localStorage.getItem("mealPlan") || "{}");
+  mealTableBody.innerHTML="";
+
+  days.forEach(day=>{
+    const tr=document.createElement("tr");
+    tr.setAttribute("data-day",day);
+
+    const tdDay=document.createElement("td");
+    tdDay.setAttribute("data-label","Day");
+    tdDay.textContent=day;
+    tr.appendChild(tdDay);
+
+    mealTypes.forEach(type=>{
+      const td=document.createElement("td");
+      td.setAttribute("data-label",type.charAt(0).toUpperCase()+type.slice(1));
+      const select=document.createElement("select");
+      select.setAttribute("data-meal",type);
+
+      if(type==="dessert"){
+        const noneOption=document.createElement("option");
+        noneOption.value="";
+        noneOption.textContent="None";
+        select.appendChild(noneOption);
+      }else{
+        const defaultOption=document.createElement("option");
+        defaultOption.value="";
+        defaultOption.textContent="Select recipe";
+        select.appendChild(defaultOption);
+      }
+
+      const filteredRecipes=recipesList.filter(r=>r.categories.includes(type));
+      filteredRecipes.forEach(r=>{
+        const option=document.createElement("option");
+        option.value=r.url;
+        option.textContent=r.name;
+        select.appendChild(option);
+      });
+
+      td.appendChild(select);
+      const infoDiv=document.createElement("div");
+      infoDiv.className="recipe-info";
+      td.appendChild(infoDiv);
+
+      // Load saved selection
+      if(savedPlan[day] && savedPlan[day][type]) select.value=savedPlan[day][type];
+
+      select.addEventListener("change",()=>{
+        const selected=recipesList.find(r=>r.url===select.value);
+        infoDiv.innerHTML="";
+        if(selected){
+          if(pageImages[selected.url]) infoDiv.innerHTML+=`<img src="${pageImages[selected.url]}" alt="${selected.name}">`;
+          infoDiv.innerHTML+=`Difficulty: ${pageDifficulties[selected.url]}`;
+        }
+        autoSave();
+      });
+
+      select.dispatchEvent(new Event("change"));
+      tr.appendChild(td);
+    });
+
+    mealTableBody.appendChild(tr);
+  });
+}
+
+// Auto-save
+function autoSave(){
+  const plan={};
+  Array.from(mealTableBody.querySelectorAll("tr[data-day]")).forEach(row=>{
+    const day=row.getAttribute("data-day");
+    plan[day]={};
+    Array.from(row.querySelectorAll("select[data-meal]")).forEach(sel=>{
+      const meal=sel.getAttribute("data-meal");
+      plan[day][meal]=sel.value;
+    });
+  });
+  localStorage.setItem("mealPlan",JSON.stringify(plan));
+}
+
+// Reset button
+document.getElementById("reset-btn").addEventListener("click",()=>{
+  if(confirm("Are you sure you want to reset your meal plan?")){
+    localStorage.removeItem("mealPlan");
+    renderMealPlanner();
+  }
+});
+
+loadRecipes();
+</script>
+<script src="/js/gold.js" defer></script>
+<script src="/js/Bottom-bar.js"></script>
+<script src="/js/trust-pilot.js"></script>
+<script src="/js/disable-zoom.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Update Log</title>
+
+<!-- Page CSS for layout and frames -->
+<style>
+body {
+  margin: 0;
+  padding: 32px 16px;
+  font-family: system-ui, sans-serif;
+  background: #1c1c1c;
+  color: #fff;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.3rem;
+}
+
+.update {
+  max-width: 900px;
+  margin: 0 auto 32px;
+  padding: 24px;
+  background: #222;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.update h2 { margin-top:0; font-size:1.4rem; }
+.update h3 { font-size:1.05rem; font-weight:600; border-left:3px solid #555; padding-left:10px; margin-top:22px; margin-bottom:10px; }
+
+.item { margin-left:12px; padding:12px 14px; margin-bottom:12px; background:#2a2a2a; border-radius:10px; }
+.item > h2 { font-size:1.5rem; font-weight:900; margin:0 0 6px 0; }
+
+.item p { margin:0; line-height:1.45; }
+.item a { display:inline-block; margin-top:6px; font-size:0.85rem; text-decoration:none; color:#999; }
+.item a:hover { text-decoration:underline; }
+
+.time-ago {
+  display:inline-block;
+  min-height:1em;
+  white-space:nowrap;
+  will-change:contents;
+  font-size:0.85rem;
+  color:#aaa;
+  margin-bottom:18px;
+}
+</style>
+</head>
+<body>
+
+<h1>Update Logs</h1>
+<div id="updates"></div>
+
+<!-- --------------------------
+     UPDATES SCRIPT
+--------------------------- -->
+<script>
+const jsonPath = '/json/updates.json';
+
+function parseESTtoLocal(dateStr) {
+  return new Date(dateStr);
+}
+
+function timeAgo(date) {
+  const now = new Date();
+  let delta = Math.floor((now - date) / 1000);
+
+  const units = {
+    year: 365.25*24*60*60,
+    month: 30.44*24*60*60,
+    week: 7*24*60*60,
+    day: 24*60*60,
+    hour: 60*60,
+    minute: 60,
+    second: 1
+  };
+
+  let result = [];
+  let useHoursSeconds = delta < units.week;
+
+  for(const [unit, seconds] of Object.entries(units)) {
+    if(!useHoursSeconds && ["hour","minute","second"].includes(unit)) continue;
+    const value = Math.floor(delta / seconds);
+    if(value > 0) {
+      result.push(`${value} ${unit}${value !== 1 ? 's' : ''}`);
+      delta -= value*seconds;
+    }
+  }
+
+  return result.length ? result.join(', ') + ' ago' : "just now";
+}
+
+fetch(jsonPath)
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById('updates');
+
+    data.updateLogs.forEach(update => {
+      const updateDiv = document.createElement('div');
+      updateDiv.className = 'update';
+
+      const versionTitle = document.createElement('h2');
+      versionTitle.textContent = `Update ${update.version}`;
+      updateDiv.appendChild(versionTitle);
+
+      const timeEl = document.createElement('p');
+      timeEl.className = 'time-ago';
+      updateDiv.appendChild(timeEl);
+      const localDate = parseESTtoLocal(update.date);
+      const tick = () => timeEl.textContent = timeAgo(localDate);
+      tick();
+      setInterval(tick, 1000);
+
+      update.sections.forEach(section => {
+        const sectionTitle = document.createElement('h3');
+        sectionTitle.textContent = section.title;
+        updateDiv.appendChild(sectionTitle);
+
+        section.items.forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'item';
+
+          const itemName = document.createElement('h2');
+          itemName.textContent = item.name;
+          itemDiv.appendChild(itemName);
+
+          const itemDesc = document.createElement('p');
+          itemDesc.textContent = item.description;
+          itemDiv.appendChild(itemDesc);
+
+          if(item.link) {
+            const linkEl = document.createElement('a');
+            linkEl.href = item.link;
+            linkEl.textContent = item.linkName || "View Details";
+            itemDiv.appendChild(linkEl);
+          }
+
+          updateDiv.appendChild(itemDiv);
+        });
+      });
+
+      container.appendChild(updateDiv);
+    });
+  })
+  .catch(err => console.error(err));
+</script>
+
+<!-- --------------------------
+     CALL GOLD.JS
+     (fully handles popup & gold styling)
+--------------------------- -->
+<script src="/js/disable-zoom.js"></script>
+<script src="/js/gold.js"></script>
+
+</body>
+</html>
