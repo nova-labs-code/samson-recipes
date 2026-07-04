@@ -1,0 +1,124 @@
+{
+  "title": "Cinnamon Banana Chocolate Swirl Cheesecake",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Intermediate",
+    "servings": "10",
+    "images": [
+      "/Images/no-image.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "1800",
+      "cook_time": "4500",
+      "chill_time": "3600",
+      "total_time": ""
+    },
+    "ingredients": [
+      {
+      "title": "Crust",
+      "items": [
+      "1½ cups graham cracker crumbs",
+      "¼ cup granulated sugar",
+      "½ tsp ground cinnamon",
+      "6 tbsp unsalted butter, melted"
+      ]
+    },
+    {
+      "title": "Filling",
+      "items": [
+      "24 oz (680 g) cream cheese, softened",
+      "¾ cup granulated sugar",
+      "2 large eggs",
+      "1 tsp vanilla extract",
+      "½ tsp ground cinnamon",
+      "2 ripe bananas, mashed",
+      "½ cup sour cream"
+      ]
+    },
+    {
+      "title": "Chocolate Swirl",
+      "items": [
+      "½ cup semisweet chocolate chips, melted"
+      ]
+    },
+    
+    {
+      "title": "Topping (optional)",
+      "items": [
+      "Whipped cream",
+      "Sliced bananas",
+      "Grated chocolate or chocolate shavings"
+      ]
+    }
+    ],
+    
+    "instructions": [
+  {
+    "title": "Prep",
+    "items": [
+      "Preheat oven to 325°F (160°C). Grease a 9-inch springform pan and set aside."
+    ]
+  },
+  {
+    "title": "Crust",
+    "items": [
+      "Combine graham cracker crumbs, sugar, and cinnamon.",
+      "Stir in melted butter until fully combined.",
+      "Press mixture firmly into the bottom of the pan.",
+      "Bake crust for 8–10 minutes, then let it cool completely."
+    ]
+  },
+  {
+    "title": "Filling",
+    "items": [
+      "Beat cream cheese until smooth and creamy.",
+      "Add sugar and cinnamon, mixing until combined.",
+      "Add eggs one at a time, mixing after each addition.",
+      "Mix in vanilla extract, mashed bananas, and sour cream until smooth."
+    ]
+  },
+  {
+    "title": "Assembly",
+    "items": [
+      "Pour half of the filling into the cooled crust.",
+      "Drizzle half of the melted chocolate over the filling.",
+      "Add remaining filling on top.",
+      "Drizzle remaining melted chocolate.",
+      "Swirl gently with a knife or skewer to create a marbled effect."
+    ]
+  },
+  {
+    "title": "Baking",
+    "items": [
+      "Bake for 55–65 minutes until the center is almost set but slightly jiggly.",
+      "Turn off oven, crack the door, and let cheesecake cool inside for 1 hour."
+    ]
+  },
+  {
+    "title": "Chilling",
+    "items": [
+      "Refrigerate for at least 1 hour, preferably overnight, before serving."
+    ]
+  },
+  {
+    "title": "Finishing",
+    "items": [
+      "Top with whipped cream if desired.",
+      "Add sliced bananas on top.",
+      "Sprinkle or drizzle with chocolate shavings."
+    ]
+  }
+],
+    "serving_suggestions": [
+      "Add whipped cream and chocolate drizzle",
+      "Pair with coffee or dessert wine",
+      "Top with fresh banana slices"
+    ],
+    "storage": [
+      "Refrigerate covered for up to 4 days",
+      "Freeze uncut slices for up to 2 months",
+      "Thaw in fridge before serving"
+    ],
+    "recipe_by": "Elisha Samson"
+  }
+}

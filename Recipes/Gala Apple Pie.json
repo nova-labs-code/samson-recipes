@@ -1,0 +1,43 @@
+{
+  "title": "Gala Apple Pie",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Medium",
+    "servings": "6–8",
+    "images": [
+      "/Images/no-image.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "1800",
+      "cook_time": "7200",
+      "chill_time": "3000, 3600",
+      "total_time": ""
+    },
+    "ingredients": [
+      "5 Gala apples, peeled and sliced",
+      "Granulated sugar & brown sugar",
+      "Flour, cinnamon, nutmeg",
+      "Lemon juice & vanilla",
+      "Butter",
+      "Double pie crust"
+    ],
+    "instructions": [
+      "Prepare and chill pie dough.",
+      "Mix apple filling and let rest.",
+      "Assemble pie in dish.",
+      "Bake until golden and bubbling.",
+      "Cool completely before slicing."
+    ],
+    "serving_suggestions": [
+      "Serve with vanilla ice cream",
+      "Add caramel drizzle",
+      "Pair with coffee or tea"
+    ],
+    "storage": [
+      "Room temperature: up to 2 days",
+      "Refrigerator: up to 4 days",
+      "Freezer: up to 2 months"
+    ],
+    "recipe_by": "Elisha Samson"
+  }
+}

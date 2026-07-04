@@ -1,0 +1,188 @@
+:root {
+  --amethyst-light: #f3e8ff;
+  --amethyst-mid: #c084fc;
+  --amethyst-base: #a855f7;
+  --amethyst-dark: #6b21a8;
+  --amethyst-glow: #d8b4fe;
+  --background: #1c1622;
+}
+
+/* -------------------------- */
+/* Amethyst text (crystal glow) */
+.gold-text:not(.original),
+.item-name:not(.original),
+h1:not(.original), h2:not(.original), h3:not(.original),
+h4:not(.original), h5:not(.original), h6:not(.original),
+p:not(.original), th:not(.original), td:not(.original),
+footer:not(.original), a:not(.original), li:not(.original),
+strong:not(.original), em:not(.original),
+span:not(.carousel-dot):not(button *):not(.fixed-button *):not(#backToTop *):not(.original),
+select:not(button *):not(.fixed-button *):not(.original) {
+
+  background: linear-gradient(
+    145deg,
+    var(--amethyst-light),
+    var(--amethyst-mid),
+    var(--amethyst-base),
+    var(--amethyst-dark)
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text;
+  color: transparent !important;
+
+  text-shadow:
+    0 0 6px rgba(216, 180, 254, 0.25),
+    0.5px 0.5px 1px rgba(0,0,0,0.25);
+
+  font-weight: 600;
+}
+
+/* -------------------------- */
+/* Buttons – crystal core */
+button:not(.original),
+.fixed-button:not(.original) {
+  cursor: pointer;
+  border: 1px solid rgba(216,180,254,0.35);
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+
+  background: linear-gradient(
+    135deg,
+    var(--amethyst-light),
+    var(--amethyst-mid),
+    var(--amethyst-base),
+    var(--amethyst-dark)
+  );
+
+  color: #1a1a1a;
+  font-weight: 600;
+
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+/* Hover glow pulse */
+button:not(.original):hover,
+.fixed-button:not(.original):hover,
+ul li button:not(.original):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 12px rgba(168, 85, 247, 0.35),
+    0 8px 18px rgba(0,0,0,0.18);
+  filter: brightness(1.08);
+}
+
+/* Active */
+button:not(.original):active,
+.fixed-button:not(.original):active,
+ul li button:not(.original):active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* -------------------------- */
+/* List buttons (kept clean) */
+ul li button:not(.original) {
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  color: #3b2a4a !important;
+  text-shadow: none !important;
+  font-weight: 600;
+}
+
+/* -------------------------- */
+/* Images & Videos */
+img:not(.original),
+video:not(.original) {
+  border-radius: 12px;
+  border: 3px solid var(--amethyst-base);
+  box-shadow:
+    0 0 10px rgba(168,85,247,0.25),
+    0 0 18px rgba(216,180,254,0.2);
+}
+
+/* -------------------------- */
+/* BACK TO TOP */
+#backToTop:not(.original) {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  padding: 12px 16px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(216,180,254,0.35);
+
+  background: linear-gradient(
+    145deg,
+    var(--amethyst-light),
+    var(--amethyst-mid),
+    var(--amethyst-base),
+    var(--amethyst-dark)
+  );
+
+  color: #1a1a1a !important;
+  font-weight: 600;
+
+  box-shadow:
+    0 0 14px rgba(168,85,247,0.3),
+    0 0 20px rgba(216,180,254,0.2);
+
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#backToTop:not(.original):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 18px rgba(168,85,247,0.45),
+    0 10px 20px rgba(0,0,0,0.2);
+}
+
+#backToTop:not(.original):active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* -------------------------- */
+/* Dropdowns */
+select:not(.original) {
+  background-color: #2a2030;
+  border: 1px solid rgba(216,180,254,0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+option {
+  background: var(--background);
+  color: var(--amethyst-base);
+}
+
+/* -------------------------- */
+li::marker {
+  color: var(--amethyst-mid);
+}
+
+/* -------------------------- */
+/* Page background */
+body {
+  background-color: var(--background);
+}
+
+input,
+textarea {
+  background-color: #241a2c;
+  color: #fff;
+}
+
+/* -------------------------- */
+/* Popup hidden */
+.gold-popup-overlay,
+.gold-popup-box {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

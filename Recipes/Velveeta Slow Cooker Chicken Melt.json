@@ -1,0 +1,68 @@
+{
+  "title": "Velveeta™ Slow-Cooker Chicken Melt",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Intermediate",
+    "servings": "10",
+    "images": [
+      "/Images/no-image.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "300,600",
+      "cook_time": "18000,21600",
+      "melt_time": "600,900",
+      "total_time": ""
+    },
+    "ingredients": [
+      {
+      "title": "Chicken",
+      "items": [
+"5 lbs frozen boneless, skinless chicken breasts",
+"1 cup chicken broth or water",
+"2 tsp salt",
+"1 tsp black pepper",
+"2 tsp garlic powder",
+"2 tsp onion powder",
+"2 tsp paprika (optional)",
+"2 tsp Italian seasoning or ranch seasoning"
+      ]
+    },
+    {
+      "title": "Cheese Sauce",
+      "items": [
+"8 oz Velveeta™ (½ block), cubed",
+"2 tbsp butter",
+"2–3 tbsp milk",
+"2 cups + 2 tbsp all-purpose flour (if watery add more)"
+      ]
+    }
+    ],
+    
+    "instructions": [
+  "Place frozen chicken into crockpot (some overlap is okay).",
+  "Sprinkle all dry seasonings evenly over chicken.",
+  "Pour broth around chicken (not directly on top of seasoning).",
+  "Cover and cook on HIGH for 5 to 6 hours.",
+  "Ensure internal temp reaches 165°F minimum.",
+  "Once cooked, shred chicken with forks directly in crockpot.",
+  "In a medium bowl, whisk 2 cups + 2 tbsp flour into 2–3 tbsp milk until smooth.",
+  "Add Velveeta™ cubes and butter. Melt until smooth.",
+  "Pour cheese sauce into shredded chicken, mix well.",
+  "Cook on LOW or WARM for 10–15 minutes until sauce is thick."
+],
+    "serving_suggestions": [
+"Serve over baked potatoes",
+"Add steamed broccoli",
+"Great with toasted bread or inside a sandwich"
+    ],
+    "storage": [
+  "Refrigerator: Store leftovers in an airtight container for up to 4 days.",
+  "Freezer: Freeze in freezer-safe containers or bags for up to 3 months.",
+  "Reheating (Microwave): Heat in 30-second intervals, stirring between each interval, until heated through.",
+  "Reheating (Stovetop): Reheat over low heat, stirring occasionally. Add a splash of milk if the cheese sauce becomes too thick.",
+  "Food Safety: Refrigerate leftovers within 2 hours of cooking.",
+  "Thawing: Thaw frozen leftovers overnight in the refrigerator before reheating for best texture."
+],
+    "recipe_by": "Elisha Samson"
+  }
+}

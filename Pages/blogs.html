@@ -9,7 +9,7 @@
 
   body {
     font-family: 'Segoe UI', sans-serif;
-    background: #f0f2f5;
+    background: #1F1F1F;
     margin: 0;
     padding: 20px;
   }
@@ -22,7 +22,7 @@
   h1 {
     text-align: center;
     margin-bottom: 10px;
-    color: #333;
+    color: #B0B0B0;
   }
 
   #search {
@@ -35,12 +35,13 @@
   }
 
   .blog {
-    background: #fff;
+    background: #363636;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 12px;
     box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
     transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
   }
 
   .blog:hover {
@@ -58,42 +59,27 @@
   .blog-title {
     font-size: 26px;
     font-weight: bold;
-    color: #222;
+    color: #B0B0B0;
     margin-bottom: 5px;
   }
 
   .blog-author {
     font-style: italic;
-    color: #555;
+    color: #BFBFBF;
     margin-bottom: 5px;
   }
 
   .blog-date {
     font-size: 13px;
-    color: #999;
+    color: #C4C2C2;
     margin-bottom: 15px;
   }
 
   .blog-content {
     font-size: 16px;
     line-height: 1.6;
-    color: #333;
-    display: none; /* 👈 start minimized */
-  }
-
-  .blog-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-  }
-
-  .toggle-btn {
-    border: none;
-    background: transparent; /* 👈 no background */
-    cursor: pointer;
-    font-size: 20px;
-    line-height: 1;
-    padding: 0;
+    color: #C9C9C9;
+    display: none;
   }
 </style>
 
@@ -109,19 +95,37 @@
 
 <script>
 let blogData = [];
+let openBlog = null;
+let lastJSONHash = null;
 
-async function loadBlogs() {
+async function fetchBlogs() {
   try {
-    const res = await fetch('/json/blogs.json');
+    const res = await fetch('/json/blogs.json', { cache: "no-store" });
     const data = await res.json();
-    blogData = data;
 
-    blogData.sort((a, b) => b.id - a.id);
+    const hash = JSON.stringify(data);
 
-    renderBlogs(blogData);
+    // Only update if JSON changed
+    if (hash !== lastJSONHash) {
+      lastJSONHash = hash;
+
+      blogData = data;
+      blogData.sort((a, b) => b.id - a.id);
+
+      renderBlogs(blogData);
+    }
+
   } catch (err) {
     console.warn('blogs.json not loaded:', err);
   }
+}
+
+function startLiveUpdates() {
+  fetchBlogs(); // initial load
+
+  setInterval(() => {
+    fetchBlogs();
+  }, 1000);
 }
 
 function renderBlogs(blogs) {
@@ -133,10 +137,6 @@ function renderBlogs(blogs) {
     div.className = 'blog';
 
     div.innerHTML = `
-      <div class="blog-actions">
-        <button class="toggle-btn" onclick="toggleBlog(this)">Maximize</button>
-      </div>
-
       <div class="blog-header">
         <div>
           <div class="blog-title">${blog.title}</div>
@@ -150,22 +150,28 @@ function renderBlogs(blogs) {
       </div>
     `;
 
+    div.addEventListener('click', () => toggleBlog(div));
     container.appendChild(div);
   });
 }
 
-function toggleBlog(btn) {
-  const blog = btn.closest('.blog');
-  const content = blog.querySelector('.blog-content');
+function toggleBlog(blogEl) {
+  const content = blogEl.querySelector('.blog-content');
+
+  // close previously open blog
+  if (openBlog && openBlog !== blogEl) {
+    const prevContent = openBlog.querySelector('.blog-content');
+    prevContent.style.display = 'none';
+  }
 
   const isOpen = content.style.display === 'block';
 
   if (isOpen) {
     content.style.display = 'none';
-    btn.textContent = 'Maximize';
+    openBlog = null;
   } else {
     content.style.display = 'block';
-    btn.textContent = 'Minimize';
+    openBlog = blogEl;
   }
 }
 
@@ -181,7 +187,7 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderBlogs(filtered);
 });
 
-loadBlogs();
+startLiveUpdates();
 </script>
 
 <script src="/js/disable-zoom.js"></script>

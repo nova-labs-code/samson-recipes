@@ -1,199 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Samson Blog Editor</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&family=Comic+Neue&display=swap');
+  <meta charset="UTF-8">
+  <title>Samson Blog Editor</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&family=Comic+Neue&display=swap');
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f0f2f5;
-    margin: 0;
-    padding: 20px;
-  }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
 
-  .container {
-    max-width: 900px;
-    margin: auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
 
-  .button-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+    .button-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-  .button-bar button {
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #fff;
-    transition: 0.2s;
-  }
+    .button-bar button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.2s;
+    }
 
-  .button-create { background: #17a2b8; }
-  .button-create:hover { background: #117a8b; }
+    .button-create {
+      background: #17a2b8;
+    }
 
-  .button-save { background: #28a745; }
-  .button-save:hover { background: #1e7e34; }
+    .button-create:hover {
+      background: #117a8b;
+    }
 
-  .button-copy { background: #007bff; }
-  .button-copy:hover { background: #0056b3; }
+    .button-save {
+      background: #28a745;
+    }
 
-  .blog-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    position: relative;
-  }
+    .button-save:hover {
+      background: #1e7e34;
+    }
 
-  .delete-btn {
-    position: relative;
-    background: #dc3545;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    float: right;
-  }
+    .button-copy {
+      background: #007bff;
+    }
 
-  .delete-btn:hover { background: #a71d2a; }
+    .button-copy:hover {
+      background: #0056b3;
+    }
 
-  .blog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+    .blog-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
 
-  .blog-header input[type="text"], .blog-header select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    flex: 1;
-  }
+    .delete-btn {
+      position: relative;
+      background: #dc3545;
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      float: right;
+    }
 
-  #toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-    gap: 5px;
-  }
+    .delete-btn:hover {
+      background: #a71d2a;
+    }
 
-  #toolbar button {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
-    background: #1a73e8;
-    color: #fff;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
-  }
+    .blog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-  #toolbar button:hover { background: #1558b0; }
+    .blog-header input[type="text"],
+    .blog-header select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      flex: 1;
+    }
 
-  #toolbar input[type="color"] {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-  }
+    #toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      gap: 5px;
+    }
 
-  .blog-editor {
-    border: 1px solid #ccc;
-    min-height: 150px;
-    padding: 10px;
-    border-radius: 6px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-  }
+    #toolbar button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #1a73e8;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.2s;
+    }
 
-  pre {
-    background: #eee;
-    padding: 10px;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin-top: 10px;
-  }
-</style>
+    #toolbar button:hover {
+      background: #1558b0;
+    }
+
+    #toolbar input[type="color"] {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .blog-editor {
+      border: 1px solid #ccc;
+      min-height: 150px;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+  </style>
 </head>
-<body>
-<div class="container">
-  <h1>Samson Blog Editor</h1>
 
-  <div class="button-bar">
-    <button class="button-create" id="createBlogBtn">+ Create Blog</button>
-    <button class="button-save" id="saveBtn">Save All Blogs (JSON Output)</button>
-    <button class="button-copy" id="copyBtn">Copy JSON</button>
+<body>
+  <div class="container">
+    <h1>Samson Blog Editor</h1>
+
+    <div class="button-bar">
+      <button class="button-create" id="createBlogBtn">+ Create Blog</button>
+      <button class="button-save" id="saveBtn">Save All Blogs (JSON Output)</button>
+      <button class="button-copy" id="copyBtn">Copy JSON</button>
+    </div>
+
+    <div id="blogsContainer"></div>
+
+    <h3>All Blogs JSON Output:</h3>
+    <pre id="jsonOutput"></pre>
   </div>
 
-  <div id="blogsContainer"></div>
+  <script>
+    let blogData = [];
 
-  <h3>All Blogs JSON Output:</h3>
-  <pre id="jsonOutput"></pre>
-</div>
+    function exec(command, value = null) {
+      document.execCommand(command, false, value);
+    }
 
-<script>
-let blogData = [];
+    function insertLink() {
+      const url = prompt("Enter URL:");
+      if (!url) return;
+      const text = prompt("Link text:", url);
+      if (!text) return;
+      exec('insertHTML', `<a href="${url}" target="_blank">${text}</a>`);
+    }
 
-function exec(command, value = null) {
-  document.execCommand(command, false, value);
-}
+    function createBlogCard(blog) {
+      const card = document.createElement('div');
+      card.className = 'blog-card';
 
-function insertLink() {
-  const url = prompt("Enter URL:");
-  if (!url) return;
-  const text = prompt("Link text:", url);
-  if (!text) return;
-  exec('insertHTML', `<a href="${url}" target="_blank">${text}</a>`);
-}
+      // Delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener('click', () => {
+        card.remove();
+        recalcIDs();
+      });
+      card.insertAdjacentElement('afterbegin', deleteBtn);
 
-function createBlogCard(blog) {
-  const card = document.createElement('div');
-  card.className = 'blog-card';
+      // Header
+      const header = document.createElement('div');
+      header.className = 'blog-header';
 
-  // Delete button
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'delete-btn';
-  deleteBtn.textContent = "Delete";
-  deleteBtn.addEventListener('click', () => {
-    card.remove();
-    recalcIDs();
-  });
-  card.insertAdjacentElement('afterbegin', deleteBtn);
-
-  // Header
-  const header = document.createElement('div');
-  header.className = 'blog-header';
-
-  // Font selector per blog
-  const fontSelect = document.createElement('select');
-  fontSelect.innerHTML = `
+      // Font selector per blog
+      const fontSelect = document.createElement('select');
+      fontSelect.innerHTML = `
   <select class="font-select">
   <option value="'Segoe UI', sans-serif">Segoe UI</option>
   <option value="Arial, sans-serif">Arial</option>
@@ -207,20 +229,20 @@ function createBlogCard(blog) {
 </select>
 
   `;
-  fontSelect.value = blog.font || "'Segoe UI', sans-serif";
+      fontSelect.value = blog.font || "'Segoe UI', sans-serif";
 
-  // ID, title, author
-  header.innerHTML = `
+      // ID, title, author
+      header.innerHTML = `
     <span class="blog-id">ID: ${blog.id}</span>
     <input type="text" class="blog-title" placeholder="Title" value="${blog.title}">
     <input type="text" class="blog-author" placeholder="Author" value="${blog.author}">
   `;
-  header.appendChild(fontSelect);
+      header.appendChild(fontSelect);
 
-  // Toolbar
-  const toolbar = document.createElement('div');
-  toolbar.id = 'toolbar';
-  toolbar.innerHTML = `
+      // Toolbar
+      const toolbar = document.createElement('div');
+      toolbar.id = 'toolbar';
+      toolbar.innerHTML = `
     <button onclick="exec('bold')"><b>B</b></button>
     <button onclick="exec('italic')"><i>I</i></button>
     <button onclick="exec('underline')"><u>U</u></button>
@@ -230,100 +252,101 @@ function createBlogCard(blog) {
     <button onclick="insertLink()">Link</button>
   `;
 
-  // Editor
-  const editor = document.createElement('div');
-  editor.className = 'blog-editor';
-  editor.contentEditable = true;
-  editor.style.fontFamily = fontSelect.value;
-  editor.innerHTML = blog.content;
+      // Editor
+      const editor = document.createElement('div');
+      editor.className = 'blog-editor';
+      editor.contentEditable = true;
+      editor.style.fontFamily = fontSelect.value;
+      editor.innerHTML = blog.content;
 
-  fontSelect.addEventListener('change', () => {
-    editor.style.fontFamily = fontSelect.value;
-  });
+      fontSelect.addEventListener('change', () => {
+        editor.style.fontFamily = fontSelect.value;
+      });
 
-  // Colors
-  toolbar.querySelector('.textColor').addEventListener('input', e => {
-    document.execCommand('foreColor', false, e.target.value);
-  });
-  toolbar.querySelector('.bgColor').addEventListener('input', e => {
-    document.execCommand('hiliteColor', false, e.target.value);
-  });
+      // Colors
+      toolbar.querySelector('.textColor').addEventListener('input', e => {
+        document.execCommand('foreColor', false, e.target.value);
+      });
+      toolbar.querySelector('.bgColor').addEventListener('input', e => {
+        document.execCommand('hiliteColor', false, e.target.value);
+      });
 
-  card.appendChild(header);
-  card.appendChild(toolbar);
-  card.appendChild(editor);
+      card.appendChild(header);
+      card.appendChild(toolbar);
+      card.appendChild(editor);
 
-  return card;
-}
+      return card;
+    }
 
-function recalcIDs() {
-  document.querySelectorAll('.blog-card').forEach((card, i) => {
-    card.querySelector('.blog-id').textContent = `ID: ${i + 1}`;
-  });
-}
+    function recalcIDs() {
+      document.querySelectorAll('.blog-card').forEach((card, i) => {
+        card.querySelector('.blog-id').textContent = `ID: ${i + 1}`;
+      });
+    }
 
-async function loadBlogs() {
-  try {
-    const res = await fetch('/json/blogs.json');
-    if (!res.ok) throw new Error('Cannot load blogs.json');
-    const data = await res.json();
-    blogData = data;
-    const container = document.getElementById('blogsContainer');
-    container.innerHTML = '';
-    blogData.forEach((blog, i) => {
-      blog.id = i + 1;
-      container.appendChild(createBlogCard(blog));
+    async function loadBlogs() {
+      try {
+        const res = await fetch('./json/blogs.json');
+        if (!res.ok) throw new Error('Cannot load blogs.json');
+        const data = await res.json();
+        blogData = data;
+        const container = document.getElementById('blogsContainer');
+        container.innerHTML = '';
+        blogData.forEach((blog, i) => {
+          blog.id = i + 1;
+          container.appendChild(createBlogCard(blog));
+        });
+      } catch (err) {
+        console.warn('blogs.json not loaded:', err);
+      }
+    }
+
+    // Create blog
+    document.getElementById('createBlogBtn').addEventListener('click', () => {
+      const container = document.getElementById('blogsContainer');
+      const newBlog = { id: container.children.length + 1, title: '', author: '', content: '', font: "'Segoe UI', sans-serif" };
+      container.appendChild(createBlogCard(newBlog));
     });
-  } catch (err) {
-    console.warn('blogs.json not loaded:', err);
-  }
-}
 
-// Create blog
-document.getElementById('createBlogBtn').addEventListener('click', () => {
-  const container = document.getElementById('blogsContainer');
-  const newBlog = { id: container.children.length + 1, title: '', author: '', content: '', font: "'Segoe UI', sans-serif" };
-  container.appendChild(createBlogCard(newBlog));
-});
+    // Save all blogs
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const container = document.getElementById('blogsContainer');
+      const cards = container.querySelectorAll('.blog-card');
+      const allBlogs = Array.from(cards).map((card, i) => {
+        const title = card.querySelector('.blog-title').value.trim();
+        const author = card.querySelector('.blog-author').value.trim();
+        const content = card.querySelector('.blog-editor').innerHTML.trim();
+        const font = card.querySelector('select').value;
 
-// Save all blogs
-document.getElementById('saveBtn').addEventListener('click', () => {
-  const container = document.getElementById('blogsContainer');
-  const cards = container.querySelectorAll('.blog-card');
-  const allBlogs = Array.from(cards).map((card, i) => {
-    const title = card.querySelector('.blog-title').value.trim();
-    const author = card.querySelector('.blog-author').value.trim();
-    const content = card.querySelector('.blog-editor').innerHTML.trim();
-    const font = card.querySelector('select').value;
+        // Keep existing date if blogData[i] exists, else create a new date
+        const date = blogData[i] && blogData[i].date
+          ? blogData[i].date
+          : new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: true });
 
-    // Keep existing date if blogData[i] exists, else create a new date
-    const date = blogData[i] && blogData[i].date 
-      ? blogData[i].date 
-      : new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: true });
+        return {
+          id: i + 1,
+          title,
+          author,
+          content,
+          font,
+          date
+        };
+      });
 
-    return {
-      id: i + 1,
-      title,
-      author,
-      content,
-      font,
-      date
-    };
-  });
-
-  document.getElementById('jsonOutput').textContent = JSON.stringify(allBlogs, null, 2);
-});
+      document.getElementById('jsonOutput').textContent = JSON.stringify(allBlogs, null, 2);
+    });
 
 
-// Copy JSON
-document.getElementById('copyBtn').addEventListener('click', () => {
-  const json = document.getElementById('jsonOutput').textContent;
-  navigator.clipboard.writeText(json).then(() => alert('JSON copied!'));
-});
+    // Copy JSON
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const json = document.getElementById('jsonOutput').textContent;
+      navigator.clipboard.writeText(json).then(() => alert('JSON copied!'));
+    });
 
-loadBlogs();
-</script>
-<script src="/js/disable-zoom.js"></script>
+    loadBlogs();
+  </script>
+  <script src="/js/disable-zoom.js"></script>
 
 </body>
+
 </html>

@@ -1,5 +1,56 @@
 {
   "updateLogs": [
+{
+  "version": "1.27",
+  "date": "Jul 1, 2026 12:46 PM EDT",
+  "sections": [
+    {
+      "title": "🍽️ JSON Recipe System",
+      "items": [
+        {
+          "name": "JSON-Based Recipe Pages",
+          "description": "Recipe pages have been completely rebuilt to use a JSON-powered system. This allows recipes to be added, updated, and maintained more efficiently while improving scalability and consistency across the website."
+        },
+        {
+          "name": "Server-Driven Recipe Data",
+          "description": "Recipe content is now loaded from structured data files, enabling easier management, better organization, and future expansion of recipe features."
+        }
+      ]
+    },
+    {
+      "title": "🎮 Roblox App Launch",
+      "items": [
+        {
+          "name": "Official Roblox App Released",
+          "description": "Launched the Samson Recipes experience on Roblox, bringing recipe browsing and platform features into an interactive Roblox application."
+        },
+        {
+          "name": "Cross-Platform Expansion",
+          "description": "The Samson Recipes platform now extends beyond the website, marking the beginning of expansion into additional platforms and experiences."
+        }
+      ]
+    }
+  ]
+},
+    {
+      "version": "1.18",
+      "date": "Apr 19, 2026 5:30 PM EST",
+      "sections": [
+        {
+          "title": "📁 File Organization & Fixes",
+          "items": [
+            {
+              "name": "Folder Structure Overhaul",
+              "description": "Project files have been reorganized into structured folders for improved clarity, scalability, and easier navigation across the codebase."
+            },
+            {
+              "name": "Minor Bug Fixes",
+              "description": "Resolved several small issues affecting stability and UI behavior to improve overall smoothness and reliability."
+            }
+          ]
+        }
+      ]
+    },
     {
       "version": "1.17",
       "date": "Jan 31, 2026 10:27 PM EST",

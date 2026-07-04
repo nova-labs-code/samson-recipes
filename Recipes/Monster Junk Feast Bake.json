@@ -1,0 +1,136 @@
+{
+  "title": "Monster Junk Feast Bake",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Hard",
+    "servings": "8–10",
+    "images": [
+      "/Images/no-image.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "3600, 5400",
+      "cook_time": "7200",
+      "total_time": ""
+    },
+    "ingredients": [
+    {
+      "title": "Protein",
+      "items": [
+        "3 lb chicken breast (~6 medium, cut into chunks)",
+        "2 lb ground beef (~4 patties, crumbled)",
+        "1 lb bacon (~16 slices)",
+        "6 oz pepperoni (~30 slices)"
+      ]
+    },
+    {
+      "title": "Dairy & Eggs",
+      "items": [
+        "8 oz cheddar (~2 cups shredded)",
+        "16 oz mozzarella (~4 cups shredded + sticks)",
+        "1 gallon milk (use ~5 cups total)",
+        "½ lb butter (~4 tbsp used)",
+        "8 oz cream cheese (for jalapeño poppers)"
+        ]
+    },
+  {
+    "title": "Pasta & Grains",
+    "items": [
+      "1 lb elbow macaroni (~4 cups cooked)",
+      "3 cups bread flour (pizza dough)",
+      "¼ - ½ cup all-purpose flour (for tots & breading)"
+      ]
+  },
+  {
+    "title": "Vegetables & Misc",
+    "items": [
+      "5 medium russet potatoes (~2 lb, for tater tots)",
+      "6–7 jalapeños (~6 oz)",
+      "1 cup pickle slices",
+      "¼ cup honey or syrup",
+      "3–4 eggs (for breading/frying)"
+      ]
+  },
+  {
+    "title": "Coating & Frying",
+    "items": [
+      "3 cups breadcrumbs",
+      "~2 cups cooking oil"
+      ]
+  },
+  {
+    "title": "Seasonings & Extras",
+    "items": [
+      "Salt",
+      "Black pepper",
+      "Paprika",
+      "Garlic powder",
+      "Cayenne"
+      ]
+  }
+  ],
+
+    "instructions": [
+      {
+        "title": "Spicy Chicken Nuggets",
+        "items": [
+          "Cut chicken into 1.5–2 chunks, season with salt, paprika, garlic powder, and cayenne.",
+          "Coat each piece in flour, dip in beaten eggs, then breadcrumbs.",
+          "Fry or bake until golden and crispy."
+          ]
+      },
+      {
+        "title": "Tater Tots",
+        "items": [
+          "Peel potatoes, boil until tender, mash lightly.",
+          "Form into tots, coat lightly with flour and breadcrumbs.",
+          "Fry or bake until crispy and golden."
+          ]
+      },
+      {
+        "title": "Mac & Cheese",
+        "items": [
+          "Cook macaroni until al dente.",
+          "Melt butter, whisk in flour, gradually add milk until thickened.",
+          "Stir in cheddar and mozzarella until creamy.",
+          "Combine pasta with sauce."
+          ]
+      },
+      {
+        "title": "Bacon & Pepperoni",
+        "items": [
+          "Cook bacon until crispy, crumble.",
+          "Slice pepperoni and crisp lightly in a skillet.",
+          "Layer over mac & cheese and tater tots."
+          ]
+      },
+      {
+        "title": "Jalapeño Poppers",
+        "items": [
+          "Halve jalapeños, remove seeds, mix cream cheese with paprika & garlic powder.",
+          "Fill jalapeños, coat with breadcrumbs, bake or fry until golden."
+          ]
+      },
+      {
+       "title": "Assembling",
+        "items": [
+          "Layer mac & cheese, chicken nuggets, tater tots, bacon, pepperoni, and jalapeño poppers in a large casserole dish.",
+          "Drizzle with honey or syrup.",
+          "Bake at 350°F for 15–20 min until everything is warmed through.",
+          "Serve immediately with optional pickle slices."
+          ] 
+      }
+    ],
+    "storage": [
+      "Refrigerate leftovers in airtight container for up to 4 days.",
+      "Freeze individual portions for up to 2 months.",
+      "Reheat in oven at 325°F or microwave until hot."
+    ],
+    "serving_suggestions": [
+      "Add extra shredded cheese on top for gooeyness.",
+      "Serve with sour cream, salsa, or dipping sauces.",
+      "Pair with soft rolls or biscuits for a hearty meal.",
+      "Top with cinnamon toast crunch for crunch."
+    ],
+    "recipe_by": "Elisha Samson"
+  }
+}

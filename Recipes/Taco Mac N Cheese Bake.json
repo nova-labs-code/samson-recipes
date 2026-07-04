@@ -1,0 +1,57 @@
+{
+  "title": "Taco Mac &amp; Cheese Bake",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Medium",
+    "servings": "12",
+    "images": [
+      "/Images/Taco-Mac-N-Cheese-Bake1.png",
+      "/Images/Taco-Mac-N-Cheese-Bake2.png"
+    ],
+
+    "time_breakdown": {
+      "prep_time": "1200",
+      "cook_time": "1800",
+      "total_time": ""
+    },
+
+    "ingredients": [
+"1 can refrigerated biscuits (8 biscuits)",
+"2 cups cooked macaroni",
+"1 lb ground turkey or beef",
+"1 tsp mild taco seasoning",
+"1 cup shredded cheddar or Monterey Jack cheese",
+"½ cup cream cheese or ricotta",
+"1 cup sweet corn",
+"½ cup finely diced red bell pepper",
+"¼ cup milk",
+"Salt and pepper to taste",
+"Optional: chopped parsley for garnish"
+],
+
+    "instructions": [
+"Preheat oven to 375°F (190°C) and grease a 9×13-inch baking pan.",
+"Make the biscuit base: Flatten biscuits and press into the bottom and slightly up the sides of the pan. Bake 5–7 minutes until slightly firm.",
+"Cook the meat: Brown ground meat in a skillet. Drain fat and stir in taco seasoning, corn, bell pepper, and milk.",
+"Mix mac n cheese filling: Combine cooked macaroni, shredded cheese, and cream cheese/ricotta until creamy.",
+"Combine filling with meat: Fold cooked meat mixture into mac n cheese filling.",
+"Assemble the bake: Pour filling into pre-baked biscuit base. Sprinkle extra cheese on top if desired.",
+"Bake 20–25 minutes until biscuit base is golden and filling is bubbly.",
+"Serve: Slice and garnish with parsley if desired."
+    ],
+
+    "serving_suggestions": [
+"Serve warm, straight from the baking pan",
+"Optional: drizzle mild sour cream or cheese sauce",
+"Pair with a simple side salad or roasted veggies"
+    ],
+
+    "storage": [
+      "Store leftovers in fridge (up to 4 days)",
+      "Freeze slices individually (up to 2 months)",
+      "Reheat at 325°F (oven) or microwave until hot"
+    ],
+
+    "recipe_by": "Elisha Samson"
+  }
+}

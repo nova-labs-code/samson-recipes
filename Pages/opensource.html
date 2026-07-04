@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samson Recipes GitHub Sync Countdown</title>
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --text: #e6edf3;
+      --muted: #9da7b3;
+      --border: #2a2f36;
+    }
+
+    * {
+      margin: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #111827, var(--bg));
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .wrap {
+      width: min(1100px, 100%);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 64px);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: clamp(14px, 2.5vw, 20px);
+    }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: clamp(12px, 2vw, 24px);
+      margin-top: 60px;
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 1.2 / 1;
+    }
+
+    .unit {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(10px, 2vw, 26px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .flip {
+      position: relative;
+      width: 100%;
+      height: clamp(60px, 9vw, 120px);
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #0f1720;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(24px, 5vw, 64px);
+      font-weight: 800;
+      border: 1px solid var(--border);
+      backface-visibility: hidden;
+    }
+
+    .top {
+      transform-origin: bottom;
+    }
+
+    .bottom {
+      transform-origin: top;
+      transform: rotateX(90deg);
+    }
+
+    .unit.animate .top {
+      animation: flipTop 0.35s ease forwards;
+    }
+
+    .unit.animate .bottom {
+      animation: flipBottom 0.35s ease forwards;
+    }
+
+    @keyframes flipTop {
+      0% {
+        transform: rotateX(0);
+      }
+
+      100% {
+        transform: rotateX(-90deg);
+      }
+    }
+
+    @keyframes flipBottom {
+      0% {
+        transform: rotateX(90deg);
+      }
+
+      100% {
+        transform: rotateX(0);
+      }
+    }
+
+    .tick {
+      animation: tickPulse 0.25s ease;
+    }
+
+    @keyframes tickPulse {
+      0% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+        filter: brightness(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+    }
+
+    .label {
+      margin-top: 10px;
+      font-size: clamp(12px, 2vw, 16px);
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 40px;
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--muted);
+      padding: 0 20px;
+      max-width: 900px;
+    }
+
+    .disc {
+      margin-top: 80px;
+      width: 100%;
+      max-width: 1100px;
+      padding: 18px 22px;
+      background: #161b22;
+      border: 1px solid #2a2f36;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .disc h3 {
+      font-size: clamp(14px, 2vw, 18px);
+      margin-bottom: 8px;
+    }
+
+    .disc p {
+      font-size: clamp(12px, 1.8vw, 16px);
+      color: #9da7b3;
+      line-height: 1.5;
+    }
+
+    .disc .reason {
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+    <h1>Samson Recipes</h1>
+    <p class="subtitle">GitHub Open Source Sync</p>
+
+    <div class="timer">
+      <div class="unit" id="d">
+        <div class="flip">
+          <div class="card top">00</div>
+          <div class="card bottom">00</div>
+        </div>
+        <div class="label">Days</div>
+      </div>
+
+      <div class="unit" id="h">
+        <div class="flip">
+          <div class="card top">00</div>
+          <div class="card bottom">00</div>
+        </div>
+        <div class="label">Hours</div>
+      </div>
+
+      <div class="unit" id="m">
+        <div class="flip">
+          <div class="card top">00</div>
+          <div class="card bottom">00</div>
+        </div>
+        <div class="label">Minutes</div>
+      </div>
+
+      <div class="unit" id="s">
+        <div class="flip">
+          <div class="card top">00</div>
+          <div class="card bottom">00</div>
+        </div>
+        <div class="label">Seconds</div>
+      </div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="disc">
+      <h3>Open Source Sync</h3>
+      <p>
+        The main Samson Recipes site is continuously updated throughout the year with improvements and fixes.
+      </p>
+      <p class="reason">
+        On the first Saturday of every month, the current state of the site is synced and published as an open source
+        version on GitHub, ensuring the latest stable snapshot is always available.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function getFirstSaturday(year, month) {
+      const firstDay = new Date(year, month, 1);
+
+      // Saturday = 6
+      const offset = (6 - firstDay.getDay() + 7) % 7;
+
+      const date = new Date(year, month, 1 + offset);
+
+      // Set to 5:00 PM local time.
+      // Browsers automatically handle EST/EDT transitions.
+      date.setHours(17, 0, 0, 0);
+
+      return date;
+    }
+
+    function getTarget() {
+      const now = new Date();
+
+      let target = getFirstSaturday(
+        now.getFullYear(),
+        now.getMonth()
+      );
+
+      // If we've passed this month's sync,
+      // move to next month's first Saturday.
+      if (now.getTime() >= target.getTime()) {
+        let month = now.getMonth() + 1;
+        let year = now.getFullYear();
+
+        if (month > 11) {
+          month = 0;
+          year++;
+        }
+
+        target = getFirstSaturday(year, month);
+      }
+
+      return target;
+    }
+
+    function flip(unit, value) {
+      const el = document.getElementById(unit);
+      const top = el.querySelector(".top");
+      const bottom = el.querySelector(".bottom");
+
+      const v = String(value).padStart(2, "0");
+
+      if (top.textContent === v) return;
+
+      el.classList.remove("animate", "tick");
+      void el.offsetWidth;
+
+      top.textContent = v;
+      bottom.textContent = v;
+
+      el.classList.add("animate", "tick");
+    }
+
+    function update() {
+      const now = new Date();
+      const target = getTarget();
+      const diff = Math.max(0, target - now);
+
+      flip("d", Math.floor(diff / 86400000));
+      flip("h", Math.floor(diff / 3600000) % 24);
+      flip("m", Math.floor(diff / 60000) % 60);
+      flip("s", Math.floor(diff / 1000) % 60);
+
+      const status = document.getElementById("status");
+
+      if (now.toDateString() === target.toDateString() &&
+        now.getHours() >= 17) {
+        status.textContent =
+          "Sync in progress: publishing latest main site snapshot to GitHub.";
+      } else {
+        status.textContent =
+          "Counting down to the next monthly GitHub open source sync.";
+      }
+    }
+
+    setInterval(update, 1000);
+    update();
+  </script>
+
+  <script src="/js/disable-zoom.js"></script>
+</body>
+
+</html>

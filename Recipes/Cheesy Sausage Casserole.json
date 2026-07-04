@@ -1,0 +1,49 @@
+{
+  "title": "Cheesy Sausage Casserole",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Medium",
+    "servings": "12",
+    "images": [
+      "/Images/Cheesy-Sausage-Casserole1.png",
+      "/Images/Cheesy-Sausage-Casserole2.png",
+      "/Images/Cheesy-Sausage-Casserole3.png",
+      "/Images/Cheesy-Sausage-Casserole4.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "1200",
+      "cook_time": "3000, 3600 Minutes",
+      "total_time": ""
+    },
+    "ingredients": [
+      "1½ lbs breakfast sausage",
+      "9 large eggs",
+      "½ cup water",
+      "2 tbsp mayonnaise",
+      "1 tbsp sour cream or Greek yogurt (optional)",
+      "9 slices bread, cubed or 5 cups hash browns",
+      "2 tbsp melted butter or bacon grease",
+      "2½ cups shredded cheese, divided",
+      "¾ cup plain breadcrumbs",
+      "2 tbsp melted butter (topping)",
+      "Salt, pepper, garlic powder, paprika"
+    ],
+    "instructions": [
+      "Preheat oven to 350°F (175°C). Grease a 9×13-inch dish.",
+      "Brown sausage and drain grease.",
+      "Whisk eggs, water, mayo, sour cream, and seasoning.",
+      "Toss bread or hash browns with melted butter.",
+      "Mix sausage, egg mixture, bread, and half the cheese.",
+      "Spread evenly into dish.",
+      "Top with remaining cheese and buttered breadcrumbs.",
+      "Bake uncovered 50–60 minutes until set and golden.",
+      "Rest 10 minutes before slicing."
+    ],
+    "storage": [
+      "Refrigerate leftovers up to 4 days",
+      "Freeze slices up to 2 months",
+      "Reheat at 325°F or microwave"
+    ],
+    "recipe_by": "Elisha Samson"
+  }
+}

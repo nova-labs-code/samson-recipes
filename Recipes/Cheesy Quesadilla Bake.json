@@ -1,0 +1,45 @@
+{
+  "title": "Cheesy Veggie Quesadilla Bake",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Medium",
+    "servings": "12",
+    "images": [
+      "/Images/no-image.png"
+    ],
+    "time_breakdown": {
+      "prep_time": "900",
+      "cook_time": "2100",
+      "total_time": ""
+    },
+    "ingredients": [
+      "8 large flour tortillas",
+      "2 cups shredded cheddar cheese",
+      "1 cup shredded mozzarella cheese",
+      "1 cup diced bell peppers",
+      "1 cup corn kernels",
+      "1 cup black beans, drained and rinsed",
+      "½ cup diced red onion",
+      "2 cloves garlic, minced",
+      "½ tsp smoked paprika",
+      "½ tsp cumin",
+      "¼ tsp chili powder",
+      "Salt and pepper, to taste"
+    ],
+    "instructions": [
+      "Preheat oven to 375°F (190°C).",
+      "Sauté bell peppers, onion, and garlic until softened.",
+      "Stir in corn, black beans, and seasonings.",
+      "Lightly grease a baking dish.",
+      "Layer tortillas, veggie mixture, and cheeses.",
+      "Cover and bake for 20 minutes.",
+      "Uncover and bake until cheese is bubbly and lightly golden.",
+      "Let cool slightly before slicing."
+    ],
+    "storage": [
+      "Refrigerate leftovers in an airtight container for up to 4 days.",
+      "Reheat in the oven at 350°F or in the microwave."
+    ],
+    "recipe_by": "Elisha Samson"
+  }
+}

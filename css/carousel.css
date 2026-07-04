@@ -1,52 +1,54 @@
-/* Images in carousel */
-div img {
-  display: none;
-  margin: 0 auto;
-  border-radius: 12px;
-  width: 285px;
-  height: 285px;
+/* =========================
+   SINGLE IMAGE CAROUSEL
+========================= */
+
+#imageGallery {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-div img.active {
+/* Only one image visible at a time */
+#imageGallery img {
+  display: none;
+  width: 285px;
+  height: 285px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Active image */
+#imageGallery img.active {
   display: block;
 }
 
-/* Dots container */
+/* =========================
+   DOTS
+========================= */
+
 .carousel-dots {
   text-align: center;
-  margin-top: 8px;
+  margin-top: 10px;
+  user-select: none;
 }
 
-/* Dots */
 .carousel-dot {
   display: inline-block;
   width: 12px;
   height: 12px;
   margin: 4px;
   border-radius: 50%;
-  background-color: white; /* default dot */
+  background: white;
   border: 2px solid black;
   cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
-/* Active dot */
-.carousel-dot.active {
-  background-color: black; /* active dot filled */
-}
-
-/* Ignore gradient gold styling */
-.carousel-dot {
-  all: unset;
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin: 4px;
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid black;
-  cursor: pointer;
+.carousel-dot:hover {
+  transform: scale(1.15);
 }
 
 .carousel-dot.active {
-  background-color: black;
+  background: black;
 }

@@ -1,0 +1,51 @@
+{ 
+"title": "Protein Crunch Cereal", 
+"site": "Samson Recipes", 
+"recipe": { 
+"difficulty": "Hard", 
+"servings": "8–10", 
+"images": [ 
+"/Images/no-image.png" 
+], 
+"time_breakdown": { 
+"prep_time": "600", 
+"cook_time": "900", 
+"total_time": "" 
+}, 
+"ingredients": [
+
+"3 cups rolled oats", 
+"1 cup protein powder (any flavor)", 
+"½ cup almond butter or peanut butter", 
+"¼ cup honey or maple syrup",
+"1 tsp vanilla extract",
+"½ tsp cinnamon (optional)",
+"Pinch of salt",
+"½ cup chopped nuts or seeds (optional)",
+"¼ cup dark chocolate chips (optional)"
+
+
+],
+
+"instructions": [
+"Preheat oven to 325°F (165°C).",
+"Mix oats, protein powder, cinnamon, salt, and nuts/seeds in a large bowl.",
+"Warm almond/peanut butter and honey in a small saucepan until smooth; stir in vanilla.",
+"Pour wet mixture over dry ingredients and mix until coated.",
+"Spread evenly on a lined baking sheet and press down gently.",
+"Bake 12–15 minutes, stirring halfway, until golden and crisp.",
+"Let cool completely, then break into clusters; add chocolate chips if desired."
+],
+"storage": [
+  "Serve with milk or plant-based alternative.",
+  "Sprinkle over yogurt or smoothie bowls for extra crunch."
+],
+"serving_suggestions": [
+  "Store in an airtight container at room temperature for up to 2 weeks.",
+  "Refrigerate for up to 1 month for longer freshness.",
+  "Freeze in a sealed container for up to 3 months; thaw at room temperature before serving."
+],
+"recipe_by": "Elisha Samson"
+
+} 
+}

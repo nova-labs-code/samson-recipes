@@ -1,166 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recipe Not Found</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Recipe Not Found</title>
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(120deg, #fff1e6, #ffe3e3, #fff8dc);
-      background-size: 300% 300%;
-      animation: bgShift 10s ease-in-out infinite;
-      text-align: center;
-    }
+<style>
+:root{
+  --bg1:#07070a;
+  --bg2:#0e0b12;
+  --accent:#ff3b3b;
+}
 
-    @keyframes bgShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+*{box-sizing:border-box;}
 
-    h1 {
-      font-size: 100px;
-      margin: 0;
-      color: #ff4d4d;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: bounce 2s infinite ease-in-out;
-    }
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  font-family:system-ui, Arial, sans-serif;
+  color:#e6e6e6;
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
-    }
+  perspective:1000px;
 
-    p {
-      max-width: 520px;
-      font-size: 18px;
-      color: #444;
-      margin-top: 10px;
-      animation: fadeIn 2s ease forwards;
-    }
+  background:
+    radial-gradient(circle at 20% 20%, #1a0f14 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #120a18 0%, transparent 45%),
+    linear-gradient(120deg,var(--bg1),var(--bg2));
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+/* ===== STATIC 3D SCENE ===== */
+.scene{
+  position:fixed;
+  inset:0;
+  transform-style:preserve-3d;
 
-    a {
-      margin-top: 20px;
-      color: tomato;
-      font-weight: bold;
-      text-decoration: none;
-      animation: fadeIn 3s ease forwards;
-    }
+  /* fixed cinematic tilt (no animation) */
+  transform:rotateX(14deg) rotateY(-12deg);
+}
 
-    /* floating kitchen chaos */
-    .float {
-      position: absolute;
-      bottom: -50px;
-      font-size: 30px;
-      animation: rise linear infinite;
-      opacity: 0.75;
-    }
+/* subtle depth fog (static only) */
+.fog{
+  position:absolute;
+  inset:-30%;
+  background:radial-gradient(circle at 50% 50%,
+    rgba(255,60,60,0.06),
+    transparent 65%);
+  transform:translateZ(-300px);
+}
 
-    @keyframes rise {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% { opacity: 1; }
-      100% {
-        transform: translateY(-120vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
+/* center lock */
+.center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transform:translateZ(80px);
+}
 
-    .f1 { left: 10%; animation-duration: 8s; }
-    .f2 { left: 25%; animation-duration: 6s; font-size: 36px; }
-    .f3 { left: 40%; animation-duration: 10s; }
-    .f4 { left: 60%; animation-duration: 7s; font-size: 34px; }
-    .f5 { left: 75%; animation-duration: 9s; }
-    .f6 { left: 90%; animation-duration: 11s; font-size: 38px; }
+/* ===== CARD ===== */
+.card{
+  width:90%;
+  max-width:520px;
 
-    /* drifting steam waves */
-    .steam {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: rgba(255,255,255,0.35);
-      filter: blur(80px);
-      border-radius: 50%;
-      animation: steamMove 6s ease-in-out infinite;
-    }
+  padding:28px 22px;
+  border-radius:16px;
 
-    @keyframes steamMove {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-30px) scale(1.1); }
-    }
+  background:rgba(10,10,14,0.75);
+  border:1px solid rgba(255,255,255,0.08);
 
-    .s1 { top: 10%; left: 20%; }
-    .s2 { top: 30%; right: 15%; animation-delay: 2s; }
-    .s3 { bottom: 20%; left: 50%; animation-delay: 4s; }
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.8),
+    0 0 60px rgba(255,40,40,0.12);
 
-    /* subtle sparkle overlay */
-    .sparkle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 3s infinite ease-in-out;
-    }
+  backdrop-filter:blur(8px);
 
-    @keyframes twinkle {
-      0%, 100% { opacity: 0; transform: scale(0.5); }
-      50% { opacity: 1; transform: scale(1.2); }
-    }
+  transform:translateZ(0px);
+}
 
-  </style>
+/* ===== TEXT DEPTH (static only) ===== */
+h1{
+  margin:0;
+  font-size:88px;
+  color:var(--accent);
+  text-shadow:0 25px 50px rgba(0,0,0,0.6);
+  transform:translateZ(40px);
+}
+
+p{
+  margin:12px 0 18px;
+  line-height:1.6;
+  color:#d6d6d6;
+  transform:translateZ(20px);
+}
+
+a{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:600;
+  color:white;
+
+  background:linear-gradient(135deg,#ff3b3b,#b3002d);
+  box-shadow:0 10px 30px rgba(255,0,0,0.15);
+
+  transform:translateZ(50px);
+}
+
+/* optional: disable motion accessibility safe */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="steam s1"></div>
-  <div class="steam s2"></div>
-  <div class="steam s3"></div>
+<div class="scene">
+  <div class="fog"></div>
 
-  <h1>404</h1>
+  <div class="center">
+    <div class="card">
+      <h1>404</h1>
+      <p id="msg"></p>
+      <a href="/">← Return</a>
+    </div>
+  </div>
+</div>
 
-  <p>
-    This recipe drifted out of the cookbook and is currently floating somewhere between the spice rack and imagination.
-    The kitchen is still warm… something was just here.
-  </p>
+<script>
+const messages = [
+  "A recipe once lived here, but it was erased from the pantry archives long ago.",
+  "You found a burned page where instructions used to be written in ink and steam.",
+  "This dish was never finished — only the echo of measurements remains.",
+  "The cookbook remembers this page, but refuses to show it again.",
+  "Something tried to bake here… the oven never agreed.",
+  "A recipe card was torn out mid-sentence and never replaced.",
+  "You’re standing where flavor used to exist before it faded out.",
+  "This page dissolved into broth before it could be served.",
+  "The kitchen lights went out before this recipe could form.",
+  "A forgotten dish lingers here like smoke in an empty pot.",
+  "The instructions were written, then washed away under boiling water.",
+  "This recipe broke apart while still being measured.",
+  "The page was removed from the recipe index without explanation.",
+  "What you see is the aftertaste of something that never finished cooking.",
+  "A dish tried to exist here, but the timeline skipped the timer.",
+  "This recipe exists only as a stain on the cookbook’s memory.",
+  "You reached a shelf where recipes go to be forgotten.",
+  "The ingredients assembled, but the meaning never arrived.",
+  "A half-written recipe still hums in the background of this page.",
+  "This page is what remains after the last spoon was put down."
+];
 
-  <a href="/">← Return to the kitchen</a>
-
-  <!-- floating ingredients -->
-  <div class="float f1">🍞</div>
-  <div class="float f2">🍳</div>
-  <div class="float f3">🧄</div>
-  <div class="float f4">🍪</div>
-  <div class="float f5">🥕</div>
-  <div class="float f6">🧂</div>
-
-  <!-- tiny sparkles -->
-  <script>
-    for (let i = 0; i < 25; i++) {
-      let s = document.createElement("div");
-      s.className = "sparkle";
-      s.style.left = Math.random() * 100 + "vw";
-      s.style.top = Math.random() * 100 + "vh";
-      s.style.animationDuration = (2 + Math.random() * 3) + "s";
-      document.body.appendChild(s);
-    }
-  </script>
+document.getElementById("msg").textContent =
+  messages[Math.floor(Math.random() * messages.length)];
+</script>
 
 </body>
 </html>

@@ -1,77 +1,105 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const title = document.getElementById('Title');
-  const recipeBy = document.getElementById('recipeBy');
+(() => {
+  let button = null;
 
-  if (!title || !recipeBy) return;
-
-  // Create button
-  const button = document.createElement('button');
-  button.textContent = 'Back to start';
-  button.id = 'back-to-start';
-
-  Object.assign(button.style, {
-    padding: '10px 20px',
-    backgroundColor: '#00b67a',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    display: 'none', // hidden initially
-    zIndex: '10000',
-  });
-
-  // Scroll to top of Title
-  button.addEventListener('click', () => {
-    window.scrollTo({
-      top: title.offsetTop,
-      behavior: 'smooth',
-    });
-  });
-
-  document.body.appendChild(button);
-
-  // Check if element is visible in viewport
-  function elementVisible(el) {
-    const rect = el.getBoundingClientRect();
-    return rect.top < window.innerHeight && rect.bottom > 0;
+  function findTitle() {
+    return document.querySelector("#Title");
   }
 
-  function updateButton() {
-    const scrollY = window.scrollY || window.pageYOffset;
-    const titleBottom = title.offsetTop + title.offsetHeight + 100; // 100px past title
-
-    // Hide until 100px past Title
-    if (scrollY < titleBottom) {
-      button.style.display = 'none';
+  function ensureButton() {
+    const existing = document.getElementById("back-to-start");
+    if (existing) {
+      button = existing;
       return;
     }
 
-    button.style.display = 'block';
+    if (!document.documentElement) return;
 
-    if (elementVisible(recipeBy)) {
-      // Move inline under recipeBy
-      if (button.parentNode !== recipeBy.parentNode) {
-        button.remove();
-        recipeBy.insertAdjacentElement('afterend', button);
-      }
-      button.style.position = 'static';
-      button.style.margin = '16px auto';
+    button = document.createElement("button");
+    button.textContent = "Back To Top";
+    button.id = "back-to-start";
+    button.className = "no-print";
+
+    Object.assign(button.style, {
+      position: "fixed",
+      bottom: "20px",
+      right: "20px",
+
+      zIndex: "2147483647", // max safe z-index (top of reality stack)
+      isolation: "isolate",
+
+      padding: "10px 20px",
+      backgroundColor: "#a855f7",
+      color: "#fff",
+      border: "none",
+      borderRadius: "10px",
+      cursor: "pointer",
+      fontWeight: "bold",
+
+      boxShadow: "0 0 18px rgba(168, 85, 247, 0.5)",
+      transition: "transform 0.15s ease, opacity 0.2s ease",
+
+      opacity: "0",
+      pointerEvents: "none",
+
+      // 🧠 prevents weird CSS overrides from JSON themes
+      fontFamily: "inherit",
+      fontSize: "14px"
+    });
+
+    button.addEventListener("click", () => {
+      const t = findTitle();
+      if (!t) return;
+
+      window.scrollTo({
+        top: t.getBoundingClientRect().top + window.scrollY,
+        behavior: "smooth"
+      });
+    });
+
+    // 🚀 attach to documentElement (more stable than body in JSON rebuilds)
+    document.documentElement.appendChild(button);
+  }
+
+  function update() {
+    ensureButton();
+
+    const t = findTitle();
+    if (!t || !button) return;
+
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const showAfter = t.offsetTop + t.offsetHeight + 100;
+
+    if (scrollY > showAfter) {
+      button.style.opacity = "1";
+      button.style.pointerEvents = "auto";
+      button.style.transform = "translateY(0) scale(1)";
     } else {
-      // Fixed bottom-right
-      if (button.parentNode !== document.body) {
-        button.remove();
-        document.body.appendChild(button);
-      }
-      button.style.position = 'fixed';
-      button.style.bottom = '20px';
-      button.style.right = '20px';
-      button.style.margin = '';
+      button.style.opacity = "0";
+      button.style.pointerEvents = "none";
+      button.style.transform = "translateY(10px) scale(0.95)";
     }
   }
 
-  window.addEventListener('scroll', updateButton);
-  window.addEventListener('resize', updateButton);
-  window.addEventListener('load', updateButton);
-  updateButton();
-});
+  function loop() {
+    update();
+    requestAnimationFrame(loop);
+  }
+
+  // 🔁 catches ANY JSON DOM rewrite
+  const observer = new MutationObserver(() => {
+    ensureButton();
+    update();
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true
+  });
+
+  window.addEventListener("scroll", update);
+  window.addEventListener("resize", update);
+
+  // start engine
+  loop();
+})();

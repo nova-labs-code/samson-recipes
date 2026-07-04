@@ -2,64 +2,83 @@
   "recipes": [
     {
       "name": "Boneless Wings",
-      "url": "boneless-Wings",
+      "url": "Boneless Wings",
       "categories": ["dinner", "appetizer"],
+      "tags": ["chicken", "wings", "crispy", "finger food", "party"],
+      "collections": ["game day", "comfort food", "crowd favorites"],
       "difficulty": "",
       "image": ""
     },
+    
     {
       "name": "Cheesy Sausage Casserole",
-      "url": "Cheesy-Sausage-Casserole",
+      "url": "Cheesy Sausage Casserole",
       "categories": ["breakfast", "dinner"],
+      "tags": ["sausage", "cheese", "casserole", "hearty", "family"],
+      "collections": ["comfort food", "family meals", "make ahead"],
       "difficulty": "",
       "image": ""
     },
     {
       "name": "Gala Apple Pie",
-      "url": "Gala-Apple-Pie",
+      "url": "Gala Apple Pie",
       "categories": ["dessert"],
+      "tags": ["apple", "pie", "baked", "fruit", "classic"],
+      "collections": ["holiday favorites", "desserts", "baking"],
       "difficulty": "",
       "image": ""
     },
     {
-      "name": "Cheesy Veggie Quesadilla Bake",
-      "url": "cheesy-quesadilla-bake",
+      "name": "Cheesy Quesadilla Bake",
+      "url": "Cheesy Quesadilla Bake",
       "categories": ["dinner", "lunch"],
+      "tags": ["quesadilla", "cheese", "mexican inspired", "bake", "comfort"],
+      "collections": ["family meals", "comfort food", "quick meals"],
       "difficulty": "",
       "image": ""
     },
     {
       "name": "Protein Crunch Cereal",
-      "url": "protein-crunch-cereal",
+      "url": "Protein Crunch",
       "categories": ["breakfast"],
+      "tags": ["protein", "cereal", "high protein", "quick", "breakfast"],
+      "collections": ["healthy options", "quick meals", "breakfast favorites"],
       "difficulty": "",
       "image": ""
     },
     {
       "name": "Monster Junk Feast Bake",
-      "url": "Monster-Junk-Feast-Bake",
+      "url": "Monster Junk Feast Bake",
       "categories": ["dinner"],
+      "tags": ["loaded", "cheese", "hearty", "comfort", "bake"],
+      "collections": ["comfort food", "family meals", "experimental"],
       "difficulty": "",
       "image": ""
     },
     {
       "name": "Taco Mac N Cheese Bake",
-      "url": "Taco-Mac-N-Cheese-Bake",
+      "url": "Taco Mac N Cheese Bake",
       "categories": ["dinner", "lunch"],
+      "tags": ["taco", "mac and cheese", "cheese", "bake", "fusion"],
+      "collections": ["comfort food", "family meals", "crowd favorites"],
       "difficulty": "",
       "image": ""
     },
     {
-      "name": "Velveeta Slow-Cooker Chicken Melt",
-      "url": "Velveeta-Slow-Cooker-Chicken-Melt",
+      "name": "Velveeta Slow Cooker Chicken Melt",
+      "url": "Velveeta Slow Cooker Chicken Melt",
       "categories": ["dinner"],
+      "tags": ["chicken", "slow cooker", "velveeta", "cheesy", "comfort"],
+      "collections": ["slow cooker", "comfort food", "family meals"],
       "difficulty": "",
       "image": ""
     },
     {
       "name": "Cinnamon Banana Chocolate Swirl Cheesecake",
-      "url": "cinnamon-banana-chocolate-swirl-cheesecake",
+      "url": "Cinnamon Banana Chocolate Swirl Cheesecake",
       "categories": ["dessert"],
+      "tags": ["cheesecake", "banana", "chocolate", "cinnamon", "baked"],
+      "collections": ["desserts", "holiday favorites", "baking"],
       "difficulty": "",
       "image": ""
     }

@@ -1,0 +1,58 @@
+{
+  "title": "Boneless Wings",
+  "site": "Samson Recipes",
+  "recipe": {
+    "difficulty": "Medium",
+    "servings": "12",
+    "images": [
+      "/Images/Boneless-Wings.png"
+    ],
+
+    "time_breakdown": {
+      "prep_time": "900",
+      "cook_time": "6000",
+      "total_time": ""
+    },
+
+    "ingredients": [
+      "2 lbs boneless chicken breast or tenders",
+      "1 cup buttermilk",
+      "1 tsp garlic powder",
+      "1 tsp smoked paprika",
+      "1 tsp salt",
+      "½ tsp black pepper",
+      "1½ cups all-purpose flour",
+      "½ cup cornstarch",
+      "2 cups breadcrumbs or panko",
+      "2–3 cups vegetable oil for frying",
+      "½ cup hot sauce or wing sauce",
+      "2 tbsp melted butter (optional, for sauce)"
+    ],
+
+    "instructions": [
+      "Cut chicken into bite-sized pieces if not using tenders.",
+      "Marinate chicken in buttermilk, garlic powder, paprika, salt, and pepper for at least 10 minutes.",
+      "Mix flour, cornstarch, and breadcrumbs in a shallow bowl.",
+      "Dredge marinated chicken in flour mixture, pressing lightly to coat.",
+      "Heat oil in a deep skillet or fryer to 350°F (175°C).",
+      "Fry chicken in batches until golden brown and cooked through, ~5–6 minutes per batch. Drain on paper towels.",
+      "For sauce: Mix hot sauce with melted butter, toss cooked wings until coated.",
+      "Serve immediately with ranch or blue cheese dipping sauce."
+    ],
+
+    "serving_suggestions": [
+      "Serve with ranch or blue cheese dressing for dipping.",
+      "Pair with celery and carrot sticks.",
+      "Serve alongside crispy fries or potato wedges.",
+      "Drizzle with extra buffalo sauce for added flavor."
+    ],
+
+    "storage": [
+      "Refrigerate leftovers in an airtight container for up to 3 days.",
+      "Reheat in oven at 350°F until hot and crispy.",
+      "Do not freeze after tossing in sauce; freeze raw fried chicken if desired."
+    ],
+
+    "recipe_by": "Elisha, Ella, Ivan Samson"
+  }
+}

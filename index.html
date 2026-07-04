@@ -1,224 +1,1890 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Samson Recipes</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samson Recipes</title>
 
-<meta name="description" content="Samson Recipes offers delicious, family-loved meals for every occasion. Explore simple breakfasts, comforting dinners, and sweet treats your whole family will enjoy.">
-<meta property="og:site_name" content="Samson Recipes">
+  <meta name="description"
+    content="Samson Recipes offers delicious, family-loved meals for every occasion. Explore simple breakfasts, comforting dinners, and sweet treats your whole family will enjoy.">
+  <meta property="og:site_name" content="Samson Recipes">
 
-<link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-<link rel="apple-touch-icon" href="/icons/favicon.ico" sizes="180x180">
+  <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/icons/favicon.ico" sizes="180x180">
 
-<style>
-body { font-family: "Segoe UI", Arial, sans-serif; margin: 1rem; color: black; text-align: center; }
-.text1 { text-decoration: none; font-size: 40px; color: black; }
-.subtext { font-size: 25px; margin-bottom: 1.5rem; }
-.image img { border-radius: 25px; max-width: 100%; height: auto; margin-bottom: 1.5rem; }
-.recipe-thumb { width: 100%; max-width: 200px; max-height: 350px; border-radius: 12px; display: block; margin: 0.5rem auto 0.75rem auto; }
-.recipe-item { margin-bottom: 2rem; }
-.recipe-meta { font-size: 0.9rem; color: #555; margin-top: 0.75rem; margin-bottom: 1rem; }
-#search-bar { font-size: 1rem; padding: 0.5rem; width: 60%; max-width: 300px; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #ccc; }
-select { box-sizing: border-box; border: 2px solid #d4af37; border-radius: 8px; background-color: #222; color: inherit; font-weight: bold; font-family: inherit; padding: 0.5rem 1rem; }
-@media(max-width:600px){
-  .text1 { font-size: 30px; }
-  .subtext { font-size: 20px; }
-  #search-bar { width: 80%; }
-  select { width: 40%; margin-bottom: 0.5rem; }
-}
-</style>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 1rem;
+      color: black;
+      text-align: center;
+    }
+
+    .Icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .Icon img {
+      width: 35px;
+      height: 35px;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .Icon h1 {
+      margin: 0;
+      font-size: 40px;
+    }
+
+    .subtext {
+      font-size: 25px;
+      max-width: 800px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .search-input {
+      font-size: 1rem;
+      padding: .5rem;
+      width: 60%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    select {
+      box-sizing: border-box;
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: .5rem 1rem;
+      font-weight: bold;
+      margin: .25rem;
+    }
+
+    /* ---- Shared grid layout (recipes + collections, exact same rules) ---- */
+
+    #recipes-container,
+    #collections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 155px);
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .recipe-item,
+    .collection-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Only applied by JS when a tile/card is created as part of
+       an initial "load" (site load for collections, entering a
+       collection for recipes) - not for tiles/cards created later
+       from a live JSON update. */
+    .entrance {
+      animation: fadeInUp .45s ease both;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    .recipe-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      transition: opacity .35s ease, transform .25s ease;
+    }
+
+    .collection-item:hover .recipe-thumb,
+    .recipe-item:hover .recipe-thumb {
+      transform: scale(1.03);
+    }
+
+    .favorite-btn {
+      position: absolute !important;
+      bottom: 8px !important;
+      right: 8px !important;
+
+      width: 38px !important;
+      height: 38px !important;
+
+      border: 1px solid rgba(0, 0, 0, .2) !important;
+      border-radius: 50% !important;
+
+      background: rgba(95, 95, 95, 0.22) !important;
+      backdrop-filter: blur(4px) !important;
+
+      font-size: 22px !important;
+      cursor: pointer !important;
+
+      z-index: 10 !important;
+
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      padding: 0 !important;
+      transition: transform .15s ease;
+    }
+
+    .favorite-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .favorite-btn.pop {
+      animation: heartPop .4s ease;
+    }
+
+    /* ---- Collections view ---- */
+
+    #collections-view {
+      max-width: 100%;
+      margin: 2rem auto;
+    }
+
+    .collection-item {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .collection-item .image-container,
+    .recipe-item .image-container {
+      border-radius: 12px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .collection-item:hover .image-container,
+    .collection-item:focus-visible .image-container,
+    .recipe-item:hover .image-container,
+    .recipe-item:focus-within .image-container {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+    }
+
+    .collection-label {
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: black;
+      margin-top: .5rem;
+    }
+
+    /* ---- Recipes view / back nav ---- */
+
+    #recipes-view {
+      display: none;
+      animation: fadeIn .3s ease both;
+    }
+
+    #back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid #000;
+      border-radius: 8px;
+      background: #fff;
+      font-weight: bold;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    #back-btn:hover {
+      background: #f0f0f0;
+      transform: translateX(-3px);
+    }
+
+    #current-collection-title {
+      font-size: 1.5rem;
+      margin: 0.25rem 0 1rem 0;
+    }
+
+    /* ---- Animations ---- */
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOutDown {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+    }
+
+    .removing {
+      animation: fadeOutDown .3s ease both;
+      pointer-events: none;
+    }
+
+    @keyframes heartPop {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.4);
+      }
+
+      70% {
+        transform: scale(0.9);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .Icon h1 {
+        font-size: 40px;
+      }
+
+      .subtext {
+        font-size: 18px;
+        padding: 0 1rem;
+      }
+
+      #search-bar {
+        width: 90%;
+      }
+
+      .text1 {
+        font-size: 16px;
+      }
+    }
+  </style>
+
+  <script src="/site_down.js" defer></script>
 </head>
 
-<body>
+<body data-maintenance="minor">
 
-<h1 class="text1">Samson Recipes</h1>
-<p class="subtext"><b>Delicious, family-loved meals for every occasion—breakfast, dinner, and sweet treats everyone will enjoy!</b></p>
+  <div class="Icon">
+    <h1>Samson Recipes</h1>
+  </div>
 
-<div class="image">
-  <img src="Images/Samson-family.png" width="442" height="332" alt="Samson Family">
+  <p class="subtext">
+    <b>
+      Delicious, family-loved meals for every occasion,
+      breakfast, dinner, and sweet treats everyone will enjoy!
+    </b>
+  </p>
+
+  <!-- Collections picker screen -->
+  <div id="collections-view">
+
+    <input type="text" id="collections-search-bar" class="search-input" placeholder="Search collections">
+
+    <br>
+
+    <select id="collections-sort-by">
+      <option value="name-asc">Name A→Z</option>
+      <option value="name-desc">Name Z→A</option>
+    </select>
+
+    <div id="collections-grid"></div>
+  </div>
+
+  <!-- Recipe list screen (shown after picking a collection) -->
+  <div id="recipes-view">
+
+    <button id="back-btn">&larr; Back to Collections</button>
+    <h2 id="current-collection-title"></h2>
+
+    <input type="text" id="search-bar" class="search-input" placeholder="Search recipes, ingredients, tags">
+
+    <br>
+
+    <select id="category-filter">
+      <option value="">All Categories</option>
+      <option value="appetizer">Appetizer</option>
+      <option value="breakfast">Breakfast</option>
+      <option value="dessert">Dessert</option>
+      <option value="dinner">Dinner</option>
+      <option value="drink">Drink</option>
+      <option value="lunch">Lunch</option>
+    </select>
+
+    <select id="difficulty-filter">
+      <option value="">All Difficulties</option>
+      <option value="mild">Mild</option>
+      <option value="easy">Easy</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <select id="sort-by">
+      <option value="name-asc">Name A→Z</option>
+      <option value="name-desc">Name Z→A</option>
+    </select>
+
+    <div id="recipes-container"></div>
+
+  </div>
+
+  <script>
+    const collectionsView =
+      document.getElementById("collections-view");
+
+    const collectionsGrid =
+      document.getElementById("collections-grid");
+
+    const collectionsSearchBar =
+      document.getElementById("collections-search-bar");
+
+    const collectionsSortBy =
+      document.getElementById("collections-sort-by");
+
+    const recipesView =
+      document.getElementById("recipes-view");
+
+    const backBtn =
+      document.getElementById("back-btn");
+
+    const currentCollectionTitle =
+      document.getElementById("current-collection-title");
+
+    const container =
+      document.getElementById("recipes-container");
+
+    const searchBar =
+      document.getElementById("search-bar");
+
+    const categoryFilter =
+      document.getElementById("category-filter");
+
+    const difficultyFilter =
+      document.getElementById("difficulty-filter");
+
+    const sortBy =
+      document.getElementById("sort-by");
+
+    const FAVORITES_KEY =
+      "samson-recipes-favorites";
+
+    const FAVORITES_COLLECTION =
+      "Favorites";
+
+    const ALL_RECIPES =
+      "All";
+
+    const PLACEHOLDER_IMAGE =
+      "/Images/placeholder.png";
+
+    const IMAGE_ROTATE_MS =
+      3000;
+
+    const LIST_POLL_MS =
+      1000;
+
+    const PAGE_POLL_MS =
+      1000;
+
+    let recipesList = [];
+    let lastJSONHash = null;
+    let filtersLoadedFromURL = false;
+
+    // null = still on the collections picker screen
+    let currentCollection = null;
+
+    /* key = recipe.url -> DOM element (diffed in place, not rebuilt) */
+    const recipeElements = new Map();
+    let recipesEmptyShown = false;
+
+    // Same one-shot pattern as collectionsLoaded below: only the
+    // very first time recipes are ever shown (the first collection
+    // you enter) gets the entrance animation. Switching between
+    // collections after that, or any later live update, does not
+    // animate.
+    let recipesEverLoaded = false;
+    let recipesViewJustEntered = false;
+
+    /* key = collection value -> DOM element (diffed in place, not rebuilt) */
+    const collectionElements = new Map();
+    let collectionsEmptyShown = false;
+
+    // value -> { images: string[], index: number, imgEl: HTMLImageElement, hovering: boolean }
+    const collectionImageState = new Map();
+
+    // recipe.url -> { images: string[], index: number, imgEl: HTMLImageElement, hovering: boolean }
+    const recipeImageState = new Map();
+
+    const pageContents = {};
+    const pageDifficulties = {};
+    const pageImages = {};
+    const pageImageLists = {};
+
+    // recipe.url -> hash of that recipe's own JSON file, so we can
+    // tell whether a specific recipe changed without needing the
+    // top-level recipes.json to change too.
+    const pageHashes = {};
+
+    function getFavorites() {
+      return JSON.parse(
+        localStorage.getItem(
+          FAVORITES_KEY
+        ) || "[]"
+      );
+    }
+
+    function saveFavorites(favorites) {
+      localStorage.setItem(
+        FAVORITES_KEY,
+        JSON.stringify(
+          favorites
+        )
+      );
+    }
+
+    function isFavorite(recipeUrl) {
+      return getFavorites()
+        .includes(recipeUrl);
+    }
+
+    function randomItem(arr) {
+      return arr[
+        Math.floor(
+          Math.random() * arr.length
+        )
+      ];
+    }
+
+    function isPlaceholderImage(src) {
+      return (
+        /placeholder/i.test(src) ||
+        /no-image/i.test(src)
+      );
+    }
+
+    function toggleFavorite(recipeUrl, btnEl) {
+
+      const favorites =
+        getFavorites();
+
+      const index =
+        favorites.indexOf(
+          recipeUrl
+        );
+
+      if (index > -1) {
+        favorites.splice(
+          index,
+          1
+        );
+      } else {
+        favorites.push(
+          recipeUrl
+        );
+      }
+
+      saveFavorites(
+        favorites
+      );
+
+      // Play the pop animation on just the button that was
+      // clicked - the diff-based re-renders below only touch
+      // whatever actually changed (icon text, tile membership),
+      // so nothing else on screen re-animates.
+      if (btnEl) {
+        btnEl.classList.remove("pop");
+        void btnEl.offsetWidth;
+        btnEl.classList.add("pop");
+      }
+
+      renderCollections();
+      renderRecipes();
+    }
+
+    function resolveRecipeUrl(url) {
+
+      if (!url)
+        return "";
+
+      if (
+        url.startsWith(
+          "http"
+        )
+      ) {
+        return url;
+      }
+
+      return (
+        "Recipes/?Recipe="
+        + url.replace(
+          /^\/+/,
+          ""
+        )
+      );
+    }
+
+    /* =========================
+       VIEW SWITCHING
+    ========================= */
+
+    function collectionLabel(value) {
+      return value === ALL_RECIPES
+        ? "All Recipes"
+        : value;
+    }
+
+    function showCollectionsView() {
+
+      currentCollection = null;
+
+      recipesView.style.display =
+        "none";
+
+      collectionsView.style.display =
+        "block";
+
+      updateURL();
+    }
+
+    function enterCollection(value) {
+
+      currentCollection = value;
+
+      // Fresh screen - reset the diff state so the recipe
+      // grid rebuilds (and plays its entrance animation) once.
+      recipeElements.clear();
+      container.innerHTML = "";
+      recipesEmptyShown = false;
+
+      // Only the very first time recipes are ever shown (the
+      // first collection entered this session) should animate in.
+      // Later collection switches, and any live update, do not.
+      if (!recipesEverLoaded) {
+        recipesViewJustEntered = true;
+        recipesEverLoaded = true;
+      }
+
+      collectionsView.style.display =
+        "none";
+
+      recipesView.style.display =
+        "block";
+
+      currentCollectionTitle.textContent =
+        collectionLabel(value);
+
+      renderRecipes();
+    }
+
+    backBtn.addEventListener(
+      "click",
+      showCollectionsView
+    );
+
+    collectionsSearchBar.addEventListener(
+      "input",
+      renderCollections
+    );
+
+    collectionsSortBy.addEventListener(
+      "change",
+      renderCollections
+    );
+
+    /* =========================
+       URL STATE
+    ========================= */
+
+    function loadFiltersFromURL() {
+
+      const params =
+        new URLSearchParams(
+          location.search
+        );
+
+      searchBar.value =
+        params.get(
+          "search"
+        ) || "";
+
+      categoryFilter.value =
+        params.get(
+          "category"
+        ) || "";
+
+      difficultyFilter.value =
+        params.get(
+          "difficulty"
+        ) || "";
+
+      sortBy.value =
+        params.get(
+          "sort"
+        ) === "ZtoA"
+          ? "name-desc"
+          : "name-asc";
+
+      const collectionParam =
+        params.get(
+          "collection"
+        );
+
+      if (collectionParam) {
+        enterCollection(
+          collectionParam
+        );
+      }
+    }
+
+    function updateURL() {
+
+      const params =
+        new URLSearchParams();
+
+      if (currentCollection) {
+
+        params.set(
+          "collection",
+          currentCollection
+        );
+
+        if (
+          searchBar.value
+            .trim()
+        ) {
+          params.set(
+            "search",
+            searchBar.value
+              .trim()
+          );
+        }
+
+        if (
+          categoryFilter.value
+        ) {
+          params.set(
+            "category",
+            categoryFilter.value
+          );
+        }
+
+        if (
+          difficultyFilter.value
+        ) {
+          params.set(
+            "difficulty",
+            difficultyFilter.value
+          );
+        }
+
+        if (
+          sortBy.value ===
+          "name-desc"
+        ) {
+          params.set(
+            "sort",
+            "ZtoA"
+          );
+        }
+      }
+
+      history.replaceState(
+        {},
+        "",
+        params.toString()
+          ? "?"
+          + params.toString()
+          : location.pathname
+      );
+    }
+
+    /* =========================
+       COLLECTIONS GRID
+       (diff-based - existing tiles
+       are patched in place, not
+       recreated, so favoriting or
+       a live-update tick doesn't
+       replay every tile's entrance
+       animation)
+    ========================= */
+
+    function recipesForCollection(value) {
+
+      if (value === ALL_RECIPES) {
+        return recipesList;
+      }
+
+      if (value === "Favorites") {
+        return recipesList.filter(
+          r => isFavorite(r.url)
+        );
+      }
+
+      return recipesList.filter(
+        r =>
+          (r.collections || [])
+            .includes(value)
+      );
+    }
+
+    function imagesForCollection(value) {
+
+      const images =
+        recipesForCollection(value)
+          .map(r => pageImages[r.url])
+          .filter(
+            img =>
+              img &&
+              !isPlaceholderImage(img)
+          );
+
+      return [...new Set(images)];
+    }
+
+    function createCollectionElement(value, animate) {
+
+      const images =
+        imagesForCollection(value);
+
+      // Pick a random real image (if any exist) as the tile's
+      // resting image, rather than always the first one.
+      const startSrc =
+        images.length
+          ? randomItem(images)
+          : PLACEHOLDER_IMAGE;
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "collection-item"
+        + (
+          animate
+            ? " entrance"
+            : ""
+        );
+
+      item.tabIndex = 0;
+
+      item.setAttribute(
+        "role",
+        "button"
+      );
+
+      item.innerHTML =
+        `
+<div class="image-container">
+    <img
+        class="recipe-thumb"
+        src="${startSrc}"
+        alt="${collectionLabel(value)}"
+        loading="lazy">
+</div>
+<span class="collection-label">${collectionLabel(value)}</span>
+`;
+
+      const activate =
+        () =>
+          enterCollection(
+            value
+          );
+
+      item.addEventListener(
+        "click",
+        activate
+      );
+
+      item.addEventListener(
+        "keydown",
+        e => {
+          if (
+            e.key === "Enter" ||
+            e.key === " "
+          ) {
+            e.preventDefault();
+            activate();
+          }
+        }
+      );
+
+      collectionImageState.set(
+        value,
+        {
+          images,
+          index: images.indexOf(startSrc),
+          imgEl: item.querySelector("img")
+        }
+      );
+
+      return item;
+    }
+
+    function updateCollectionElement(item, value) {
+
+      const label =
+        item.querySelector(
+          ".collection-label"
+        );
+
+      const desiredLabel =
+        collectionLabel(value);
+
+      if (
+        label &&
+        label.textContent !==
+        desiredLabel
+      ) {
+        label.textContent =
+          desiredLabel;
+      }
+
+      const newImages =
+        imagesForCollection(value);
+
+      const state =
+        collectionImageState.get(value);
+
+      if (!state) {
+
+        collectionImageState.set(
+          value,
+          {
+            images: newImages,
+            index: 0,
+            imgEl: item.querySelector("img")
+          }
+        );
+
+        return;
+      }
+
+      const sameImages =
+        state.images.length ===
+        newImages.length &&
+        state.images.every(
+          (img, i) =>
+            img === newImages[i]
+        );
+
+      // Pool of eligible images hasn't changed - leave the
+      // in-progress rotation alone (don't reset/flicker it).
+      if (sameImages) {
+        return;
+      }
+
+      const img =
+        state.imgEl;
+
+      const currentSrc =
+        img.getAttribute(
+          "src"
+        );
+
+      const stillValidIndex =
+        newImages.indexOf(
+          currentSrc
+        );
+
+      if (stillValidIndex === -1) {
+
+        // Currently displayed image fell out of the pool
+        // (e.g. it got un-favorited, or the recipe's real
+        // image just came in from a page-level update) -
+        // swap straight to a random image from the new pool,
+        // or the placeholder. No fade/animation - data updates
+        // never animate, only load events do.
+        const nextSrc =
+          newImages.length
+            ? randomItem(newImages)
+            : PLACEHOLDER_IMAGE;
+
+        if (nextSrc !== currentSrc) {
+          img.src = nextSrc;
+        }
+
+        state.index =
+          newImages.indexOf(nextSrc);
+
+      } else {
+
+        state.index =
+          stillValidIndex;
+      }
+
+      state.images = newImages;
+    }
+
+    // True until the very first time the collections grid is
+    // populated (site load). Tiles created during that first pass
+    // get the entrance animation; anything created afterward - a
+    // brand-new collection showing up from a live JSON update -
+    // does not.
+    let collectionsLoaded = false;
+
+    function renderCollections() {
+
+      const animateNewTiles =
+        !collectionsLoaded;
+
+      const collections =
+        new Set();
+
+      recipesList.forEach(
+        recipe => {
+
+          (
+            recipe.collections
+            || []
+          ).forEach(
+            c =>
+              collections.add(
+                c
+              )
+          );
+        }
+      );
+
+      const names =
+        [...collections].sort(
+          (a, b) =>
+            collectionsSortBy.value ===
+              "name-desc"
+              ? b.localeCompare(a)
+              : a.localeCompare(b)
+        );
+
+      let ordered =
+        [
+          ALL_RECIPES,
+          FAVORITES_COLLECTION,
+          ...names
+        ];
+
+      // Everything that genuinely still exists in the data,
+      // before the search box filters the list down. Used below
+      // to tell "filtered out of view" (still exists - remove
+      // instantly) apart from "actually deleted" (fade out).
+      const baseKeys =
+        new Set(ordered);
+
+      const search =
+        collectionsSearchBar.value
+          .toLowerCase()
+          .trim();
+
+      if (search) {
+        ordered =
+          ordered.filter(
+            value =>
+              collectionLabel(value)
+                .toLowerCase()
+                .includes(search)
+          );
+      }
+
+      if (!ordered.length) {
+
+        collectionsGrid.innerHTML =
+          "<p>No collections found.</p>";
+
+        collectionElements.clear();
+        collectionImageState.clear();
+        collectionsEmptyShown = true;
+
+        return;
+      }
+
+      if (collectionsEmptyShown) {
+        collectionsGrid.innerHTML =
+          "";
+        collectionsEmptyShown = false;
+      }
+
+      const currentKeys =
+        new Set();
+
+      ordered.forEach(
+        (value, i) => {
+
+          currentKeys.add(
+            value
+          );
+
+          let item =
+            collectionElements.get(
+              value
+            );
+
+          if (!item) {
+            item =
+              createCollectionElement(
+                value,
+                animateNewTiles
+              );
+            collectionElements.set(
+              value,
+              item
+            );
+          } else {
+            updateCollectionElement(
+              item,
+              value
+            );
+          }
+
+          const childAtIndex =
+            collectionsGrid.children[i];
+
+          if (childAtIndex !== item) {
+            collectionsGrid.insertBefore(
+              item,
+              childAtIndex || null
+            );
+          }
+        }
+      );
+
+      for (
+        const [value, item]
+        of collectionElements
+      ) {
+        if (!currentKeys.has(value)) {
+
+          if (baseKeys.has(value)) {
+            // Still exists in the data, just filtered out of
+            // view by the search box - disappear instantly.
+            item.remove();
+          } else {
+            // No longer exists in the data at all - fade out.
+            removeTile(item);
+          }
+
+          collectionElements.delete(value);
+          collectionImageState.delete(value);
+        }
+      }
+
+      collectionsLoaded = true;
+    }
+
+    // Fades/slides a tile out before removing it from the DOM,
+    // instead of having it just disappear. Removing it from the
+    // tracking Map happens immediately (above) so a rebuilt tile
+    // with the same key can be created fresh right away if it
+    // comes back; this fading node is just on its way out.
+    function removeTile(el) {
+
+      // Snapshot where it currently sits on screen, then pull it
+      // completely out of the grid right away and re-show it as a
+      // fixed-position overlay in that same spot. This means the
+      // container's real children immediately reflect the new
+      // state (this item is just gone) - nothing downstream has
+      // to "step around" a leftover node still occupying a grid
+      // slot, so no other card/tile ever needs to be repositioned
+      // or touched just because this one is fading out.
+      const rect =
+        el.getBoundingClientRect();
+
+      el.style.position =
+        "fixed";
+
+      el.style.top =
+        rect.top + "px";
+
+      el.style.left =
+        rect.left + "px";
+
+      el.style.width =
+        rect.width + "px";
+
+      el.style.margin =
+        "0";
+
+      el.style.zIndex =
+        "1000";
+
+      document.body.appendChild(
+        el
+      );
+
+      el.classList.add(
+        "removing"
+      );
+
+      setTimeout(
+        () => el.remove(),
+        300
+      );
+    }
+
+    /* =========================
+       IMAGE ROTATION (1 image
+       at a time, crossfades
+       every 3s - but ONLY while
+       the card/tile is hovered
+       or focused; otherwise it
+       sits on the first image)
+    ========================= */
+
+    function crossfadeImage(img, nextSrc) {
+
+      if (
+        !nextSrc ||
+        img.getAttribute("src") ===
+        nextSrc
+      ) {
+        return;
+      }
+
+      img.style.opacity = 0;
+
+      setTimeout(
+        () => {
+          img.src = nextSrc;
+          img.style.opacity = 1;
+        },
+        350
+      );
+    }
+
+    function resetToFirstImage(state) {
+
+      state.index = 0;
+
+      if (!state.images.length) {
+        return;
+      }
+
+      crossfadeImage(
+        state.imgEl,
+        state.images[0]
+      );
+    }
+
+    function attachHoverRotation(item, stateMap, key) {
+
+      const markHovering =
+        hovering => {
+
+          const state =
+            stateMap.get(key);
+
+          if (!state) {
+            return;
+          }
+
+          state.hovering =
+            hovering;
+
+          if (!hovering) {
+            resetToFirstImage(
+              state
+            );
+          }
+        };
+
+      item.addEventListener(
+        "mouseenter",
+        () => markHovering(true)
+      );
+
+      item.addEventListener(
+        "mouseleave",
+        () => markHovering(false)
+      );
+
+      item.addEventListener(
+        "focusin",
+        () => markHovering(true)
+      );
+
+      item.addEventListener(
+        "focusout",
+        () => markHovering(false)
+      );
+    }
+
+    function rotateHoverImages() {
+
+      [
+        collectionImageState,
+        recipeImageState
+      ].forEach(
+        stateMap => {
+
+          stateMap.forEach(
+            state => {
+
+              if (
+                !state.hovering ||
+                state.images.length < 2 ||
+                !state.imgEl.isConnected
+              ) {
+                return;
+              }
+
+              state.index =
+                (state.index + 1) %
+                state.images.length;
+
+              crossfadeImage(
+                state.imgEl,
+                state.images[state.index]
+              );
+            }
+          );
+        }
+      );
+    }
+
+    setInterval(
+      rotateHoverImages,
+      IMAGE_ROTATE_MS
+    );
+
+    /* =========================
+       LIVE UPDATE LOOPS
+
+       Two independent pollers:
+
+       1. fetchRecipeList() - polls /json/recipes.json for
+          structural changes (recipes added/removed, name,
+          collections, categories, tags). Skips all work when
+          its hash is unchanged.
+
+       2. pollRecipePages() - polls each individual recipe's
+          own JSON file (ingredients/instructions/difficulty/
+          images) independently of #1, so a change made only
+          inside a single recipe's page is picked up even when
+          recipes.json itself hasn't changed. Each recipe has
+          its own hash, so a tick where nothing changed touches
+          no DOM at all, and a tick where exactly one recipe
+          changed only re-renders that recipe's card/tile
+          in place (renderRecipes/renderCollections are both
+          diff-based and never recreate untouched elements),
+          so entrance animations never replay on live updates.
+    ========================= */
+
+    async function fetchRecipeList() {
+
+      try {
+
+        const res =
+          await fetch(
+            "/json/recipes.json",
+            { cache: "no-store" }
+          );
+
+        const data =
+          await res.json();
+
+        const hash =
+          JSON.stringify(
+            data
+          );
+
+        if (
+          hash === lastJSONHash
+        ) {
+          return;
+        }
+
+        lastJSONHash = hash;
+
+        recipesList =
+          data.recipes
+          || [];
+
+        // Only pull filter/collection values from the URL on
+        // the very first successful load, so we don't stomp
+        // on a user's in-progress search/filter typing.
+        if (!filtersLoadedFromURL) {
+          loadFiltersFromURL();
+          filtersLoadedFromURL = true;
+        }
+
+        // Seed placeholder data for any brand-new recipe so it
+        // shows up immediately; pollRecipePages() fills in its
+        // real content/image on the next per-page poll.
+        recipesList.forEach(
+          r => {
+            if (!(r.url in pageContents)) {
+              pageContents[r.url] = "";
+              pageDifficulties[r.url] = "unknown";
+              pageImages[r.url] = PLACEHOLDER_IMAGE;
+            }
+          }
+        );
+
+        renderCollections();
+        renderRecipes();
+
+      } catch (err) {
+
+        console.error(
+          err
+        );
+
+        if (!recipesList.length) {
+          collectionsGrid.innerHTML =
+            "<p>Failed to load recipes.</p>";
+        }
+      }
+    }
+
+    async function pollRecipePages() {
+
+      for (
+        const recipe
+        of recipesList
+      ) {
+
+        const key =
+          recipe.url;
+
+        try {
+
+          const res =
+            await fetch(
+              "/Recipes/"
+              + key
+              + ".json",
+              { cache: "no-store" }
+            );
+
+          const data =
+            await res.json();
+
+          const hash =
+            JSON.stringify(
+              data
+            );
+
+          // Nothing changed for this specific recipe since
+          // the last poll - skip it entirely so its card is
+          // never touched.
+          if (
+            pageHashes[key] ===
+            hash
+          ) {
+            continue;
+          }
+
+          pageHashes[key] =
+            hash;
+
+          pageContents[
+            key
+          ] =
+            (
+              (
+                data.recipe
+                  ?.ingredients
+                || []
+              ).join(
+                " "
+              )
+              + " "
+              + (
+                data.recipe
+                  ?.instructions
+                || []
+              ).join(
+                " "
+              )
+            )
+              .toLowerCase();
+
+          pageDifficulties[
+            key
+          ] =
+            (
+              data.recipe
+                ?.difficulty
+              || "unknown"
+            )
+              .toLowerCase();
+
+          const images =
+            data.recipe
+              ?.images;
+
+          const realImage =
+            Array.isArray(images)
+              ? images.find(
+                img =>
+                  img &&
+                  !isPlaceholderImage(img)
+              )
+              : null;
+
+          pageImages[
+            key
+          ] =
+            realImage
+            || PLACEHOLDER_IMAGE;
+
+          // Only this recipe changed - the diff-based
+          // renderers below patch just its card/tile in
+          // place and leave every other element untouched,
+          // so no entrance animation replays.
+          renderRecipes();
+          renderCollections();
+
+        } catch {
+
+          if (!(key in pageContents)) {
+
+            pageContents[
+              key
+            ] = "";
+
+            pageDifficulties[
+              key
+            ] =
+              "unknown";
+
+            pageImages[
+              key
+            ] =
+              PLACEHOLDER_IMAGE;
+          }
+        }
+      }
+    }
+
+    async function startLiveUpdates() {
+
+      await fetchRecipeList();
+      await pollRecipePages();
+
+      setInterval(
+        fetchRecipeList,
+        LIST_POLL_MS
+      );
+
+      setInterval(
+        pollRecipePages,
+        PAGE_POLL_MS
+      );
+    }
+
+    /* =========================
+       RECIPES GRID
+       (diff-based - existing cards
+       are patched in place, not
+       recreated, so favoriting or
+       a live-update tick doesn't
+       replay every card's entrance
+       animation)
+    ========================= */
+
+    function createRecipeElement(r, index, animate) {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "recipe-item"
+        + (
+          animate
+            ? " entrance"
+            : ""
+        );
+
+      if (animate) {
+        div.style.animationDelay =
+          (index * 0.03) + "s";
+      }
+
+      div.innerHTML =
+        `
+<div class="image-container">
+
+    <a href="${resolveRecipeUrl(r.url)}">
+        <img
+            class="recipe-thumb"
+            src="${pageImages[r.url]}"
+            loading="lazy">
+    </a>
+
+    <button
+        class="favorite-btn"
+        title="Favorite">
+        ${isFavorite(
+          r.url
+        )
+          ? "⭐"
+          : "☆"
+        }
+    </button>
+
 </div>
 
-<input type="text" id="search-bar" placeholder="Search recipes or ingredients">
+<a
+    class="text1"
+    href="${resolveRecipeUrl(r.url)}">
+    ${r.name}
+</a>
+`;
 
-<select id="category-filter">
-  <option value="">All Categories</option>
-  <option value="appetizer">Appetizer</option>
-  <option value="breakfast">Breakfast</option>
-  <option value="dessert">Dessert</option>
-  <option value="dinner">Dinner</option>
-  <option value="drink">Drink</option>
-  <option value="lunch">Lunch</option>
-</select>
+      const btn =
+        div.querySelector(
+          ".favorite-btn"
+        );
 
-<select id="difficulty-filter">
-  <option value="">All Difficulties</option>
-  <option value="mild">Mild</option>
-  <option value="easy">Easy</option>
-  <option value="intermediate">Intermediate</option>
-  <option value="medium">Medium</option>
-  <option value="hard">Hard</option>
-</select>
+      btn.addEventListener(
+        "click",
+        e => {
 
-<select id="sort-by">
-  <option value="name-asc" selected>Name A→Z</option>
-  <option value="name-desc">Name Z→A</option>
-</select>
+          e.preventDefault();
+          e.stopPropagation();
 
-<hr>
+          toggleFavorite(
+            r.url,
+            btn
+          );
+        }
+      );
 
-<div id="recipes-container"></div>
-
-<script>
-const container = document.getElementById("recipes-container");
-const searchBar = document.getElementById("search-bar");
-const categoryFilter = document.getElementById("category-filter");
-const difficultyFilter = document.getElementById("difficulty-filter");
-const sortBy = document.getElementById("sort-by");
-
-const pageContents = {};
-const pageDifficulties = {};
-const pageImages = {};
-const difficultiesOrder = ["mild","easy","intermediate","medium","hard"];
-let recipesList = [];
-
-// 🔧 FORCE Recipes/ for pages
-function resolveRecipeUrl(url) {
-  if (!url) return "";
-
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  if (url.startsWith("Recipes/")) return url;
-
-  return "Recipes/" + url.replace(/^\/+/, "");
-}
-
-// 🖼️ FORCE Images/ for images
-function resolveImagePath(src) {
-  if (!src) return null;
-
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-
-  const fileName = src.split("/").pop();
-  return "Images/" + fileName;
-}
-
-// Load recipes JSON
-async function loadRecipesJSON() {
-  try {
-    const res = await fetch('/json/recipes.json');
-    const data = await res.json();
-    recipesList = data.recipes || [];
-    preloadPages();
-  } catch (e) {
-    container.innerHTML = "<p>Failed to load recipes.</p>";
-    console.error(e);
-  }
-}
-
-// Fetch recipe pages
-async function preloadPages() {
-  for (let recipe of recipesList) {
-    const fixedUrl = resolveRecipeUrl(recipe.url);
-
-    try {
-      const res = await fetch(fixedUrl);
-      const text = await res.text();
-      const doc = new DOMParser().parseFromString(text, "text/html");
-
-      const ingredients = Array.from(doc.querySelectorAll("ul")).map(u => u.textContent).join(" ");
-      const instructions = Array.from(doc.querySelectorAll("ol")).map(o => o.textContent).join(" ");
-      pageContents[fixedUrl] = (ingredients + " " + instructions).toLowerCase();
-
-      // Detect difficulty
-      const bodyText = doc.body.textContent.toLowerCase();
-      let detected = "unknown";
-      for (let d of difficultiesOrder) {
-        if (bodyText.includes(d)) { detected = d; break; }
-      }
-      pageDifficulties[fixedUrl] = detected;
-
-      // Get first image
-      let chosenImage = null;
-      for (let img of doc.querySelectorAll("img")) {
-        let src = img.getAttribute("src");
-        if (!src) continue;
-        if (src.toLowerCase().includes("no-image")) continue;
-
-        chosenImage = resolveImagePath(src);
-        break;
-      }
-
-      pageImages[fixedUrl] = chosenImage;
-
-    } catch {
-      pageContents[fixedUrl] = "";
-      pageDifficulties[fixedUrl] = "unknown";
-      pageImages[fixedUrl] = null;
+      return div;
     }
-  }
 
-  renderRecipes();
-}
+    function updateRecipeElement(div, r) {
 
-// Render recipes
-function renderRecipes() {
-  const search = searchBar.value.toLowerCase();
-  const category = categoryFilter.value;
-  const difficulty = difficultyFilter.value;
+      const img =
+        div.querySelector(
+          ".recipe-thumb"
+        );
 
-  let filtered = recipesList.filter(r => {
-    const fixedUrl = resolveRecipeUrl(r.url);
+      // Straight swap, no fade/animation - image data updates
+      // never animate, only load events (entrance) do.
+      if (
+        img &&
+        img.getAttribute("src") !==
+        pageImages[r.url]
+      ) {
+        img.src =
+          pageImages[r.url];
+      }
 
-    return (
-      (r.name.toLowerCase().includes(search) || (pageContents[fixedUrl]||"").includes(search)) &&
-      (category === "" || r.categories.includes(category)) &&
-      (difficulty === "" || pageDifficulties[fixedUrl] === difficulty)
+      const nameLink =
+        div.querySelector(
+          ".text1"
+        );
+
+      if (
+        nameLink &&
+        nameLink.textContent.trim() !==
+        r.name
+      ) {
+        nameLink.textContent =
+          r.name;
+      }
+
+      const btn =
+        div.querySelector(
+          ".favorite-btn"
+        );
+
+      if (btn) {
+
+        const desired =
+          isFavorite(r.url)
+            ? "⭐"
+            : "☆";
+
+        if (
+          btn.textContent !==
+          desired
+        ) {
+          btn.textContent =
+            desired;
+        }
+      }
+    }
+
+    function renderRecipes() {
+
+      if (!currentCollection) {
+        return;
+      }
+
+      const animateNewCards =
+        recipesViewJustEntered;
+
+      recipesViewJustEntered = false;
+
+      // Everything that genuinely still exists in the data
+      // (regardless of search/category/difficulty/collection
+      // filtering). Used below to tell "filtered out of view"
+      // (still exists - remove instantly) apart from "actually
+      // deleted from recipes.json" (fade out).
+      const allKeys =
+        new Set(
+          recipesList.map(
+            r => r.url
+          )
+        );
+
+      updateURL();
+
+      const search =
+        searchBar.value
+          .toLowerCase()
+          .trim();
+
+      const filtered =
+        recipesList
+
+          .filter(r => {
+
+            const key =
+              r.url;
+
+            const searchable =
+              [
+                r.name,
+                ...(r.categories || []),
+                ...(r.tags || []),
+                pageContents[
+                key
+                ] || ""
+              ]
+                .join(
+                  " "
+                )
+                .toLowerCase();
+
+            const matchesSearch =
+              searchable
+                .includes(
+                  search
+                );
+
+            const matchesCategory =
+              !categoryFilter
+                .value
+              ||
+              (
+                r.categories
+                || []
+              ).includes(
+                categoryFilter
+                  .value
+              );
+
+            const matchesCollection =
+              currentCollection
+              ===
+              ALL_RECIPES
+              ||
+              (
+                currentCollection
+                  ===
+                  "Favorites"
+
+                  ? isFavorite(
+                    r.url
+                  )
+
+                  : (
+                    r.collections
+                    || []
+                  ).includes(
+                    currentCollection
+                  )
+              );
+
+            const matchesDifficulty =
+              !difficultyFilter
+                .value
+              ||
+              pageDifficulties[
+              key
+              ]
+              ===
+              difficultyFilter
+                .value;
+
+            return (
+              matchesSearch
+              &&
+              matchesCategory
+              &&
+              matchesCollection
+              &&
+              matchesDifficulty
+            );
+          })
+
+          .sort(
+            (
+              a,
+              b
+            ) =>
+              sortBy.value
+                ===
+                "name-desc"
+
+                ? b.name
+                  .localeCompare(
+                    a.name
+                  )
+
+                : a.name
+                  .localeCompare(
+                    b.name
+                  )
+          );
+
+      if (!filtered.length) {
+
+        container.innerHTML =
+          "<p>No recipes found.</p>";
+
+        recipeElements.clear();
+        recipesEmptyShown = true;
+
+        return;
+      }
+
+      if (recipesEmptyShown) {
+        container.innerHTML =
+          "";
+        recipesEmptyShown = false;
+      }
+
+      const currentKeys =
+        new Set();
+
+      filtered.forEach(
+        (r, i) => {
+
+          const key =
+            r.url;
+
+          currentKeys.add(
+            key
+          );
+
+          let el =
+            recipeElements.get(
+              key
+            );
+
+          if (!el) {
+            el =
+              createRecipeElement(
+                r,
+                i,
+                animateNewCards
+              );
+            recipeElements.set(
+              key,
+              el
+            );
+          } else {
+            updateRecipeElement(
+              el,
+              r
+            );
+          }
+
+          const childAtIndex =
+            container.children[i];
+
+          if (childAtIndex !== el) {
+            container.insertBefore(
+              el,
+              childAtIndex || null
+            );
+          }
+        }
+      );
+
+      for (
+        const [key, el]
+        of recipeElements
+      ) {
+        if (!currentKeys.has(key)) {
+
+          if (allKeys.has(key)) {
+            // Still exists in the data, just filtered out of
+            // view by search/category/difficulty - disappear
+            // instantly.
+            el.remove();
+          } else {
+            // No longer exists in recipes.json at all - fade out.
+            removeTile(el);
+          }
+
+          recipeElements.delete(key);
+        }
+      }
+    }
+
+    [
+      searchBar,
+      categoryFilter,
+      difficultyFilter,
+      sortBy
+    ].forEach(
+      el =>
+        el.addEventListener(
+          el === searchBar
+            ? "input"
+            : "change",
+          renderRecipes
+        )
     );
-  });
 
-  filtered.sort((a,b)=>
-    sortBy.value === "name-desc"
-      ? b.name.localeCompare(a.name)
-      : a.name.localeCompare(b.name)
-  );
+    startLiveUpdates();
+  </script>
 
-  container.innerHTML = filtered.length ? "" : "<p>No recipes found.</p>";
-
-  filtered.forEach(r => {
-    const fixedUrl = resolveRecipeUrl(r.url);
-
-    const div = document.createElement("div");
-    div.className = "recipe-item";
-
-    const imgHTML = pageImages[fixedUrl]
-      ? `<img src="${pageImages[fixedUrl]}" class="recipe-thumb" alt="${r.name}" loading="lazy">`
-      : "";
-
-    div.innerHTML = `
-      <a href="${fixedUrl}" class="text1">${r.name}</a>
-      ${imgHTML}
-      <p class="recipe-meta">
-        Categories: ${r.categories.join(", ")} | Difficulty: ${pageDifficulties[fixedUrl]}
-      </p>
-      <hr>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-searchBar.addEventListener("input", renderRecipes);
-categoryFilter.addEventListener("change", renderRecipes);
-difficultyFilter.addEventListener("change", renderRecipes);
-sortBy.addEventListener("change", renderRecipes);
-
-loadRecipesJSON();
-</script>
-
-<script src="/js/disable-zoom.js"></script>
-<script src="/js/gold.js" defer></script>
-<script src="/js/Bottom-bar.js"></script>
-<script src="/js/trust-pilot.js"></script>
+  <script src="/js/disable-zoom.js"></script>
+  <script src="/js/Tier.js" defer></script>
+  <script src="/js/Bottom-bar.js"></script>
+  <script src="/js/trust-pilot.js"></script>
 
 </body>
+
 </html>
