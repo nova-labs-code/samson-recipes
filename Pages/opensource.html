@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
 
 <head>
@@ -7,6 +8,14 @@
   <title>Samson Recipes GitHub Sync Countdown</title>
 
   <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
+
     :root {
       --bg: #0d1117;
       --card: #161b22;
@@ -333,7 +342,7 @@
     update();
   </script>
 
-  <script src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/disable-zoom.js"></script>
 </body>
 
 </html>

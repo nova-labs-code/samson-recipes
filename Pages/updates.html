@@ -1,13 +1,22 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Update Log</title>
-
+  <link rel="manifest" href="/manifest.json">
   <!-- Page CSS for layout and frames -->
   <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
+
     body {
       margin: 0;
       padding: 32px 16px;
@@ -86,6 +95,7 @@
       margin-bottom: 18px;
     }
   </style>
+  <script type="module" src="/js/profile.js"></script>
 </head>
 
 <body>
@@ -191,9 +201,8 @@
      CALL GOLD.JS
      (fully handles popup & gold styling)
 --------------------------- -->
-  <script src="/js/disable-zoom.js"></script>
-  <script src="/js/Tier.js"></script>
-  <script src="/js/Bottom-bar.js"></script>
+  <script type="module" src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/Bottom-bar.js"></script>
 
 </body>
 

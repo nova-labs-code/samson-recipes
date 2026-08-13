@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
 
 <head>
@@ -6,6 +7,14 @@
   <title>Samson Blog Editor</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&family=Comic+Neue&display=swap');
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -162,6 +171,7 @@
       margin-top: 10px;
     }
   </style>
+  <script type="module" src="/profile.js"></script>
 </head>
 
 <body>
@@ -345,7 +355,7 @@
 
     loadBlogs();
   </script>
-  <script src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/disable-zoom.js"></script>
 
 </body>
 

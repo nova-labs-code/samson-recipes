@@ -1,3 +1,4 @@
+import { isAuthorized } from "/js/security.js";
 // gold.js – Full version with popup completely disabled
 document.addEventListener('DOMContentLoaded', () => {
 

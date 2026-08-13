@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>Samson Recipes Status</title>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+
+            /* For Internet Explorer and Edge */
+            -ms-overflow-style: none;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #080b12;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            padding-bottom: 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            font-size: 42px;
+            margin: 0;
+        }
+
+        header p {
+            color: #94a3b8;
+        }
+
+
+        .summary {
+
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+
+        }
+
+
+        .summary span {
+
+            font-size: 22px;
+            font-weight: 700;
+
+        }
+
+
+        .system {
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+        }
+
+
+        .dot {
+
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 15px #22c55e;
+
+        }
+
+
+        .dot.down {
+
+            background: #ef4444;
+            box-shadow: 0 0 15px #ef4444;
+
+        }
+
+
+        .card {
+
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: .2s;
+
+        }
+
+
+        .card:hover {
+
+            transform: translateY(-3px);
+            border-color: #3b82f6;
+
+        }
+
+
+        .name {
+
+            font-size: 20px;
+            font-weight: 700;
+
+        }
+
+
+        .url {
+
+            color: #94a3b8;
+            margin-top: 8px;
+            font-size: 14px;
+
+        }
+
+
+        .badge {
+
+            padding: 8px 15px;
+            border-radius: 999px;
+            font-weight: 700;
+
+        }
+
+
+        .online {
+
+            background: #052e16;
+            color: #4ade80;
+
+        }
+
+
+        .offline {
+
+            background: #450a0a;
+            color: #f87171;
+
+        }
+
+
+        .loading {
+
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+
+        }
+
+
+        @media(max-width:650px) {
+
+            .card,
+            .summary {
+
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+
+            }
+
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <header>
+
+            <h1>Status</h1>
+
+            <p>Live service monitoring</p>
+
+        </header>
+
+
+
+        <div class="summary">
+
+
+            <div>
+
+                <span>
+                    System Status
+                </span>
+
+
+                <div style="color:#94a3b8;margin-top:8px;">
+
+                    <strong id="uptimePercent">
+                        Checking...
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="system">
+
+                <div class="dot"></div>
+
+                <strong>
+                    Checking...
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div id="services">
+
+            <div class="loading">
+                Loading services...
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <script>
+
+
+        // Main UptimeRobot API key
+        const API_KEY = "ur3301295-3df24e63467ca13a0ec9cd28";
+
+
+        // Force monitor display order
+        // Use the exact UptimeRobot friendly_name values
+        const MONITOR_ORDER = [
+
+            "Home",
+            "Recipes",
+            "About"
+
+        ];
+
+
+
+
+
+        async function getMonitors(apiKey) {
+
+
+            const response = await fetch(
+
+                "https://api.uptimerobot.com/v2/getMonitors",
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type": "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        api_key: apiKey,
+
+                        format: "json"
+
+                    })
+
+                }
+
+            );
+
+
+
+            const data = await response.json();
+
+
+
+            if (data.error) {
+
+                throw new Error(
+                    data.error.message || "UptimeRobot API Error"
+                );
+
+            }
+
+
+
+            return data.monitors || [];
+
+        }
+
+
+
+
+
+
+
+        async function loadStatus() {
+
+
+            const services =
+                document.getElementById("services");
+
+
+
+            try {
+
+
+                let monitors =
+                    await getMonitors(API_KEY);
+
+
+
+
+                // Force order
+
+                monitors.sort((a, b) => {
+
+
+                    const aIndex =
+                        MONITOR_ORDER.indexOf(a.friendly_name);
+
+
+                    const bIndex =
+                        MONITOR_ORDER.indexOf(b.friendly_name);
+
+
+
+                    // Unknown monitors go last
+
+                    if (aIndex === -1 && bIndex === -1)
+                        return 0;
+
+
+                    if (aIndex === -1)
+                        return 1;
+
+
+                    if (bIndex === -1)
+                        return -1;
+
+
+
+                    return aIndex - bIndex;
+
+
+                });
+
+
+
+
+
+                services.innerHTML = "";
+
+
+
+                let good = true;
+
+                let onlineCount = 0;
+
+
+
+
+                if (monitors.length === 0) {
+
+
+                    services.innerHTML =
+
+                        "<div class='loading'>No monitors found</div>";
+
+
+                    return;
+
+
+                }
+
+
+
+
+
+
+
+                monitors.forEach(monitor => {
+
+
+                    const online =
+                        monitor.status === 2;
+
+
+
+                    if (online) {
+
+                        onlineCount++;
+
+                    } else {
+
+                        good = false;
+
+                    }
+
+
+
+
+                    services.innerHTML += `
+
+
+<div class="card">
+
+
+<div>
+
+
+<div class="name">
+
+${monitor.friendly_name}
+
+</div>
+
+
+<div class="url">
+
+${monitor.url || "No URL"}
+
+</div>
+
+
+</div>
+
+
+
+<div class="badge ${online ? "online" : "offline"}">
+
+${online ? "Operational" : "Offline"}
+
+</div>
+
+
+</div>
+
+
+`;
+
+
+
+                });
+
+
+
+
+
+
+                const percent = Math.round(
+
+                    (onlineCount / monitors.length) * 100
+
+                );
+
+
+
+                document.getElementById("uptimePercent").textContent =
+
+                    `${percent}% of services online`;
+
+
+
+
+
+
+
+                const dot =
+                    document.querySelector(".dot");
+
+
+                const text =
+                    document.querySelector(".system strong");
+
+
+
+
+                if (good) {
+
+
+                    dot.className = "dot";
+
+
+                    text.textContent =
+                        "All Systems Operational";
+
+
+                } else {
+
+
+                    dot.className = "dot down";
+
+
+                    text.textContent =
+                        "Issues Detected";
+
+
+                }
+
+
+
+            }
+
+
+
+            catch (error) {
+
+
+                console.error(error);
+
+
+
+                services.innerHTML =
+
+                    "<div class='loading'>Failed to load services</div>";
+
+
+
+                document.getElementById("uptimePercent").textContent =
+
+                    "Unable to check services";
+
+
+            }
+
+
+
+        }
+
+
+
+
+
+        loadStatus();
+
+
+        setInterval(loadStatus, 80000);
+
+
+
+    </script>
+
+
+    <script type="module" src="/js/disable-zoom.js"></script>
+    <script type="module" src="/js/Bottom-bar.js"></script>
+
+
+</body>
+
+</html>

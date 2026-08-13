@@ -1,0 +1,7 @@
+{
+  "1": [
+    {"text": "Founder","bg": "rgba(0, 0, 188, 0.15)","color": "#3374FF","border": "1px solid rgba(0, 0, 255, 0.69)"},
+    {"text": "Owner", "bg": "rgba(255, 60, 60, 0.15)", "color": "#FF3C3C", "border": "1px solid rgba(255, 60, 60, 0.69)"},
+    {"text": "Head Developer","bg": "rgba(0, 200, 140, 0.15)","color": "#00C88C","border": "1px solid rgba(0, 200, 140, 0.69)"}
+  ]
+}

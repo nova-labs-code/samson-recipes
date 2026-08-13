@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Out - Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .your-container-class::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #080b12;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 460px;
+            background: #121824;
+            border: 1px solid #232d3d;
+            border-radius: 18px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .45);
+            animation: fadeIn .35s ease;
+        }
+
+        .icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            background: #1d2636;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: #b6c1d0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 14px;
+            margin-top: 32px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .no {
+            background: #202b3c;
+            color: white;
+        }
+
+        .no:hover {
+            background: #29364a;
+        }
+
+        .yes {
+            background: #d83c3c;
+            color: white;
+        }
+
+        .yes:hover {
+            background: #ef4a4a;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel">
+        <div class="icon">👋</div>
+        <h1>Sign Out?</h1>
+        <p>
+            Are you sure you want to sign out?<br>
+            You'll need to sign in again to access your account.
+        </p>
+        <div class="buttons">
+            <button class="no" onclick="window.location.href='account-settings.html'">
+                No
+            </button>
+            <button class="yes" id="signOutBtn">
+                Yes
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from "/js/firebase.js";
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const signOutBtn = document.getElementById("signOutBtn");
+
+        signOutBtn.addEventListener("click", async () => {
+            signOutBtn.disabled = true;
+            signOutBtn.textContent = "Signing Out...";
+
+            try {
+                // 1. Terminate the server session via Firebase Auth natively
+                if (auth) {
+                    await signOut(auth);
+                }
+
+                // 2. Clear local storage overrides
+                localStorage.removeItem("samson_recipe_account_id");
+                localStorage.removeItem("samson_accounts");
+
+                // Route cleanly back to dashboard
+                window.location.href = "account-settings.html";
+
+            } catch (err) {
+                alert("Unable to sign out.\n\n" + err.message);
+                signOutBtn.disabled = false;
+                signOutBtn.textContent = "Yes";
+            }
+        });
+    </script>
+<script type="module" src="/js/disable-zoom.js"></script>
+</body>
+
+</html>

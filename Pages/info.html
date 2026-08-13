@@ -1,42 +1,452 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>info - Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <title>Information - Samson Recipes</title>
+
     <style>
-      /* Center all content on the page, both horizontally and vertically */
-      body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column; /* Stack text elements vertically */
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        color: #333;
-        text-align: center; /* Ensures text is centered within its container */
-      }
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
 
-      .full-screen-text {
-        font-size: 10vw; /* Responsive font size */
-        margin: 0;
-      }
+            /* For Internet Explorer and Edge */
+            -ms-overflow-style: none;
+        }
 
-      .sub-text {
-        font-size: 3vw;
-        margin: 0;
-        max-width: 80%;
-      }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding-bottom: 20px;
+            background: #050505;
+            color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            line-height: 1.7;
+        }
+
+
+        .container {
+
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px 20px;
+
+        }
+
+
+        /* Hero */
+
+        .hero {
+
+            text-align: center;
+            padding: 55px 20px;
+            margin-bottom: 35px;
+
+        }
+
+
+        .hero h1 {
+
+            font-size: clamp(36px, 6vw, 58px);
+            margin: 0;
+            color: white;
+
+        }
+
+
+        .hero p {
+
+            color: #999;
+            font-size: 20px;
+            max-width: 650px;
+            margin: 20px auto 0;
+
+        }
+
+
+        /* Cards */
+
+        /* Cards */
+
+        .card {
+
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-radius: 22px;
+            padding: 32px;
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, .5);
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease;
+
+        }
+
+
+        .card:hover {
+
+            transform: translateY(-5px);
+            border-color: #444;
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, .7);
+
+        }
+
+
+
+        /* Info Boxes */
+
+        .info-box {
+
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 18px;
+            padding: 22px;
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                background .25s ease;
+
+        }
+
+
+        .card h2 {
+
+            margin-top: 0;
+            font-size: 28px;
+            color: white;
+
+        }
+
+
+        /* Info Grid */
+
+        .info-grid {
+
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+
+        }
+
+
+        .info-box {
+
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 18px;
+            padding: 22px;
+
+        }
+
+
+        .info-box h3 {
+
+            margin-top: 0;
+            color: white;
+
+        }
+
+
+        .icon {
+
+            font-size: 32px;
+            margin-bottom: 10px;
+
+        }
+
+
+        /* Lists */
+
+        ul {
+
+            padding-left: 20px;
+
+        }
+
+
+        li {
+
+            margin-bottom: 10px;
+
+        }
+
+
+        /* Footer */
+
+        .footer {
+
+            text-align: center;
+            color: #666;
+            margin-top: 50px;
+            font-size: 14px;
+
+        }
+
+
+        @media(max-width:600px) {
+
+            .card {
+
+                padding: 24px;
+
+            }
+
+            .hero {
+
+                padding: 35px 10px;
+
+            }
+
+        }
     </style>
-  </head>
-  <body>
-    <h1 class="full-screen-text">Preheating the info page. </h1>
-    <br>
-    <br><br><br><br><br>
-    <h2 class="sub-text">Please wait until we reach 375°F of readiness.</h2>
-  </body>
-  <script src="/js/disable-zoom.js"></script>
-<script src="/js/Tier.js"></script>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <section class="hero">
+
+            <h1>Samson Recipes Information</h1>
+
+            <p>
+                Learn how Samson Recipes works, what features are available,
+                and how to get the most out of the website.
+            </p>
+
+        </section>
+
+
+
+        <div class="card">
+
+            <h2>🌐 About Samson Recipes</h2>
+
+            <p>
+                Samson Recipes is a recipe website focused on making cooking
+                simple, organized, and enjoyable. Recipes are designed with
+                clear layouts so you can quickly find ingredients, follow
+                instructions, and prepare meals with confidence.
+            </p>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>📖 How Recipes Work</h2>
+
+            <p>
+                Every recipe on Samson Recipes follows a structured format
+                to make cooking easier.
+            </p>
+
+
+            <div class="info-grid">
+
+
+                <div class="info-box">
+
+                    <div class="icon">📋</div>
+
+                    <h3>Recipe Details</h3>
+
+                    <p>
+                        Recipes include important information such as preparation
+                        time, cooking time, servings, and other helpful details.
+                    </p>
+
+                </div>
+
+
+
+                <div class="info-box">
+
+                    <div class="icon">🥕</div>
+
+                    <h3>Ingredients</h3>
+
+                    <p>
+                        Ingredients are organized into a clear list so you know
+                        exactly what is needed before starting.
+                    </p>
+
+                </div>
+
+
+
+                <div class="info-box">
+
+                    <div class="icon">👨‍🍳</div>
+
+                    <h3>Cooking Steps</h3>
+
+                    <p>
+                        Instructions are separated into easy-to-follow steps to
+                        guide you through the entire recipe.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>✨ Website Features</h2>
+
+            <div class="info-grid">
+
+
+                <div class="info-box">
+
+                    <div class="icon">📱</div>
+
+                    <h3>Mobile Friendly</h3>
+
+                    <p>
+                        The website is designed to work smoothly on phones,
+                        tablets, and computers.
+                    </p>
+
+                </div>
+
+
+
+                <div class="info-box">
+
+                    <div class="icon">⚡</div>
+
+                    <h3>Fast Loading</h3>
+
+                    <p>
+                        Pages are built to stay lightweight and provide a quick
+                        browsing experience.
+                    </p>
+
+                </div>
+
+
+
+                <div class="info-box">
+
+                    <div class="icon">🔎</div>
+
+                    <h3>Easy Browsing</h3>
+
+                    <p>
+                        Recipes are organized to help you find meals quickly.
+                    </p>
+
+                </div>
+
+
+
+                <div class="info-box">
+
+                    <div class="icon">🗂️</div>
+
+                    <h3>Organized Recipes</h3>
+
+                    <p>
+                        Recipes use a consistent layout so every page feels familiar.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>📝 Recipe Information</h2>
+
+            <ul>
+
+                <li>Ingredients and measurements</li>
+
+                <li>Step-by-step cooking instructions</li>
+
+                <li>Preparation and cooking details</li>
+
+                <li>Serving information</li>
+
+                <li>Helpful cooking notes</li>
+
+            </ul>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>🔄 Updates & Improvements</h2>
+
+            <p>
+                Samson Recipes is continuously updated with improvements,
+                new recipes, and additional features to create a better
+                cooking experience.
+            </p>
+
+            <p>
+                New content and updates may change the way recipes are
+                organized or introduce new tools to help users.
+            </p>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>💬 Feedback</h2>
+
+            <p>
+                Suggestions and feedback help improve Samson Recipes.
+                If you have ideas for new features, recipes, or improvements,
+                you can share them through the available contact options.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <script type="module" src="/js/disable-zoom.js"></script>
+    <script type="module" src="/js/Bottom-bar.js"></script>
+
+
+</body>
+
 </html>

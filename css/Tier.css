@@ -5,6 +5,7 @@
   --amethyst-dark: #6b21a8;
   --amethyst-glow: #d8b4fe;
   --background: #1c1622;
+  --separator-color: var(--amethyst-glow);
 }
 
 /* -------------------------- */
@@ -185,4 +186,41 @@ textarea {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* -------------------------- */
+/* Bottom bar separators ✦ */
+
+#bottom-bar .sep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 4px;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  background: none !important;
+  background-image: none !important;
+
+  color: var(--amethyst-glow) !important;
+  -webkit-text-fill-color: var(--amethyst-glow) !important;
+
+  text-shadow:
+    0 0 8px rgba(216,180,254,0.55);
+
+  user-select: none;
+}
+
+#bottom-bar .sep::before {
+  content: "✦";
+
+  color: var(--amethyst-glow) !important;
+  -webkit-text-fill-color: var(--amethyst-glow) !important;
+
+  background: none !important;
+
+  text-shadow:
+    0 0 8px rgba(216,180,254,0.55);
 }

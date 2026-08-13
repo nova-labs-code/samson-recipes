@@ -5,8 +5,8 @@
     "difficulty": "Medium",
     "servings": "12",
     "images": [
-      "/Images/Taco-Mac-N-Cheese-Bake1.png",
-      "/Images/Taco-Mac-N-Cheese-Bake2.png"
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Taco-Mac-N-Cheese-Bake1.png",
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Taco-Mac-N-Cheese-Bake2.png"
     ],
 
     "time_breakdown": {

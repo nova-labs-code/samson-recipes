@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
 
 <head>
+  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Samson Recipes</title>
@@ -14,10 +16,33 @@
   <link rel="apple-touch-icon" href="/icons/favicon.ico" sizes="180x180">
 
   <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
+
+    /* For Chrome, Safari, and Opera */
+    .your-container-class::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ---- Modern Link Styles Reset ---- */
+    a {
+      color: inherit;
+      text-decoration: none;
+      outline: none;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 1rem;
-      color: black;
+      background-color: #121214;
+      /* Dark background */
+      color: #b0c4de;
+      /* Light blueish-grey text */
       text-align: center;
     }
 
@@ -38,12 +63,16 @@
     .Icon h1 {
       margin: 0;
       font-size: 40px;
+      color: #cbd5e1;
+      /* Slightly brighter light blueish-grey for headings */
     }
 
     .subtext {
       font-size: 25px;
       max-width: 800px;
       margin: 0 auto 1.5rem auto;
+      color: #94a3b8;
+      /* Muted slate grey for subtext */
     }
 
     .search-input {
@@ -53,16 +82,31 @@
       max-width: 400px;
       margin-bottom: 1rem;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid #3a4a5a;
+      /* Dark border to match */
+      background-color: #1e1e24;
+      /* Dark background for input */
+      color: #b0c4de;
+      /* Light blueish-grey input text */
+    }
+
+    .search-input::placeholder {
+      color: #64748b;
+      /* Styled placeholder to match dark theme */
     }
 
     select {
       box-sizing: border-box;
-      border: 2px solid #000;
+      border: 2px solid #3a4a5a;
+      /* Dark border */
       border-radius: 8px;
       padding: .5rem 1rem;
       font-weight: bold;
       margin: .25rem;
+      background-color: #1e1e24;
+      /* Dark dropdown background */
+      color: #b0c4de;
+      /* Light blueish-grey option text */
     }
 
     /* ---- Shared grid layout (recipes + collections, exact same rules) ---- */
@@ -120,10 +164,12 @@
       width: 38px !important;
       height: 38px !important;
 
-      border: 1px solid rgba(0, 0, 0, .2) !important;
+      border: 1px solid rgba(255, 255, 255, .2) !important;
+      /* Lighter border for dark mode */
       border-radius: 50% !important;
 
-      background: rgba(95, 95, 95, 0.22) !important;
+      background: rgba(30, 30, 35, 0.6) !important;
+      /* Darker overlay background */
       backdrop-filter: blur(4px) !important;
 
       font-size: 22px !important;
@@ -170,15 +216,24 @@
     .recipe-item:hover .image-container,
     .recipe-item:focus-within .image-container {
       transform: translateY(-4px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .5);
+      /* Darker shadow for dark background */
     }
 
     .collection-label {
-      text-decoration: none;
       font-size: 1rem;
       font-weight: bold;
-      color: black;
+      color: #b0c4de;
+      /* Sleek light blueish-grey */
       margin-top: .5rem;
+      transition: color 0.2s ease;
+    }
+
+    /* Modern subtle glow/highlight on hover */
+    .collection-item:hover .collection-label,
+    .recipe-item:hover .collection-label {
+      color: #cbd5e1;
+      /* Slightly brighter highlight on hover */
     }
 
     /* ---- Recipes view / back nav ---- */
@@ -194,9 +249,13 @@
       gap: 0.4rem;
       margin-bottom: 1rem;
       padding: 0.5rem 1rem;
-      border: 2px solid #000;
+      border: 2px solid #3a4a5a;
+      /* Darker border */
       border-radius: 8px;
-      background: #fff;
+      background: #1e1e24;
+      /* Dark button background */
+      color: #b0c4de;
+      /* Light blueish-grey text */
       font-weight: bold;
       font-family: inherit;
       font-size: 1rem;
@@ -205,13 +264,16 @@
     }
 
     #back-btn:hover {
-      background: #f0f0f0;
+      background: #2a2a35;
+      /* Slightly lighter hover background */
       transform: translateX(-3px);
     }
 
     #current-collection-title {
       font-size: 1.5rem;
       margin: 0.25rem 0 1rem 0;
+      color: #cbd5e1;
+      /* Brighter heading for current collection */
     }
 
     /* ---- Animations ---- */
@@ -292,11 +354,16 @@
       }
     }
   </style>
-
+  <script type="module" src="/js/profile.js"></script>
   <script src="/site_down.js" defer></script>
 </head>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+  }
+</script>
 
-<body data-maintenance="minor">
+<body data-maintenance="none">
 
   <div class="Icon">
     <h1>Samson Recipes</h1>
@@ -399,8 +466,6 @@
     const sortBy =
       document.getElementById("sort-by");
 
-    const FAVORITES_KEY =
-      "samson-recipes-favorites";
 
     const FAVORITES_COLLECTION =
       "Favorites";
@@ -409,7 +474,7 @@
       "All";
 
     const PLACEHOLDER_IMAGE =
-      "/Images/placeholder.png";
+      "https://nova-labs-code.github.io/SamsonRecipesImages/placeholder.png";
 
     const IMAGE_ROTATE_MS =
       3000;
@@ -459,80 +524,170 @@
     // top-level recipes.json to change too.
     const pageHashes = {};
 
+    // Assuming you have initialized Firestore as 'db' and have an 'auth' object
+    // const db = firebase.firestore(); // v8
+    // or import { getFirestore, doc, setDoc } from "firebase/firestore"; // v9+
+
+    /* ==========================================================================
+       SAMSON RECIPES: COMPLETE FAVORITES & AUTH LIFECYCLE MANAGEMENT
+       ========================================================================== */
+
+    /* ==========================================================================
+     SAMSON RECIPES: COMPLETE LIVE FAVORITES & AUTH LIFECYCLE MANAGEMENT
+     ========================================================================== */
+
+    // Make sure you import arrayUnion and arrayRemove from firestore at the top of your script:
+    // import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    const FAVORITES_KEY = "samson-recipes-favorites";
+
+    // Dynamic state trackers managed by the Auth lifecycle
+    let currentUserUid = null;           // Stores the custom 10-digit account ID when logged in
+    let currentCloudFavorites = [];      // In-memory cache of the user's Firestore favorites
+    let unsubscribeCloudListener = null; // Holds the active Firestore live unsubscribe function
+
+    /**
+     * Core Data Fetcher
+     * Reads favorites based on the current authentication state.
+     * Signed Out: Pulls directly from LocalStorage.
+     * Signed In: Pulls from the real-time streamed Firestore memory cache.
+     */
     function getFavorites() {
-      return JSON.parse(
-        localStorage.getItem(
-          FAVORITES_KEY
-        ) || "[]"
-      );
-    }
-
-    function saveFavorites(favorites) {
-      localStorage.setItem(
-        FAVORITES_KEY,
-        JSON.stringify(
-          favorites
-        )
-      );
-    }
-
-    function isFavorite(recipeUrl) {
-      return getFavorites()
-        .includes(recipeUrl);
-    }
-
-    function randomItem(arr) {
-      return arr[
-        Math.floor(
-          Math.random() * arr.length
-        )
-      ];
-    }
-
-    function isPlaceholderImage(src) {
-      return (
-        /placeholder/i.test(src) ||
-        /no-image/i.test(src)
-      );
-    }
-
-    function toggleFavorite(recipeUrl, btnEl) {
-
-      const favorites =
-        getFavorites();
-
-      const index =
-        favorites.indexOf(
-          recipeUrl
-        );
-
-      if (index > -1) {
-        favorites.splice(
-          index,
-          1
-        );
-      } else {
-        favorites.push(
-          recipeUrl
-        );
+      if (currentUserUid) {
+        return currentCloudFavorites;
       }
+      try {
+        return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+      } catch (e) {
+        console.error("Error reading local favorites from localStorage:", e);
+        return [];
+      }
+    }
 
-      saveFavorites(
-        favorites
-      );
+    /**
+     * Handles modifying and executing a favorite change securely across modes.
+     * Updated to utilize Firestore's live atomic array operators.
+     */
+    async function toggleFavorite(recipeUrl, btnEl) {
+      const isCurrentlyFavorited = isFavorite(recipeUrl);
 
-      // Play the pop animation on just the button that was
-      // clicked - the diff-based re-renders below only touch
-      // whatever actually changed (icon text, tile membership),
-      // so nothing else on screen re-animates.
+      // Play micro-interaction UI button animation instantly
       if (btnEl) {
         btnEl.classList.remove("pop");
-        void btnEl.offsetWidth;
+        void btnEl.offsetWidth; // Force DOM reflow to cleanly restart CSS keyframes
         btnEl.classList.add("pop");
       }
 
-      renderCollections();
-      renderRecipes();
+      if (currentUserUid) {
+        // LIVE CLOUD MODE: Atomically push changes straight to Firestore.
+        // Firestore's local cache handles this instantly, triggering our onSnapshot listener
+        // and updating your UI elements with zero perceptible lag.
+        try {
+          const userDocRef = doc(db, "users", currentUserUid);
+
+          if (isCurrentlyFavorited) {
+            // Live remove element from the cloud array
+            await updateDoc(userDocRef, {
+              favorites: arrayRemove(recipeUrl),
+              lastUpdated: new Date().toISOString()
+            });
+          } else {
+            // Live add element to the cloud array safely without duplicates
+            await updateDoc(userDocRef, {
+              favorites: arrayUnion(recipeUrl),
+              lastUpdated: new Date().toISOString()
+            });
+          }
+        } catch (error) {
+          console.error("Live Firestore update failed:", error);
+        }
+      } else {
+        // LOCAL STORAGE MODE: Strict offline-first processing
+        const favorites = [...getFavorites()];
+        if (isCurrentlyFavorited) {
+          favorites.splice(favorites.indexOf(recipeUrl), 1);
+        } else {
+          favorites.push(recipeUrl);
+        }
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+
+        // Manually trigger re-renders only when signed out
+        renderCollections();
+        renderRecipes();
+      }
+    }
+
+    /**
+     * Global Utility Helpers
+     */
+    function isFavorite(recipeUrl) {
+      return getFavorites().includes(recipeUrl);
+    }
+
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function isPlaceholderImage(src) {
+      return /placeholder/i.test(src) || /no-image/i.test(src);
+    }
+
+    /* ==========================================================================
+       AUTHENTICATION LIFECYCLE & LIVE REAL-TIME FIRESTORE LISTENER
+       ========================================================================== */
+    if (typeof auth !== 'undefined') {
+      auth.onAuthStateChanged(async (user) => {
+        // Clean up any existing listeners to protect against memory leaks and stale data
+        if (unsubscribeCloudListener) {
+          unsubscribeCloudListener();
+          unsubscribeCloudListener = null;
+        }
+
+        if (user) {
+          try {
+            console.log(`Firebase Auth active for UID: ${user.uid}. Fetching custom account mapping...`);
+
+            // 1. Convert raw Firebase UID to your custom 10-digit Account ID
+            const custom10DigitId = await getAccountIdFromUid(user.uid);
+
+            // 2. Lock the custom ID into our active tracking state
+            currentUserUid = custom10DigitId;
+            console.log(`Live Cloud Mode enabled for Firestore document ID: ${currentUserUid}`);
+
+            // 3. Open a live WebSocket snapshot stream pointing to that custom document ID
+            unsubscribeCloudListener = onSnapshot(doc(db, "users", currentUserUid), (docSnap) => {
+              if (docSnap.exists() && Array.isArray(docSnap.data().favorites)) {
+                currentCloudFavorites = docSnap.data().favorites;
+              } else {
+                currentCloudFavorites = [];
+              }
+
+              // Trigger your layout engine instantly whenever local or remote data moves
+              renderCollections();
+              renderRecipes();
+            }, (error) => {
+              console.error("Firestore live listener encountered an error:", error);
+            });
+
+          } catch (err) {
+            console.error("Critical: Failed to map the custom account ID during auth initialization:", err);
+            // Safety Fallback: Force system back into strict local memory if lookups crash
+            currentUserUid = null;
+            currentCloudFavorites = [];
+            renderCollections();
+            renderRecipes();
+          }
+
+        } else {
+          // Clean sign-out teardown
+          currentUserUid = null;
+          currentCloudFavorites = [];
+          console.log("No active session found. App shifted to strict Local Storage Mode.");
+
+          renderCollections();
+          renderRecipes();
+        }
+      });
     }
 
     function resolveRecipeUrl(url) {
@@ -1304,69 +1459,75 @@
     async function fetchRecipeList() {
 
       try {
+        // 1. Fetch from local JSON file
+        const res = await fetch("/json/recipes.json", { cache: "no-store" });
+        const jsonData = await res.json();
+        const localRecipes = jsonData.recipes || [];
 
-        const res =
-          await fetch(
-            "/json/recipes.json",
-            { cache: "no-store" }
-          );
-
-        const data =
-          await res.json();
-
-        const hash =
-          JSON.stringify(
-            data
-          );
-
-        if (
-          hash === lastJSONHash
-        ) {
-          return;
+        // 2. Fetch from Firebase Firestore
+        let firebaseRecipes = [];
+        try {
+          // Import dynamically or ensure it's imported at the top of your script
+          const { getAllRecipesList } = await import("/js/firebase.js");
+          firebaseRecipes = await getAllRecipesList();
+        } catch (fbError) {
+          console.error("Firebase fetch failed, fallback to local only:", fbError);
         }
 
+        // 3. Normalize Firebase schemas to match your JSON structure
+        const normalizedFirebaseRecipes = firebaseRecipes.map(doc => {
+          const rObj = doc.recipeData?.recipe || doc.recipeData || doc;
+
+          // Determine a safe URL fallback string if doc.id is used as a slug
+          const slug = doc.id || rObj.id || "";
+          const simulatedUrl = slug.startsWith("/") ? slug : `/recipe.html?id=${slug}`;
+
+          return {
+            url: doc.url || rObj.url || simulatedUrl,
+            title: doc.name || rObj.title || "Untitled Masterpiece",
+            difficulty: doc.difficulty || rObj.difficulty || "Standard",
+            images: rObj.images || (doc.image ? [doc.image] : []),
+            servings: rObj.servings || "Variable",
+            // Spread any remaining properties to prevent data loss
+            ...doc
+          };
+        });
+
+        // 4. Combine arrays safely
+        const combinedRecipes = [...localRecipes, ...normalizedFirebaseRecipes];
+
+        // 5. Generate unique hash tracking against structural updates
+        const hash = JSON.stringify(combinedRecipes);
+        if (hash === lastJSONHash) {
+          return;
+        }
         lastJSONHash = hash;
 
-        recipesList =
-          data.recipes
-          || [];
+        recipesList = combinedRecipes;
 
-        // Only pull filter/collection values from the URL on
-        // the very first successful load, so we don't stomp
-        // on a user's in-progress search/filter typing.
+        // Only pull filter/collection values from the URL on the first load
         if (!filtersLoadedFromURL) {
           loadFiltersFromURL();
           filtersLoadedFromURL = true;
         }
 
-        // Seed placeholder data for any brand-new recipe so it
-        // shows up immediately; pollRecipePages() fills in its
-        // real content/image on the next per-page poll.
-        recipesList.forEach(
-          r => {
-            if (!(r.url in pageContents)) {
-              pageContents[r.url] = "";
-              pageDifficulties[r.url] = "unknown";
-              pageImages[r.url] = PLACEHOLDER_IMAGE;
-            }
+        // Seed placeholders or parse direct structures so the system renders them immediately
+        recipesList.forEach(r => {
+          if (!(r.url in pageContents)) {
+            pageContents[r.url] = "";
+            pageDifficulties[r.url] = r.difficulty || "unknown";
+            pageImages[r.url] = (r.images && r.images[0]) || PLACEHOLDER_IMAGE;
           }
-        );
+        });
 
-        renderCollections();
-        renderRecipes();
-
-      } catch (err) {
-
-        console.error(
-          err
-        );
-
-        if (!recipesList.length) {
-          collectionsGrid.innerHTML =
-            "<p>Failed to load recipes.</p>";
-        }
+      } catch (error) {
+        console.error("Critical error building comprehensive recipe lists:", error);
       }
+
     }
+
+    renderCollections();
+    renderRecipes();
 
     async function pollRecipePages() {
 
@@ -1387,6 +1548,14 @@
               + ".json",
               { cache: "no-store" }
             );
+          console.log(`Recipe Page Loaded`);
+          console.clear();
+          console.log(`Recipe Page Loaded`);
+          // Guardrail: If the local file doesn't exist on the server (404),
+          // skip it quietly without failing or parsing bad data.
+          if (!res.ok) {
+            continue;
+          }
 
           const data =
             await res.json();
@@ -1490,7 +1659,6 @@
     }
 
     async function startLiveUpdates() {
-
       await fetchRecipeList();
       await pollRecipePages();
 
@@ -1880,11 +2048,9 @@
     startLiveUpdates();
   </script>
 
-  <script src="/js/disable-zoom.js"></script>
-  <script src="/js/Tier.js" defer></script>
-  <script src="/js/Bottom-bar.js"></script>
-  <script src="/js/trust-pilot.js"></script>
-
+  <script type="module" src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/Bottom-bar.js"></script>
+ <!-- <script type="module" src="/js/april-fools.js"></script> -->
 </body>
 
 </html>

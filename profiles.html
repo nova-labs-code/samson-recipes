@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Profiles | Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #080b12;
+            margin: 0;
+            padding: 0;
+            color: #e5e7eb;
+        }
+
+        .directory-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .directory-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .directory-header h1 {
+            font-family: "Comic Sans MS", sans-serif;
+            font-size: 32px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .directory-header p {
+            font-size: 18px;
+            color: #9ca3af;
+            margin: 0;
+        }
+
+        .search-wrapper {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+
+        .directory-search {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            color: white;
+            background: #111827;
+            border: 2px solid #263244;
+            border-radius: 50px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .directory-search::placeholder {
+            color: #6b7280;
+        }
+
+        .directory-search:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+        }
+
+        .directory-section {
+            margin-bottom: 50px;
+        }
+
+        .directory-section h2 {
+            font-size: 22px;
+            color: #ffffff;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .profiles-carousel {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .profiles-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .profile-card {
+            background: #111827;
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            padding: 25px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+
+        .profiles-carousel .profile-card {
+            min-width: 200px;
+            max-width: 200px;
+            flex-shrink: 0;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-4px);
+            border-color: #8b5cf6;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+        }
+
+        .avatar-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 2px solid #374151;
+            display: block;
+        }
+
+        .profile-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .profile-id {
+            font-size: 12px;
+            color: #cbd5e1;
+            background: #1f2937;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .follower-count-badge {
+            font-size: 12px;
+            font-weight: bold;
+            color: #a78bfa;
+            margin-bottom: 8px;
+        }
+
+        .profile-joined {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-top: auto;
+        }
+
+        .center-status {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        .no-results {
+            font-style: italic;
+            color: #64748b;
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+<body>
+
+    <div class="directory-container">
+        <div class="directory-header">
+            <h1>Samson Community Creators</h1>
+            <p>Explore culinary accounts from chefs across our network</p>
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" id="directorySearchInput" class="directory-search"
+                placeholder="Search profiles by Chef Name or Account ID...">
+        </div>
+
+        <div id="directoryStatus" class="center-status">
+            Connecting to cloud profiles live registry...
+        </div>
+
+        <div class="directory-section" id="followingSection" style="display: none;">
+            <h2>People You Follow</h2>
+            <div class="profiles-carousel" id="followingCarousel"></div>
+        </div>
+
+        <div class="directory-section" id="topChefsSection" style="display: none;">
+            <h2>Top Chefs 🔥</h2>
+            <div class="profiles-carousel" id="topChefsCarousel"></div>
+        </div>
+
+        <div class="directory-section" id="exploreSection">
+            <h2 id="exploreTitle">Explore Community Chefs</h2>
+            <div class="profiles-grid" id="exploreGrid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, auth, getAccountIdFromUid } from "/js/firebase.js";
+        import { collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let rawProfiles = [];
+        let cachedProfiles = [];
+        let followingIds = [];
+        let currentUserId = null;
+
+        let unsubUserDoc = null;
+        let unsubDirectory = null;
+
+        function initLiveDirectory() {
+            setupSearchEngine();
+
+            // Real-time listener for all community user profiles
+            const usersCollectionRef = collection(db, "users");
+            unsubDirectory = onSnapshot(usersCollectionRef, (querySnapshot) => {
+                const statusNode = document.getElementById("directoryStatus");
+
+                if (querySnapshot.empty) {
+                    if (statusNode) {
+                        statusNode.className = "center-status no-results";
+                        statusNode.textContent = "No registered user profiles found on this platform network infrastructure.";
+                    }
+                    rawProfiles = [];
+                    updateAndRenderAll();
+                    return;
+                }
+
+                rawProfiles = [];
+                querySnapshot.forEach(docSnap => {
+                    const accountId = docSnap.id;
+                    // Include all profiles, including current logged in user
+                    rawProfiles.push({ accountId, ...docSnap.data() });
+                });
+
+                if (statusNode) {
+                    statusNode.remove();
+                }
+
+                updateAndRenderAll();
+            }, (error) => {
+                console.error("Directory real-time stream error:", error);
+                const statusNode = document.getElementById("directoryStatus");
+                if (statusNode) {
+                    statusNode.textContent = "Error streaming active community profile blocks.";
+                }
+            });
+
+            onAuthStateChanged(auth, async (user) => {
+                if (unsubUserDoc) { unsubUserDoc(); unsubUserDoc = null; }
+
+                if (user) {
+                    try {
+                        currentUserId = await getAccountIdFromUid(user.uid);
+                        if (currentUserId) {
+                            const currentUserRef = doc(db, "users", currentUserId);
+                            unsubUserDoc = onSnapshot(currentUserRef, (docSnap) => {
+                                if (docSnap.exists() && Array.isArray(docSnap.data().following)) {
+                                    followingIds = docSnap.data().following;
+                                } else {
+                                    followingIds = [];
+                                }
+                                updateAndRenderAll();
+                            });
+                        }
+                    } catch (e) {
+                        console.warn("Could not load user tracking reference:", e);
+                    }
+                } else {
+                    currentUserId = null;
+                    followingIds = [];
+                    updateAndRenderAll();
+                }
+            });
+        }
+
+        function updateAndRenderAll() {
+            // Calculate real-time follower counts
+            cachedProfiles = rawProfiles.map(targetProfile => {
+                let followerCount = 0;
+                if (Array.isArray(targetProfile.followers)) {
+                    followerCount = targetProfile.followers.length;
+                } else {
+                    followerCount = rawProfiles.reduce((acc, currentSearchUser) => {
+                        if (currentSearchUser.following && currentSearchUser.following.includes(targetProfile.accountId)) {
+                            return acc + 1;
+                        }
+                        return acc;
+                    }, 0);
+                }
+
+                return { ...targetProfile, followerCount };
+            });
+
+            const searchInput = document.getElementById("directorySearchInput");
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+            const filtered = cachedProfiles.filter(p =>
+                (p.name && p.name.toLowerCase().includes(query)) ||
+                (p.accountId && p.accountId.toLowerCase().includes(query))
+            );
+
+            processAndRender(filtered);
+        }
+
+        function processAndRender(profilesArray) {
+            const followingSection = document.getElementById("followingSection");
+            const topChefsSection = document.getElementById("topChefsSection");
+            const exploreSection = document.getElementById("exploreSection");
+            const exploreTitle = document.getElementById("exploreTitle");
+
+            // Display ALL profiles (including the signed-in user)
+            const displayableProfiles = profilesArray;
+
+            // 1. People You Follow
+            const followingArray = displayableProfiles.filter(p => followingIds.includes(p.accountId));
+
+            // 2. Top Chefs
+            const topChefsArray = [...displayableProfiles]
+                .filter(p => p.followerCount > 0)
+                .sort((a, b) => b.followerCount - a.followerCount)
+                .slice(0, 20);
+
+            // 3. Explore Section
+            const exploreArray = displayableProfiles;
+
+            if (followingArray.length > 0) {
+                followingSection.style.display = "block";
+                renderContainer(followingArray, document.getElementById("followingCarousel"));
+            } else {
+                followingSection.style.display = "none";
+            }
+
+            if (topChefsArray.length > 0) {
+                topChefsSection.style.display = "block";
+                renderContainer(topChefsArray, document.getElementById("topChefsCarousel"));
+            } else {
+                topChefsSection.style.display = "none";
+            }
+
+            if (exploreArray.length > 0) {
+                exploreSection.style.display = "block";
+                renderContainer(exploreArray, document.getElementById("exploreGrid"));
+                exploreTitle.textContent = "Explore Community Chefs";
+            } else {
+                exploreSection.style.display = "block";
+                const grid = document.getElementById("exploreGrid");
+                grid.innerHTML = '<div class="center-status no-results">No active chefs matched your parameters.</div>';
+            }
+        }
+
+        async function renderContainer(profiles, targetElement) {
+            targetElement.innerHTML = "";
+
+            if (profiles.length === 0) {
+                targetElement.innerHTML = '<div class="center-status no-results">No profiles found.</div>';
+                return;
+            }
+
+            for (const profile of profiles) {
+                const name = profile.name || "Anonymous Chef";
+                const id = profile.accountId || "--------";
+                const formattedDate = profile.createdAt
+                    ? new Date(profile.createdAt).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric"
+                    })
+                    : "Member";
+
+                const avatar = await createAvatarImage(name);
+                const cardNode = document.createElement("a");
+                cardNode.className = "profile-card";
+                cardNode.href = `profile.html?${id}`;
+
+                const followersMarkup = `<div class="follower-count-badge">👥 ${profile.followerCount} ${profile.followerCount === 1 ? 'follower' : 'followers'}</div>`;
+
+                cardNode.innerHTML = `
+                    <img class="avatar-thumb" src="${avatar}" alt="${name}'s avatar">
+                    <h3>${name}</h3>
+                    <div class="profile-id">ID: ${id}</div>
+                    ${followersMarkup}
+                    <div class="profile-joined">Joined ${formattedDate}</div>
+                `;
+                targetElement.appendChild(cardNode);
+            }
+        }
+
+        function getInitials(name) {
+            if (!name) return "SR";
+            return name.trim().split(/\s+/).map(word => word[0]).join("").substring(0, 1).toUpperCase();
+        }
+
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `hsl(${hue}, 65%, 45%)`;
+        }
+
+        function createAvatarImage(name) {
+            return new Promise((resolve) => {
+                const initials = getInitials(name);
+                const color = stringToColor(name);
+                const canvas = document.createElement("canvas");
+                canvas.width = 200;
+                canvas.height = 200;
+                const ctx = canvas.getContext("2d");
+
+                ctx.beginPath();
+                ctx.arc(100, 100, 100, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+                ctx.font = "900 120px system-ui, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(initials, 100, 108);
+
+                resolve(canvas.toDataURL("image/png"));
+            });
+        }
+
+        function setupSearchEngine() {
+            document.getElementById("directorySearchInput").addEventListener("input", () => {
+                updateAndRenderAll();
+            });
+        }
+
+        initLiveDirectory();
+    </script>
+</body>
+<script type="module" src="/js/disable-zoom.js"></script>
+</html>

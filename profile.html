@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #0b0f14;
+            color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #141b23;
+            border: 1px solid #253140;
+            border-radius: 16px;
+        }
+
+        .profile-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            transition: transform .2s ease;
+            user-select: none;
+            border: 2px solid #e9d5ff;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-info h1 {
+            margin: 0 0 6px;
+            color: #fff;
+            font-size: 28px;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #9caec2;
+            font-size: 16px;
+        }
+
+        .meta-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(59, 130, 246, .15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, .35);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .follower-badge {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+        }
+
+        /* Customizable Dynamic Custom Badge Base styles */
+        .custom-badge {
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 5px 12px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Show All Badges Trigger Button */
+        .btn-show-all-badges {
+            background: #253140;
+            color: #f5f7fa;
+            border: 1px solid #3f5166;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-show-all-badges:hover {
+            background: #3f5166;
+        }
+
+        /* Modal overlay framework */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #141b23;
+            border: 1px solid #253140;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(10px);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #253140;
+            padding-bottom: 12px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #9caec2;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .modal-badges-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .profile-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-follow,
+        .btn-dm {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-follow {
+            background: #e67e22;
+        }
+
+        .btn-follow:hover {
+            background: #d35400;
+        }
+
+        .btn-follow.active-following {
+            background: #2d3b4c;
+            color: #9caec2;
+            border: 1px solid #3f5166;
+        }
+
+        .btn-follow.active-following:hover {
+            background: #c0392b;
+            color: white;
+            border-color: #962d22;
+        }
+
+        .btn-dm {
+            background: #2563eb;
+        }
+
+        .btn-dm:hover {
+            background: #1d4ed8;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .recipe-count {
+            background: #18212b;
+            border: 1px solid #253140;
+            color: #9caec2;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .recipe-card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            background: #141b23;
+            border: 1px solid #253140;
+            border-radius: 14px;
+            transition: .2s;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+        }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #1a2430;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 18px;
+        }
+
+        .card-body h3 {
+            margin: 0 0 8px;
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            margin-bottom: 14px;
+            color: #8ea0b3;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .pill {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .pill-cat {
+            background: rgba(59, 130, 246, .18);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, .35);
+        }
+
+        .pill-tag {
+            background: rgba(34, 197, 94, .18);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, .35);
+        }
+
+        .loading-state,
+        .error-state {
+            padding: 80px 20px;
+            text-align: center;
+            color: #9caec2;
+            font-size: 18px;
+        }
+
+        .error-state h2 {
+            margin-top: 0;
+            color: #ef4444;
+        }
+
+        .btn-home {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 22px;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-home:hover {
+            background: #3b82f6;
+        }
+
+        a {
+            color: #60a5fa;
+        }
+
+        a:hover {
+            color: #93c5fd;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0b0f14;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d3b4c;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #425468;
+        }
+
+        @media (max-width: 700px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-left {
+                flex-direction: column;
+            }
+
+            .profile-info {
+                width: 100%;
+            }
+
+            .btn-follow,
+            .btn-dm {
+                width: 100%;
+            }
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+<body>
+
+    <div class="profile-container">
+        <div id="profileStatus" class="loading-state">
+            Gathering profile registry information and building recipe indices...
+        </div>
+
+        <div id="profileContent" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-left">
+                    <img class="avatar" id="userAvatar" alt="Profile Avatar">
+                    <div class="profile-info">
+                        <h1 id="userName">Loading Chef Profile</h1>
+                        <p id="userMeta">Account Member</p>
+                        <div class="meta-container" id="metaContainer">
+                            <div class="meta-badge" id="accountIdBadge">ID: --------</div>
+                            <div class="meta-badge follower-badge" id="followerCountBadge">0 Followers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-right">
+                    <button id="followActionBtn" class="btn-follow" style="display: none;">Follow Chef</button>
+                    <button id="dmActionBtn" class="btn-dm" style="display: none;">Message Chef</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Creations</span>
+                <span class="recipe-count" id="recipeCount">0</span>
+            </div>
+
+            <div class="recipe-grid" id="userRecipeGrid"></div>
+        </div>
+    </div>
+
+    <div id="badgesModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Earned Badges</h2>
+                <button class="modal-close" id="closeBadgesModal">&times;</button>
+            </div>
+            <div class="modal-badges-grid" id="modalBadgesGrid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, auth, getAccountIdFromUid } from "/js/firebase.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, updateDoc, arrayUnion, arrayRemove, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURABLE ACCOUNT BADGES REGISTRY
+        let accountBadges = {};
+
+        fetch("/json/accountBadges.json")
+            .then(response => response.json())
+            .then(data => {
+                accountBadges = data;
+                console.log("Badges loaded:", accountBadges);
+            })
+            .catch(error => {
+                console.error("Failed to load badges:", error);
+            });
+
+        let loggedInAccountId = null;
+        let targetAccountId = "";
+        const DEFAULT_PROFILE_ID = "1";
+
+        let unsubscribeUser = null;
+        let unsubscribeFollowers = null;
+        let unsubscribeRecipes = null;
+        let unsubscribeMyDoc = null;
+
+        function initializeProfilePage() {
+            const modal = document.getElementById("badgesModal");
+            document.getElementById("closeBadgesModal").onclick = () => modal.classList.remove("active");
+            window.onclick = (e) => { if (e.target === modal) modal.classList.remove("active"); };
+
+            onAuthStateChanged(auth, async (user) => {
+                targetAccountId = window.location.search.replace("?", "").trim();
+
+                if (user) {
+                    try {
+                        loggedInAccountId = await getAccountIdFromUid(user.uid);
+                        if (!targetAccountId && loggedInAccountId) {
+                            window.location.replace(`profile.html?${loggedInAccountId}`);
+                            return;
+                        }
+                    } catch (err) {
+                        console.error("Failed to map OAuth credentials:", err);
+                    }
+                }
+
+                if (!targetAccountId) {
+                    window.location.replace(`profile.html?${DEFAULT_PROFILE_ID}`);
+                    return;
+                }
+
+                // Clean up any existing listeners if state changes
+                if (unsubscribeUser) unsubscribeUser();
+                if (unsubscribeFollowers) unsubscribeFollowers();
+                if (unsubscribeRecipes) unsubscribeRecipes();
+                if (unsubscribeMyDoc) unsubscribeMyDoc();
+
+                // Live Listener for target user profile document
+                unsubscribeUser = onSnapshot(doc(db, "users", targetAccountId), (userDocSnap) => {
+                    if (!userDocSnap.exists()) {
+                        window.location.replace(`profile.html?${DEFAULT_PROFILE_ID}`);
+                        return;
+                    }
+
+                    renderProfileHeader(targetAccountId, userDocSnap.data());
+                    document.getElementById("profileStatus").style.display = "none";
+                    document.getElementById("profileContent").style.display = "block";
+                }, (error) => {
+                    console.error("Live User Sync Error:", error);
+                    renderError("System Retrieval Fault", "A structural exception interrupted your database communication tick.");
+                });
+
+                // Live Listeners for recipes, followers, and DMs
+                listenUserRecipesLive(targetAccountId);
+                listenFollowSystemLive();
+                setupDirectMessageSystem();
+            });
+        }
+
+        function setupDirectMessageSystem() {
+            const dmBtn = document.getElementById("dmActionBtn");
+            if (!dmBtn) return;
+
+            if (!loggedInAccountId || loggedInAccountId === targetAccountId) {
+                dmBtn.style.display = "none";
+                return;
+            }
+
+            dmBtn.style.display = "inline-block";
+            dmBtn.onclick = () => {
+                window.location.href = `/chat.html?Open-DM=${targetAccountId}`;
+            };
+        }
+
+        function listenFollowSystemLive() {
+            const followBtn = document.getElementById("followActionBtn");
+
+            // Live listener for target user's follower count
+            const followersQuery = query(collection(db, "users"), where("following", "array-contains", targetAccountId));
+            unsubscribeFollowers = onSnapshot(followersQuery, (followersSnapshot) => {
+                const totalFollowers = followersSnapshot.size;
+                document.getElementById("followerCountBadge").textContent = `${totalFollowers} Follower${totalFollowers === 1 ? '' : 's'}`;
+            }, (err) => console.error("Live Follower Count Error:", err));
+
+            if (!loggedInAccountId || loggedInAccountId === targetAccountId) {
+                followBtn.style.display = "none";
+                return;
+            }
+
+            followBtn.style.display = "inline-block";
+            const myDocRef = doc(db, "users", loggedInAccountId);
+
+            // Live listener for logged-in user's relationship state
+            unsubscribeMyDoc = onSnapshot(myDocRef, (myDocSnap) => {
+                const myData = myDocSnap.exists() ? myDocSnap.data() : {};
+                const isFollowing = myData.following && myData.following.includes(targetAccountId);
+
+                if (isFollowing) {
+                    followBtn.textContent = "Unfollow";
+                    followBtn.className = "btn-follow active-following";
+                } else {
+                    followBtn.textContent = "Follow Chef";
+                    followBtn.className = "btn-follow";
+                }
+
+                followBtn.onclick = async () => {
+                    followBtn.disabled = true;
+                    try {
+                        if (isFollowing) {
+                            await updateDoc(myDocRef, {
+                                following: arrayRemove(targetAccountId)
+                            });
+                        } else {
+                            await updateDoc(myDocRef, {
+                                following: arrayUnion(targetAccountId)
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Error managing relationship node:", err);
+                    } finally {
+                        followBtn.disabled = false;
+                    }
+                };
+            }, (err) => console.error("Live Follow State Sync Error:", err));
+        }
+
+        function getInitials(name) {
+            if (!name) return "SR";
+            return name
+                .trim()
+                .split(/\s+/)
+                .map(word => word[0])
+                .join("")
+                .substring(0, 1)
+                .toUpperCase();
+        }
+
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `hsl(${hue}, 65%, 45%)`;
+        }
+
+        function createAvatarImage(name) {
+            return new Promise((resolve) => {
+                const initials = getInitials(name);
+                const color = stringToColor(name);
+
+                const canvas = document.createElement("canvas");
+                canvas.width = 200;
+                canvas.height = 200;
+                const ctx = canvas.getContext("2d");
+
+                ctx.beginPath();
+                ctx.arc(100, 100, 100, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+                ctx.font = "900 120px system-ui, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(initials, 100, 108);
+
+                resolve(canvas.toDataURL("image/png"));
+            });
+        }
+
+        function createBadgeDOMElement(badgeData, index) {
+            const badgeElement = document.createElement("div");
+            badgeElement.className = "custom-badge";
+            badgeElement.textContent = badgeData.text;
+            badgeElement.style.backgroundColor = badgeData.bg;
+            badgeElement.style.color = badgeData.color;
+            badgeElement.style.border = badgeData.border;
+            return badgeElement;
+        }
+
+        function renderProfileHeader(accountId, user) {
+            const name = user.name || "Anonymous Chef";
+            document.title = `${name} | Samson Recipes`;
+            document.getElementById("userName").textContent = name;
+
+            const avatar = document.getElementById("userAvatar");
+            createAvatarImage(name).then(image => {
+                avatar.src = image;
+            });
+
+            document.getElementById("accountIdBadge").textContent = `ID: ${accountId}`;
+
+            document.querySelectorAll(".custom-badge, .btn-show-all-badges").forEach(el => el.remove());
+
+            if (accountBadges[accountId]) {
+                const metaContainer = document.getElementById("metaContainer");
+                const badgesList = accountBadges[accountId];
+
+                if (badgesList.length > 4) {
+                    badgesList.slice(0, 4).forEach((badgeData, index) => {
+                        const badgeElement = createBadgeDOMElement(badgeData, index);
+                        metaContainer.appendChild(badgeElement);
+                    });
+
+                    const showAllBtn = document.createElement("button");
+                    showAllBtn.className = "btn-show-all-badges";
+                    showAllBtn.textContent = `+${badgesList.length - 4} More`;
+
+                    showAllBtn.onclick = () => {
+                        const modalGrid = document.getElementById("modalBadgesGrid");
+                        modalGrid.innerHTML = "";
+
+                        badgesList.forEach((badgeData, index) => {
+                            const badgeElement = createBadgeDOMElement(badgeData, index);
+                            modalGrid.appendChild(badgeElement);
+                        });
+
+                        document.getElementById("badgesModal").classList.add("active");
+                    };
+
+                    metaContainer.appendChild(showAllBtn);
+                } else {
+                    badgesList.forEach((badgeData, index) => {
+                        const badgeElement = createBadgeDOMElement(badgeData, index);
+                        metaContainer.appendChild(badgeElement);
+                    });
+                }
+            }
+
+            if (user.createdAt) {
+                document.getElementById("userMeta").textContent =
+                    `Platform contributor since ${new Date(user.createdAt).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric"
+                    })}`;
+            }
+        }
+
+        // Live listener for recipe grid updates
+        function listenUserRecipesLive(accountId) {
+            const grid = document.getElementById("userRecipeGrid");
+            const q = query(collection(db, "recipes"), where("ownerId", "==", accountId));
+
+            unsubscribeRecipes = onSnapshot(q, (querySnapshot) => {
+                grid.innerHTML = "";
+                document.getElementById("recipeCount").textContent = querySnapshot.size.toString();
+
+                if (querySnapshot.empty) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #777; font-style: italic; padding: 40px 0;">This chef has no published creations.</div>`;
+                    return;
+                }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const rObj = data.recipeData?.recipe || data.recipeData || {};
+                    const title = data.name || rObj.title || "Untitled Masterpiece";
+                    const imageSrc = data.image || (rObj.images && rObj.images[0]) || "/Images/no-image.png";
+
+                    let pillsHTML = "";
+                    if (data.categories) data.categories.slice(0, 2).forEach(c => pillsHTML += `<span class="pill pill-cat">${c}</span>`);
+                    if (data.tags) data.tags.slice(0, 3).forEach(t => pillsHTML += `<span class="pill pill-tag">${t}</span>`);
+
+                    const card = document.createElement("a");
+                    card.className = "recipe-card";
+                    card.href = `/Recipes/?Recipe=${encodeURIComponent(docSnap.id)}`;
+                    card.innerHTML = `
+                        <img class="card-img" src="${imageSrc}" alt="${title}" onerror="this.src='/Images/no-image.png';">
+                        <div class="card-body">
+                            <h3>${title}</h3>
+                            <div class="card-meta">${data.difficulty || rObj.difficulty || "Standard"} &bull; ${rObj.servings || "Variable"} Servings</div>
+                            <div class="pill-container">${pillsHTML}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }, (err) => console.error("Live Recipes Sync Error:", err));
+        }
+
+        function renderError(title, msg) {
+            const statusNode = document.getElementById("profileStatus");
+            statusNode.className = "error-state";
+            statusNode.innerHTML = `<h2>${title}</h2><p>${msg}</p><a href="index.html" class="btn-home">Return To Main Navigation Deck</a>`;
+        }
+
+        initializeProfilePage();
+    </script>
+
+    <script type="module" src="/js/disable-zoom.js"></script>
+    <script type="module" src="/js/Bottom-bar.js"></script>
+</body>
+
+</html>

@@ -1,360 +1,469 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile IDE with Folders</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-html, body {
-  margin:0; padding:0; height:100%; font-family:'Segoe UI',sans-serif; background:#1e1e1e; color:#fff;
-  display:flex; flex-direction:column; font-size:16px;
-}
-header {
-  background:#2b2b2b; padding:10px; display:flex; flex-direction:column; z-index:10;
-}
-header h1 { margin:0; font-size:20px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile IDE with Folders</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      font-size: 16px;
+    }
 
-/* Top controls */
-#fileControls { display:flex; flex-wrap:wrap; margin-top:5px; }
-#fileControls button {
-  flex:1 1 28%; min-height:50px; font-size:18px; margin:5px 5px 5px 0;
-  border:none; border-radius:8px; background:#444; color:#fff; cursor:pointer; transition: background 0.2s;
-}
-#fileControls button:active, #fileControls button:hover { background:#666; }
+    header {
+      background: #2b2b2b;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
 
-/* File manager */
-#fileList {
-  display:block;               
-  flex:1;                      
-  overflow-y:auto;             
-  margin-top:5px;
-  padding-right:5px;
-}
-.folder, .file {
-  padding:10px 15px; margin-right:5px; border-radius:6px; cursor:pointer; user-select:none;
-}
-.folder { background:#333; font-weight:bold; }
-.file { background:#444; }
-.folder.active { background:#777; }
-.file.active { background:#777; }
-.folder-contents { display:none; margin-left:20px; }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
 
-/* Editor container */
-#editorContainer {
-  flex:1; display:flex; flex-direction:column; margin-top:10px;
-  touch-action: pan-x pan-y; -webkit-user-select: text; -webkit-touch-callout: default;
-  overflow-y:auto; -webkit-overflow-scrolling: touch;
-}
-#editor {
-  flex:1; min-height:200px; border-radius:6px; overflow:hidden;
-  -webkit-user-select: text !important; user-select: text !important;
-}
+    /* Top controls */
+    #fileControls {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
 
-/* Bottom controls */
-#editorContainer button {
-  width: calc(100% - 20px);
-  margin: 5px 10px;
-  padding: 12px 0;
-  font-size: 18px;
-  border-radius: 8px;
-  background: #555;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-}
-#editorContainer button:active, #editorContainer button:hover { background: #777; }
+    #fileControls button {
+      flex: 1 1 28%;
+      min-height: 50px;
+      font-size: 18px;
+      margin: 5px 5px 5px 0;
+      border: none;
+      border-radius: 8px;
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-/* Full-screen preview overlay */
-#previewOverlay {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  background:#fff; display:none; z-index:999; flex-direction:column;
-}
-#previewOverlay iframe { flex:1; width:100%; border:none; }
-#previewOverlay button.closePreview {
-  position:absolute; top:10px; right:10px; z-index:1000;
-  background:#444; color:#fff; border:none; border-radius:50%; font-size:20px; width:40px; height:40px; cursor:pointer;
-}
+    #fileControls button:active,
+    #fileControls button:hover {
+      background: #666;
+    }
 
-/* Scrollbars */
-#fileList::-webkit-scrollbar { width:6px; }
-#fileList::-webkit-scrollbar-thumb { background:#555; border-radius:3px; }
+    /* File manager */
+    #fileList {
+      display: block;
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 5px;
+      padding-right: 5px;
+    }
 
-/* Monaco context menu visible on mobile */
-.monaco-menu {
-  background: #222 !important;
-  color: #fff !important;
-  border-radius: 8px !important;
-  font-size: 18px !important;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
-}
+    .folder,
+    .file {
+      padding: 10px 15px;
+      margin-right: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
 
-/* Language display */
-#topLanguage, #bottomLanguage { font-weight:bold; }
-</style>
+    .folder {
+      background: #333;
+      font-weight: bold;
+    }
+
+    .file {
+      background: #444;
+    }
+
+    .folder.active {
+      background: #777;
+    }
+
+    .file.active {
+      background: #777;
+    }
+
+    .folder-contents {
+      display: none;
+      margin-left: 20px;
+    }
+
+    /* Editor container */
+    #editorContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      touch-action: pan-x pan-y;
+      -webkit-user-select: text;
+      -webkit-touch-callout: default;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #editor {
+      flex: 1;
+      min-height: 200px;
+      border-radius: 6px;
+      overflow: hidden;
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+
+    /* Bottom controls */
+    #editorContainer button {
+      width: calc(100% - 20px);
+      margin: 5px 10px;
+      padding: 12px 0;
+      font-size: 18px;
+      border-radius: 8px;
+      background: #555;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #editorContainer button:active,
+    #editorContainer button:hover {
+      background: #777;
+    }
+
+    /* Full-screen preview overlay */
+    #previewOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: none;
+      z-index: 999;
+      flex-direction: column;
+    }
+
+    #previewOverlay iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+
+    #previewOverlay button.closePreview {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    /* Scrollbars */
+    #fileList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #fileList::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+    }
+
+    /* Monaco context menu visible on mobile */
+    .monaco-menu {
+      background: #222 !important;
+      color: #fff !important;
+      border-radius: 8px !important;
+      font-size: 18px !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Language display */
+    #topLanguage,
+    #bottomLanguage {
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <h1>Mobile IDE</h1>
-  <div id="fileControls">
-    <button id="newBtn"><i class="fa fa-plus"></i> New File</button>
-    <button id="newFolderBtn"><i class="fa fa-folder-plus"></i> New Folder</button>
-    <button id="saveBtn"><i class="fa fa-save"></i> Save</button>
-    <button id="deleteBtn"><i class="fa fa-trash"></i> Delete</button>
-    <button id="exportBtn"><i class="fa fa-download"></i> Export</button>
-    <button id="selectAllBtn"><i class="fa fa-check-double"></i> Select All</button>
+  <header>
+    <h1>Mobile IDE</h1>
+    <div id="fileControls">
+      <button id="newBtn"><i class="fa fa-plus"></i> New File</button>
+      <button id="newFolderBtn"><i class="fa fa-folder-plus"></i> New Folder</button>
+      <button id="saveBtn"><i class="fa fa-save"></i> Save</button>
+      <button id="deleteBtn"><i class="fa fa-trash"></i> Delete</button>
+      <button id="exportBtn"><i class="fa fa-download"></i> Export</button>
+      <button id="selectAllBtn"><i class="fa fa-check-double"></i> Select All</button>
+    </div>
+    <div style="margin-top:5px; font-size:14px; color:#ccc;">
+      Language: <span id="topLanguage">JavaScript</span>
+    </div>
+    <div id="fileList"></div>
+  </header>
+
+  <div id="editorContainer">
+    <div id="editor"></div>
+    <div style="text-align:right; font-size:14px; color:#ccc; margin:5px 10px;">
+      Language: <span id="bottomLanguage">JavaScript</span>
+    </div>
+    <button id="previewToggle">Show Preview</button>
   </div>
-  <div style="margin-top:5px; font-size:14px; color:#ccc;">
-    Language: <span id="topLanguage">JavaScript</span>
+
+  <div id="previewOverlay">
+    <button class="closePreview" onclick="closePreview()"><i class="fa fa-times"></i></button>
+    <iframe id="previewFrame"></iframe>
   </div>
-  <div id="fileList"></div>
-</header>
 
-<div id="editorContainer">
-  <div id="editor"></div>
-  <div style="text-align:right; font-size:14px; color:#ccc; margin:5px 10px;">
-    Language: <span id="bottomLanguage">JavaScript</span>
-  </div>
-  <button id="previewToggle">Show Preview</button>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.11.0/jszip.min.js"></script>
+  <script>
+    let files = JSON.parse(localStorage.getItem('ideFiles') || '{"js":{},"css":{},"index.html":""}');
+    let currentFile = null;
+    let editor;
 
-<div id="previewOverlay">
-  <button class="closePreview" onclick="closePreview()"><i class="fa fa-times"></i></button>
-  <iframe id="previewFrame"></iframe>
-</div>
+    // Flatten files for export
+    function flattenFiles(obj, prefix = '') {
+      let result = [];
+      for (let key in obj) {
+        if (typeof obj[key] === 'string') result.push(prefix + key);
+        else result = result.concat(flattenFiles(obj[key], prefix + key + '/'));
+      }
+      return result;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.11.0/jszip.min.js"></script>
-<script>
-let files = JSON.parse(localStorage.getItem('ideFiles') || '{"js":{},"css":{},"index.html":""}');
-let currentFile = null;
-let editor;
+    // Language detection
+    function updateLanguageDisplay(lang) {
+      document.getElementById('topLanguage').textContent = lang;
+      document.getElementById('bottomLanguage').textContent = lang;
+    }
+    function detectLanguage(filename) {
+      let lang = 'javascript';
+      if (filename.endsWith('.js')) lang = 'javascript';
+      else if (filename.endsWith('.html')) lang = 'html';
+      else if (filename.endsWith('.css')) lang = 'css';
+      updateLanguageDisplay(lang);
+      return lang;
+    }
 
-// Flatten files for export
-function flattenFiles(obj, prefix=''){
-  let result = [];
-  for(let key in obj){
-    if(typeof obj[key]==='string') result.push(prefix+key);
-    else result = result.concat(flattenFiles(obj[key], prefix+key+'/'));
-  }
-  return result;
-}
+    // Nested file get/set
+    function getFileContent(path) {
+      const parts = path.split('/');
+      let current = files;
+      for (let p of parts) current = current[p];
+      return current;
+    }
+    function setFileContent(path, value) {
+      const parts = path.split('/');
+      let current = files;
+      for (let i = 0; i < parts.length - 1; i++) current = current[parts[i]];
+      current[parts[parts.length - 1]] = value;
+    }
 
-// Language detection
-function updateLanguageDisplay(lang){
-  document.getElementById('topLanguage').textContent = lang;
-  document.getElementById('bottomLanguage').textContent = lang;
-}
-function detectLanguage(filename){
-  let lang='javascript';
-  if(filename.endsWith('.js')) lang='javascript';
-  else if(filename.endsWith('.html')) lang='html';
-  else if(filename.endsWith('.css')) lang='css';
-  updateLanguageDisplay(lang);
-  return lang;
-}
+    // Delete file or folder by path
+    function deletePath(path) {
+      const parts = path.split('/');
+      let parent = files;
+      for (let i = 0; i < parts.length - 1; i++) parent = parent[parts[i]];
+      const keyToDelete = parts[parts.length - 1];
+      if (confirm('Delete "' + path + '"? This cannot be undone.')) {
+        delete parent[keyToDelete];
+        const flat = flattenFiles(files);
+        currentFile = flat[0] || null;
+        if (currentFile) editor.setValue(getFileContent(currentFile));
+        else editor.setValue('');
+        renderFileManager(document.getElementById('fileList'), files);
+        localStorage.setItem('ideFiles', JSON.stringify(files));
+      }
+    }
 
-// Nested file get/set
-function getFileContent(path){
-  const parts = path.split('/');
-  let current = files;
-  for(let p of parts) current = current[p];
-  return current;
-}
-function setFileContent(path, value){
-  const parts = path.split('/');
-  let current = files;
-  for(let i=0;i<parts.length-1;i++) current=current[parts[i]];
-  current[parts[parts.length-1]]=value;
-}
+    // Render file manager with safe long-press
+    function renderFileManager(container, obj, prefix = '') {
+      container.innerHTML = '';
+      for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+          const fileBtn = document.createElement('div');
+          fileBtn.textContent = '📄 ' + key;
+          fileBtn.className = 'file' + (currentFile === prefix + key ? ' active' : '');
+          fileBtn.onclick = () => loadFile(prefix + key);
+          attachLongPress(fileBtn, prefix + key);
+          container.appendChild(fileBtn);
+        } else {
+          const folderBtn = document.createElement('div');
+          folderBtn.textContent = '📁 ' + key;
+          folderBtn.className = 'folder' + (currentFile && currentFile.startsWith(prefix + key) ? ' active' : '');
 
-// Delete file or folder by path
-function deletePath(path){
-  const parts = path.split('/');
-  let parent = files;
-  for (let i = 0; i < parts.length - 1; i++) parent = parent[parts[i]];
-  const keyToDelete = parts[parts.length - 1];
-  if (confirm('Delete "' + path + '"? This cannot be undone.')) {
-    delete parent[keyToDelete];
-    const flat = flattenFiles(files);
-    currentFile = flat[0] || null;
-    if(currentFile) editor.setValue(getFileContent(currentFile));
-    else editor.setValue('');
-    renderFileManager(document.getElementById('fileList'), files);
-    localStorage.setItem('ideFiles', JSON.stringify(files));
-  }
-}
+          const contents = document.createElement('div');
+          contents.className = 'folder-contents';
+          renderFileManager(contents, obj[key], prefix + key + '/');
 
-// Render file manager with safe long-press
-function renderFileManager(container, obj, prefix='') {
-  container.innerHTML = '';
-  for (let key in obj) {
-    if (typeof obj[key] === 'string') {
-      const fileBtn = document.createElement('div');
-      fileBtn.textContent = '📄 ' + key;
-      fileBtn.className = 'file' + (currentFile === prefix + key ? ' active' : '');
-      fileBtn.onclick = () => loadFile(prefix + key);
-      attachLongPress(fileBtn, prefix + key);
-      container.appendChild(fileBtn);
-    } else {
-      const folderBtn = document.createElement('div');
-      folderBtn.textContent = '📁 ' + key;
-      folderBtn.className = 'folder' + (currentFile && currentFile.startsWith(prefix+key) ? ' active' : '');
+          folderBtn.onclick = (e) => {
+            e.stopPropagation();
+            const isActive = folderBtn.classList.toggle('active');
+            contents.style.display = isActive ? 'block' : 'none';
+          };
 
-      const contents = document.createElement('div');
-      contents.className = 'folder-contents';
-      renderFileManager(contents, obj[key], prefix + key + '/');
+          attachLongPress(folderBtn, prefix + key);
 
-      folderBtn.onclick = (e) => {
-        e.stopPropagation();
-        const isActive = folderBtn.classList.toggle('active');
-        contents.style.display = isActive ? 'block' : 'none';
+          container.appendChild(folderBtn);
+          container.appendChild(contents);
+        }
+      }
+    }
+
+    // Attach long-press (scroll-safe)
+    function attachLongPress(element, path) {
+      let timer = null;
+      let isLongPress = false;
+      const duration = 700; // ms
+
+      const start = () => {
+        isLongPress = false;
+        timer = setTimeout(() => {
+          isLongPress = true;
+          deletePath(path);
+        }, duration);
       };
+      const cancel = () => { if (timer) clearTimeout(timer); };
 
-      attachLongPress(folderBtn, prefix + key);
-
-      container.appendChild(folderBtn);
-      container.appendChild(contents);
+      element.addEventListener('mousedown', start);
+      element.addEventListener('touchstart', start);
+      element.addEventListener('mouseup', cancel);
+      element.addEventListener('mouseleave', cancel);
+      element.addEventListener('touchend', (e) => {
+        cancel();
+        if (isLongPress) e.preventDefault(); // prevent tap only if delete happened
+      });
+      element.addEventListener('touchcancel', cancel);
     }
-  }
-}
 
-// Attach long-press (scroll-safe)
-function attachLongPress(element, path){
-  let timer = null;
-  let isLongPress = false;
-  const duration = 700; // ms
-
-  const start = () => {
-    isLongPress = false;
-    timer = setTimeout(()=>{
-      isLongPress = true;
-      deletePath(path);
-    }, duration);
-  };
-  const cancel = () => { if(timer) clearTimeout(timer); };
-
-  element.addEventListener('mousedown', start);
-  element.addEventListener('touchstart', start);
-  element.addEventListener('mouseup', cancel);
-  element.addEventListener('mouseleave', cancel);
-  element.addEventListener('touchend', (e)=>{
-    cancel();
-    if(isLongPress) e.preventDefault(); // prevent tap only if delete happened
-  });
-  element.addEventListener('touchcancel', cancel);
-}
-
-// Load file
-function loadFile(path){
-  currentFile=path;
-  const content = getFileContent(path);
-  if(typeof content === 'string') editor.setValue(content);
-  else editor.setValue('');
-  if(typeof content === 'string') monaco.editor.setModelLanguage(editor.getModel(), detectLanguage(path));
-  renderFileManager(document.getElementById('fileList'), files);
-  window.location.hash = encodeURIComponent(currentFile);
-}
-
-// New file
-function newFile(){
-  const folderPath = prompt('Enter folder path or leave blank for top-level:', '');
-  const name = prompt('File name:', 'file'+(flattenFiles(files).length+1)+'.js');
-  if(!name) return;
-  let target = files;
-  if(folderPath){
-    const parts = folderPath.split('/');
-    for(let p of parts){
-      if(!target[p]) target[p]={};
-      target = target[p];
+    // Load file
+    function loadFile(path) {
+      currentFile = path;
+      const content = getFileContent(path);
+      if (typeof content === 'string') editor.setValue(content);
+      else editor.setValue('');
+      if (typeof content === 'string') monaco.editor.setModelLanguage(editor.getModel(), detectLanguage(path));
+      renderFileManager(document.getElementById('fileList'), files);
+      window.location.hash = encodeURIComponent(currentFile);
     }
-  }
-  target[name]='';
-  loadFile((folderPath?folderPath+'/':'')+name);
-}
 
-// New folder
-function newFolder(){
-  const folderPath = prompt('Folder name (use / for nested):','newFolder');
-  if(!folderPath) return;
-  const parts = folderPath.split('/');
-  let target = files;
-  for(let p of parts){
-    if(!target[p]) target[p]={};
-    target = target[p];
-  }
-  renderFileManager(document.getElementById('fileList'), files);
-  localStorage.setItem('ideFiles', JSON.stringify(files));
-}
+    // New file
+    function newFile() {
+      const folderPath = prompt('Enter folder path or leave blank for top-level:', '');
+      const name = prompt('File name:', 'file' + (flattenFiles(files).length + 1) + '.js');
+      if (!name) return;
+      let target = files;
+      if (folderPath) {
+        const parts = folderPath.split('/');
+        for (let p of parts) {
+          if (!target[p]) target[p] = {};
+          target = target[p];
+        }
+      }
+      target[name] = '';
+      loadFile((folderPath ? folderPath + '/' : '') + name);
+    }
 
-// Save file
-function saveFile(){
-  if(!currentFile) return alert('No file loaded');
-  const content = getFileContent(currentFile);
-  if(typeof content==='string') setFileContent(currentFile, editor.getValue());
-  localStorage.setItem('ideFiles', JSON.stringify(files));
-}
+    // New folder
+    function newFolder() {
+      const folderPath = prompt('Folder name (use / for nested):', 'newFolder');
+      if (!folderPath) return;
+      const parts = folderPath.split('/');
+      let target = files;
+      for (let p of parts) {
+        if (!target[p]) target[p] = {};
+        target = target[p];
+      }
+      renderFileManager(document.getElementById('fileList'), files);
+      localStorage.setItem('ideFiles', JSON.stringify(files));
+    }
 
-// Preview
-function openPreview(){
-  if(!currentFile || !currentFile.endsWith('.html')) return alert('HTML file required for preview');
-  document.getElementById('previewFrame').srcdoc=getFileContent(currentFile);
-  document.getElementById('previewOverlay').style.display='flex';
-}
-function closePreview(){
-  document.getElementById('previewOverlay').style.display='none';
-}
+    // Save file
+    function saveFile() {
+      if (!currentFile) return alert('No file loaded');
+      const content = getFileContent(currentFile);
+      if (typeof content === 'string') setFileContent(currentFile, editor.getValue());
+      localStorage.setItem('ideFiles', JSON.stringify(files));
+    }
 
-// Export
-function exportZIP(){
-  const zip=new JSZip();
-  flattenFiles(files).forEach(f=>zip.file(f,getFileContent(f)));
-  zip.generateAsync({type:"blob"}).then(content=>{
-    const link=document.createElement('a');
-    link.href=URL.createObjectURL(content);
-    link.download="project.zip";
-    link.click();
-  });
-}
+    // Preview
+    function openPreview() {
+      if (!currentFile || !currentFile.endsWith('.html')) return alert('HTML file required for preview');
+      document.getElementById('previewFrame').srcdoc = getFileContent(currentFile);
+      document.getElementById('previewOverlay').style.display = 'flex';
+    }
+    function closePreview() {
+      document.getElementById('previewOverlay').style.display = 'none';
+    }
 
-// Monaco
-require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' }});
-require(['vs/editor/editor.main'], function(){
-  editor=monaco.editor.create(document.getElementById('editor'),{
-    value:'',
-    language:'javascript',
-    theme:'vs-dark',
-    automaticLayout:true,
-    autoClosingBrackets:"always",
-    autoClosingQuotes:"always",
-    autoIndent:true,
-    suggestOnTriggerCharacters:true,
-    quickSuggestions:true
-  });
-  const hashFile=decodeURIComponent(window.location.hash.substring(1));
-  const flat=flattenFiles(files);
-  if(hashFile && getFileContent(hashFile)) loadFile(hashFile);
-  else if(flat.length>0) loadFile(flat[0]);
-});
+    // Export
+    function exportZIP() {
+      const zip = new JSZip();
+      flattenFiles(files).forEach(f => zip.file(f, getFileContent(f)));
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = "project.zip";
+        link.click();
+      });
+    }
 
-// Button events
-document.getElementById('newBtn').addEventListener('click', newFile);
-document.getElementById('newFolderBtn').addEventListener('click', newFolder);
-document.getElementById('saveBtn').addEventListener('click', saveFile);
-document.getElementById('deleteBtn').addEventListener('click', ()=>{ if(currentFile) deletePath(currentFile); });
-document.getElementById('exportBtn').addEventListener('click', exportZIP);
-document.getElementById('selectAllBtn').addEventListener('click', ()=>{
-  const model=editor.getModel();
-  if(model){
-    editor.setSelection(model.getFullModelRange());
-    editor.focus();
-  }
-});
-document.getElementById('previewToggle').addEventListener('click', openPreview);
-</script>
+    // Monaco
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '',
+        language: 'javascript',
+        theme: 'vs-dark',
+        automaticLayout: true,
+        autoClosingBrackets: "always",
+        autoClosingQuotes: "always",
+        autoIndent: true,
+        suggestOnTriggerCharacters: true,
+        quickSuggestions: true
+      });
+      const hashFile = decodeURIComponent(window.location.hash.substring(1));
+      const flat = flattenFiles(files);
+      if (hashFile && getFileContent(hashFile)) loadFile(hashFile);
+      else if (flat.length > 0) loadFile(flat[0]);
+    });
+
+    // Button events
+    document.getElementById('newBtn').addEventListener('click', newFile);
+    document.getElementById('newFolderBtn').addEventListener('click', newFolder);
+    document.getElementById('saveBtn').addEventListener('click', saveFile);
+    document.getElementById('deleteBtn').addEventListener('click', () => { if (currentFile) deletePath(currentFile); });
+    document.getElementById('exportBtn').addEventListener('click', exportZIP);
+    document.getElementById('selectAllBtn').addEventListener('click', () => {
+      const model = editor.getModel();
+      if (model) {
+        editor.setSelection(model.getFullModelRange());
+        editor.focus();
+      }
+    });
+    document.getElementById('previewToggle').addEventListener('click', openPreview);
+  </script>
 
 </body>
+<script type="module" src="/js/disable-zoom.js"></script>
+
 </html>

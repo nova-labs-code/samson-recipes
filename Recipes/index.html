@@ -1,22 +1,35 @@
 <!DOCTYPE html>
+<script type="module" src="/js/security.js"></script>
 <html lang="en">
-<script src="./not_found.js"></script>
+<script src="/not_found.js"></script>
 
 <head>
+  <link rel="manifest" href="/manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Samson Recipes</title>
-  <script src="./js/icon.js"></script>
-  <style>
+  <script src="/js/icon.js"></script>
+<style>
     body:not(.original) {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
       padding: 0;
-
+      background: #11111a;
+      color: #eee;
     }
 
     html {
       scroll-behavior: smooth;
+      scrollbar-width: none;
+      background: #11111a;
+
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
+
+    /* For Chrome, Safari, and Opera */
+    .your-container-class::-webkit-scrollbar {
+      display: none;
     }
 
     h1:not(.original) {
@@ -24,22 +37,26 @@
       font-family: "Comic Sans MS";
       font-size: 26px;
       margin: 1em 0;
+      color: #f5f3ff;
     }
 
     p:not(.original) {
       text-align: center;
       font-size: 20px;
       margin: 0.5em 0;
+      color: #dcd8ee;
     }
 
     hr:not(.original) {
       margin: 20px 0;
+      border-color: #2b2840;
     }
 
     li:not(.original) {
       font-size: 21px;
       margin-bottom: 0.4em;
       margin-left: .5em;
+      color: #dedaf0;
     }
 
     ol:not(.original) {
@@ -81,7 +98,7 @@
       margin-left: 18px;
     }
 
-    /* 🎠 CAROUSEL */
+    /* carousel */
     .carousel-container:not(.original) {
       position: relative;
     }
@@ -110,15 +127,15 @@
       height: 10px;
       margin: 0 4px;
       border-radius: 50%;
-      background: #bbb;
+      background: #55516d;
       cursor: pointer;
     }
 
     .carousel-dot.active:not(.original) {
-      background: #111;
+      background: #8b7cff;
     }
 
-    /* ⏱️ TIME GRID */
+    /* TIME GRID */
     .time-grid:not(.original) {
       display: flex;
       justify-content: center;
@@ -129,9 +146,11 @@
 
     .time-box:not(.original) {
       width: 110px;
-      /* instead of min-width */
       padding: 10px;
       box-sizing: border-box;
+      background: #191827;
+      border: 1px solid #2d2945;
+      border-radius: 12px;
     }
 
     .time-box h1:not(.original) {
@@ -151,31 +170,42 @@
       margin: 0 10px;
       text-decoration: underline;
       font-weight: bold;
-      color: black;
+      color: #b8adff;
       cursor: pointer;
     }
-
-    /* -------------------- */
-    /* BACK TO TOP */
-  </style>
-
+</style>
+  <script type="module" src="/js/profile.js"></script>
   <script src="/site_down.js" defer></script>
 </head>
 
-<body data-maintenance="minor"></body>
+<body data-maintenance="none"></body>
 
 <body>
 
   <div id="app">
-    <div style="text-align:center;margin-top:120px;">
-      Loading recipe...
+    <div class="view-toggle-bar no-print"
+      style="text-align: center; margin: 30px auto; max-width: 500px; display: flex; gap: 10px; padding: 0 20px;">
+      <button id="toggleCollections" class="toggle-btn active"
+        style="flex: 1; padding: 12px; border-radius: 30px; border: 2px solid #a855f7; font-weight: bold; cursor: pointer; background: #a855f7; color: white; transition: all 0.2s;">Browse
+        Collections</button>
+      <button id="toggleProfiles" class="toggle-btn"
+        style="flex: 1; padding: 12px; border-radius: 30px; border: 2px solid #e2e8f0; font-weight: bold; cursor: pointer; background: white; color: #475569; transition: all 0.2s;">Browse
+        Creators</button>
+    </div>
+
+    <div id="mainDisplayDeck">
+      <div style="text-align:center; margin-top:80px; color: #666;">
+        Loading recipe content across local and cloud partitions...
+      </div>
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { db } from "/js/firebase.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     /* =========================
-       ⏱️ TIME ENGINE (RESTORED)
+       ⏱️ TIME ENGINE
     ========================= */
 
     function parseTime(str) {
@@ -187,7 +217,6 @@
         .filter(n => !isNaN(n));
 
       if (!parts.length) return null;
-
       if (parts.length === 2) return { min: parts[0], max: parts[1] };
 
       return { min: parts[0], max: parts[0] };
@@ -220,52 +249,24 @@
     function renderTime(prep, cook, melt, chill, total) {
       if (!prep && !cook && !melt && !chill && !total) return "";
 
-      return (prep || cook || melt || chill || total) ? `
+      return `
   <div id="time">
     <h1>Time</h1>
-
     <div class="time-grid">
-
-      ${prep ? `
-        <div class="time-box">
-          <h1>Prep</h1>
-          <h1>${formatRange(prep)}</h1>
-        </div>` : ""}
-
-      ${cook ? `
-        <div class="time-box">
-          <h1>Cook</h1>
-          <h1>${formatRange(cook)}</h1>
-        </div>` : ""}
-
-      ${melt ? `
-        <div class="time-box">
-          <h1>Melt</h1>
-          <h1>${formatRange(melt)}</h1>
-        </div>` : ""}
-
-      ${chill ? `
-        <div class="time-box">
-          <h1>Chill</h1>
-          <h1>${formatRange(chill)}</h1>
-        </div>` : ""}
-
-      ${total ? `
-        <div class="time-box">
-          <h1>Total</h1>
-          <h1>${formatRange(total)}</h1>
-        </div>` : ""}
-
+      ${prep ? `<div class="time-box"><h1>Prep</h1><h1>${formatRange(prep)}</h1></div>` : ""}
+      ${cook ? `<div class="time-box"><h1>Cook</h1><h1>${formatRange(cook)}</h1></div>` : ""}
+      ${melt ? `<div class="time-box"><h1>Melt</h1><h1>${formatRange(melt)}</h1></div>` : ""}
+      ${chill ? `<div class="time-box"><h1>Chill</h1><h1>${formatRange(chill)}</h1></div>` : ""}
+      ${total ? `<div class="time-box"><h1>Total</h1><h1>${formatRange(total)}</h1></div>` : ""}
     </div>
-  </div>
-` : "";
+  </div>`;
     }
+
     /* =========================
-       🎠 CAROUSEL (UNCHANGED FIXED)
+       🎠 CAROUSEL
     ========================= */
 
     (function () {
-
       function initCarousel() {
         const wrapper = document.querySelector("#imageGallery");
         if (!wrapper) return;
@@ -287,19 +288,15 @@
 
         images.forEach((img, i) => {
           imagesWrapper.appendChild(img);
-
           const dot = document.createElement("span");
           dot.className = "carousel-dot" + (i === 0 ? " active" : "");
 
           dot.onclick = () => {
             images.forEach(i => i.classList.remove("active"));
-            dots.querySelectorAll(".carousel-dot")
-              .forEach(d => d.classList.remove("active"));
-
+            dots.querySelectorAll(".carousel-dot").forEach(d => d.classList.remove("active"));
             img.classList.add("active");
             dot.classList.add("active");
           };
-
           dots.appendChild(dot);
         });
 
@@ -311,89 +308,82 @@
         wrapper.innerHTML = "";
         wrapper.appendChild(container);
       }
-
       window.initCarousel = initCarousel;
-
     })();
+
     function formatNames(str) {
       const names = str.split(",").map(n => n.trim()).filter(Boolean);
-
       if (names.length <= 1) return names[0] || "";
       if (names.length === 2) return `${names[0]} and ${names[1]}`;
-
       return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
     }
+
     /* =========================
-       🚀 LOAD RECIPE
+       🚀 LOAD RECIPE Engine
     ========================= */
 
     function initBackToStart() {
       const title = document.getElementById("Title");
-      if (!title) return;
-
-      if (document.getElementById("back-to-start")) return;
+      if (!title || document.getElementById("back-to-start")) return;
 
       const button = document.createElement("button");
-      button.id = "back-to-start";
-      button.textContent = "Back To Top";
-      button.className = "no-print";
-      Object.assign(button.style, {
-        position: "fixed",
-        bottom: "20px",
-        right: "20px",
-        zIndex: "2147483647",
+button.id = "back-to-start";
+button.textContent = "Back To Top";
+button.className = "no-print";
 
-        padding: "10px 20px",
-        borderRadius: "10px",
-        border: "none",
-        cursor: "pointer",
-        fontWeight: "bold",
+Object.assign(button.style, {
+  position: "fixed",
+  bottom: "20px",
+  right: "20px",
+  zIndex: "2147483647",
+  padding: "10px 20px",
+  borderRadius: "10px",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "bold",
+  backgroundColor: "#211E1E",
+  color: "#fff",
+  boxShadow: "0 0 18px rgba(0,0,0,0.5)",
+  opacity: "0",
+  pointerEvents: "none",
+  transform: "translateY(10px) scale(0.95)",
+  transition: "opacity 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s"
+});
 
-        backgroundColor: "#a855f7",
-        color: "#fff",
-        boxShadow: "0 0 18px rgba(168,85,247,0.5)",
+// Hover animation
+button.addEventListener("mouseenter", () => {
+  button.style.transform = "translateY(0) scale(1.05)";
+  button.style.backgroundColor = "#302B2B";
+  button.style.boxShadow = "0 0 25px rgba(0,0,0,0.7)";
+});
 
-        opacity: "0",
-        pointerEvents: "none",
-        transform: "translateY(10px) scale(0.95)",
-        transition: "opacity 0.2s, transform 0.2s"
-      });
+button.addEventListener("mouseleave", () => {
+  button.style.transform = "translateY(0) scale(1)";
+  button.style.backgroundColor = "#211E1E";
+  button.style.boxShadow = "0 0 18px rgba(0,0,0,0.5)";
+});
 
       function update() {
         const t = document.getElementById("Title");
         if (!t) return;
-
         const scrollY = window.scrollY || document.documentElement.scrollTop;
-        const showAfter = t.offsetTop + t.offsetHeight + 100;
-
-        const show = scrollY > showAfter;
-
+        const show = scrollY > (t.offsetTop + t.offsetHeight + 100);
         button.style.opacity = show ? "1" : "0";
         button.style.pointerEvents = show ? "auto" : "none";
-        button.style.transform = show
-          ? "translateY(0) scale(1)"
-          : "translateY(10px) scale(0.95)";
+        button.style.transform = show ? "translateY(0) scale(1)" : "translateY(10px) scale(0.95)";
       }
 
       button.addEventListener("click", () => {
         const t = document.getElementById("Title");
-        if (!t) return;
-
-        window.scrollTo({
-          top: t.offsetTop,
-          behavior: "smooth"
-        });
+        if (t) window.scrollTo({ top: t.offsetTop, behavior: "smooth" });
       });
 
       document.body.appendChild(button);
-
       window.addEventListener("scroll", update);
       window.addEventListener("resize", update);
 
-      // 🔁 keeps it alive even when #app rewrites page
       const observer = new MutationObserver(update);
       observer.observe(document.body, { childList: true, subtree: true });
-
       update();
     }
 
@@ -401,16 +391,17 @@
     let currentRecipeName = null;
     let pollTimer = null;
     let isPolling = false;
+    let dataSource = "local"; // Tracks "local" or "firebase" to focus updates correctly
 
     function diffJSON(oldData, newData) {
-      const changes = {};
-
       if (!oldData) return { full: true };
+      const changes = {};
+      const o = oldData.recipe || oldData.recipeData?.recipe || {};
+      const n = newData.recipe || newData.recipeData?.recipe || {};
 
-      const o = oldData.recipe || {};
-      const n = newData.recipe || {};
-
-      if (oldData.title !== newData.title) changes.title = true;
+      const oldTitle = oldData.title || oldData.name || "";
+      const newTitle = newData.title || newData.name || "";
+      if (oldTitle !== newTitle) changes.title = true;
 
       if (JSON.stringify(o.ingredients) !== JSON.stringify(n.ingredients)) changes.ingredients = true;
       if (JSON.stringify(o.instructions) !== JSON.stringify(n.instructions)) changes.instructions = true;
@@ -419,19 +410,19 @@
       if (JSON.stringify(o.images) !== JSON.stringify(n.images)) changes.images = true;
       if (JSON.stringify(o.time_breakdown) !== JSON.stringify(n.time_breakdown)) changes.time = true;
 
-      if (oldData.recipe_by !== newData.recipe_by) changes.author = true;
+      const oldAuthor = o.recipe_by || oldData.recipe_by || "";
+      const newAuthor = n.recipe_by || newData.recipe_by || "";
+      if (oldAuthor !== newAuthor) changes.author = true;
 
       return changes;
     }
 
-    /* =========================
-       🖼️ RENDER RECIPE
-       (pulled out of loadRecipe so both the
-       initial load AND the poll loop can call it)
-    ========================= */
+    function renderRecipe(rawPayload) {
+      // Normalizes schema differences between local JSON files and Firebase data mappings
+      const data = rawPayload.recipeData ? rawPayload.recipeData : rawPayload;
+      const titleText = rawPayload.name || data.title || "";
+      document.title = `${titleText} | ${data.site || "Samson Recipes"}`;
 
-    function renderRecipe(data) {
-      document.title = `${data.title} | ${data.site}`;
       const r = data.recipe || {};
 
       const prep = parseTime(r.time_breakdown?.prep_time);
@@ -441,233 +432,100 @@
 
       const total = (prep || cook || melt || chill)
         ? {
-          min:
-            (prep?.min || 0) +
-            (cook?.min || 0) +
-            (melt?.min || 0) +
-            (chill?.min || 0),
-
-          max:
-            (prep?.max || 0) +
-            (cook?.max || 0) +
-            (melt?.max || 0) +
-            (chill?.max || 0)
+          min: (prep?.min || 0) + (cook?.min || 0) + (melt?.min || 0) + (chill?.min || 0),
+          max: (prep?.max || 0) + (cook?.max || 0) + (melt?.max || 0) + (chill?.max || 0)
         }
         : null;
 
-      const images = Array.isArray(r.images) ? r.images : [];
-
+      const images = Array.isArray(r.images) ? r.images : (rawPayload.image ? [rawPayload.image] : []);
       let imageHTML = "";
 
       function renderImage(src) {
-        const img = `<img src="${src}" alt="${data.title}">`;
-
-        if (src.includes("no-image.png")) {
-          return `<div class="no-print">${img}</div>`;
-        }
-
-        return img;
+        const img = `<img src="${src}" alt="${titleText}">`;
+        return src.includes("no-image.png") ? `<div class="no-print">${img}</div>` : img;
       }
 
-      if (images?.length > 1) {
-        imageHTML = `
-      <div id="imageGallery">
-        ${images.map(renderImage).join("")}
-      </div>
-    `;
-      }
-      else if (images?.length === 1) {
+      if (images.length > 1) {
+        imageHTML = `<div id="imageGallery">${images.map(renderImage).join("")}</div>`;
+      } else if (images.length === 1) {
         imageHTML = renderImage(images[0]);
-      }
-      else {
-        imageHTML = "";
       }
 
       document.getElementById("app").innerHTML = `
     <div>
-     ${data.title ? `<h1 id="Title">${data.title}</h1>` : ""}
-<div class="no-print">
-      <p><strong>
-${[
-          r.difficulty,
-          r.servings ? `${r.servings} Servings` : null
-        ].filter(Boolean).join(" | ")}
-
-</strong></p>
-</div>
-      ${imageHTML}
-
-      <div class="page-nav">
+      ${titleText ? `<h1 id="Title">${titleText}</h1>` : ""}
       <div class="no-print">
-${r.ingredients?.length ? `<a href="#ingredients">Ingredients</a>` : ""}
-
-${r.instructions?.length ? `<a href="#instructions">Instructions</a>` : ""}
-
-${r.storage?.length ? `<a href="#storage">Storage</a>` : ""}
-
-${r.serving_suggestions?.length ? `<a href="#serving-suggestions">Serving Suggestions</a>` : ""}
-
-${prep || cook || chill || total ? `<a href="#time">Time</a>` : ""}
-</div>
-
-</div>
-
-<hr>
-
-${renderTime(prep, cook, melt, chill, total)}
-
-${r.ingredients?.length ? `
-<hr>
-
-<h1 id="ingredients"> Ingredients</h1>
-
-${r.ingredients.map(section => {
-
-          if (typeof section === "string") {
-            return `<ul><li>${section}</li></ul>`;
-          }
-
-          return `
-    <h2 class="margin">${section.title}</h2>
-    <ul>
-      ${(section.items || []).map(item => `<li>${item}</li>`).join("")}
-    </ul>
-  `;
-        }).join("")}
-
-` : ""}
-
-${r.instructions?.length ? `
-<hr>
-
-<h1 id="instructions">Instructions</h1>
-
-${r.instructions.map(section => {
-
-          if (typeof section === "string") {
-            return `<ul><li>${section}</li></ul>`;
-          }
-
-          return `
-    <h2 class="margin">${section.title}</h2>
-    <ul>
-      ${(section.items || []).map(item => `<li>${item}</li>`).join("")}
-    </ul>
-  `;
-        }).join("")}
-
-` : ""}
-
-${r.storage?.length ? `
-<hr>
-
-<h1 id="storage">Storage</h1>
-
-${r.storage.map(section => {
-
-          if (typeof section === "string") {
-            return `<ul><li>${section}</li></ul>`;
-          }
-
-          return `
-    <h2>${section.title}</h2>
-    <ul>
-      ${(section.items || []).map(item => `<li>${item}</li>`).join("")}
-    </ul>
-  `;
-        }).join("")}
-
-` : ""}
-
-      ${r.serving_suggestions?.length ? `
-<hr>
-
-<h1 id="serving-suggestions">Serving Suggestions</h1>
-
-${r.serving_suggestions.map(section => {
-
-          if (typeof section === "string") {
-            return `<ul><li>${section}</li></ul>`;
-          }
-
-          return `
-    <h2>${section.title}</h2>
-    <ul>
-      ${(section.items || []).map(item => `<li>${item}</li>`).join("")}
-    </ul>
-  `;
-        }).join("")}
-<hr>
-
-` : ""}
-
-${r.recipe_by ? `
-<h1>Recipe by ${formatNames(r.recipe_by)}</h1>
-
-` : ""}
-
-</div>
-`;
+        <p><strong>${[r.difficulty || rawPayload.difficulty, r.servings ? `${r.servings} Servings` : null].filter(Boolean).join(" | ")}</strong></p>
+      </div>
+      ${imageHTML}
+      <div class="page-nav">
+        <div class="no-print">
+          ${r.ingredients?.length ? `<a href="#ingredients">Ingredients</a>` : ""}
+          ${r.instructions?.length ? `<a href="#instructions">Instructions</a>` : ""}
+          ${r.storage?.length ? `<a href="#storage">Storage</a>` : ""}
+          ${r.serving_suggestions?.length ? `<a href="#serving-suggestions">Serving Suggestions</a>` : ""}
+          ${prep || cook || chill || total ? `<a href="#time">Time</a>` : ""}
+        </div>
+      </div>
+      <hr>
+      ${renderTime(prep, cook, melt, chill, total)}
+      ${r.ingredients?.length ? `<hr><h1 id="ingredients">Ingredients</h1>${r.ingredients.map(section => typeof section === "string" ? `<ul><li>${section}</li></ul>` : `<h2 class="margin">${section.title}</h2><ul>${(section.items || []).map(item => `<li>${item}</li>`).join("")}</ul>`).join("")}` : ""}
+      ${r.instructions?.length ? `<hr><h1 id="instructions">Instructions</h1>${r.instructions.map(section => typeof section === "string" ? `<ul><li>${section}</li></ul>` : `<h2 class="margin">${section.title}</h2><ul>${(section.items || []).map(item => `<li>${item}</li>`).join("")}</ul>`).join("")}` : ""}
+      ${r.storage?.length ? `<hr><h1 id="storage">Storage</h1>${r.storage.map(section => typeof section === "string" ? `<ul><li>${section}</li></ul>` : `<h2>${section.title}</h2><ul>${(section.items || []).map(item => `<li>${item}</li>`).join("")}</ul>`).join("")}` : ""}
+      ${r.serving_suggestions?.length ? `<hr><h1 id="serving-suggestions">Serving Suggestions</h1>${r.serving_suggestions.map(section => typeof section === "string" ? `<ul><li>${section}</li></ul>` : `<h2>${section.title}</h2><ul>${(section.items || []).map(item => `<li>${item}</li>`).join("")}</ul>`).join("")}<hr>` : ""}
+      ${r.recipe_by ? `<h1>Recipe by ${formatNames(r.recipe_by)}</h1>` : ""}
+    </div>`;
 
       function initNavCleanup() {
-        const links = document.querySelectorAll(".page-nav a");
-
-        links.forEach(link => {
+        document.querySelectorAll(".page-nav a").forEach(link => {
           link.addEventListener("click", (e) => {
             e.preventDefault();
-
-            const targetId = link.getAttribute("href").replace("#", "");
-            const target = document.getElementById(targetId);
-
-            if (target) {
-              target.scrollIntoView({ behavior: "smooth" });
-            }
-
-            // 🧼 remove #hash from URL instantly
-            history.replaceState(
-              null,
-              "",
-              window.location.pathname + window.location.search
-            );
+            const target = document.getElementById(link.getAttribute("href").replace("#", ""));
+            if (target) target.scrollIntoView({ behavior: "smooth" });
+            history.replaceState(null, "", window.location.pathname + window.location.search);
           });
         });
-
-        // 🧼 if page loads with a hash, wipe it
-        if (location.hash) {
-          history.replaceState(
-            null,
-            "",
-            window.location.pathname + window.location.search
-          );
-        }
+        if (location.hash) history.replaceState(null, "", window.location.pathname + window.location.search);
       }
 
-      // run it after render (important for your dynamic HTML)
-      setTimeout(() => {
-        initNavCleanup();
-      }, 0);
+      setTimeout(() => initNavCleanup(), 0);
       setTimeout(() => window.initCarousel?.(), 0);
-
       initBackToStart();
     }
 
     /* =========================
-       🔁 LIVE-UPDATE POLLING
-       Fetches the JSON every second and compares it
-       against the last-known copy. Only re-renders
-       when diffJSON reports an actual change.
+       🔁 LOCAL / CLOUD DISTRIBUTED POLLING STRATEGY
     ========================= */
 
     async function fetchRecipeJSON(recipeName) {
-      const res = await fetch(`./${recipeName}.json`, { cache: "no-store" });
-      if (!res.ok) throw new Error("fetch failed");
-      return res.json();
+      if (dataSource === "local") {
+        try {
+          const res = await fetch(`./${recipeName}.json`, { cache: "no-store" });
+          if (!res.ok) throw new Error("Local fallback required");
+          return await res.json();
+        } catch (err) {
+          // If local resolution fails, flip state tracker over to check Cloud Firestore
+          dataSource = "firebase";
+          return await fetchFirebaseRecipe(recipeName);
+        }
+      } else {
+        return await fetchFirebaseRecipe(recipeName);
+      }
+    }
+
+    async function fetchFirebaseRecipe(recipeName) {
+      // Slugifies variations like spaces into cleaner lookup patterns matching your ID structures
+      const slugId = recipeName.toLowerCase().replace(/%20/g, "-").replace(/\s+/g, "-");
+      const docSnap = await getDoc(doc(db, "recipes", slugId));
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      throw new Error("Recipe missing across all distributed storage segments");
     }
 
     function startPolling(recipeName) {
       if (isPolling) return;
       isPolling = true;
-
       if (pollTimer) clearInterval(pollTimer);
 
       pollTimer = setInterval(async () => {
@@ -679,9 +537,8 @@ ${r.recipe_by ? `
             lastRecipeData = data;
             renderRecipe(data);
           }
-        } catch {
-          // Network hiccup or file momentarily unavailable —
-          // just skip this tick and try again in 1s.
+        } catch (err) {
+          // Network fluctuation catch block
         }
       }, 1000);
     }
@@ -691,17 +548,14 @@ ${r.recipe_by ? `
       const recipeName = params.get("Recipe");
 
       if (!recipeName) return window.location.replace("/index.html");
-
       currentRecipeName = recipeName;
 
       try {
         const data = await fetchRecipeJSON(recipeName);
-
         lastRecipeData = data;
         renderRecipe(data);
         startPolling(recipeName);
-
-      } catch {
+      } catch (err) {
         setInterval(() => {
           document.getElementById("bottom-bar")?.remove();
           document.getElementById("trustpilot-bottom-bar")?.remove();
@@ -711,14 +565,12 @@ ${r.recipe_by ? `
     }
 
     loadRecipe();
-
   </script>
 
   <script src="/js/disable-zoom.js" defer></script>
-  <script src="/js/Tier.js" defer></script>
-  <script src="/js/Bottom-bar.js"></script>
-  <script src="/js/trust-pilot.js"></script>
+  <script src="/js/Bottom-bar.js" type="module"></script>
   <script src="/js/noprint.js" def></script>
+  <script src="/js/wake.js"></script>
 </body>
 
 </html>

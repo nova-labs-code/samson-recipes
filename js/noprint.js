@@ -1,3 +1,4 @@
+import { isAuthorized } from "/js/security.js";
 function createNoPrintRule() {
 if (document.getElementById("no-print-style")) return;
 

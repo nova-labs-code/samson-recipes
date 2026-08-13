@@ -1,24 +1,16 @@
+import { isAuthorized } from "/js/security.js";
 document.addEventListener("DOMContentLoaded", function () {
   const isApp = navigator.userAgent === "APP";
 
-  // Redirect if not in app and trying to access app-only page
-  if (!isApp && window.location.pathname.includes("app-info.html")) {
-    window.location.href = "index.html";
-  }
-
   const links = [
     { text: "Home", url: "/index.html" },
-    { text: "Meal Planner", url: "/Pages/meal-plan.html" },
     { text: "About", url: "/Pages/about.html" },
     { text: "Staff", url: "/Pages/staff.html" },
     { text: "Information", url: "/Pages/info.html" },
-    { text: "Contact Us", url: "/Pages/contact-us.html" },
-    { text: "Samson Blogs", url: "/Pages/blogs" },
+    { text: "Samson Blogs", url: "/Pages/blogs.html" },
     { text: "Stats", url: "/Pages/sitedata.html" },
-    { text: "Status", url: "https://stats.uptimerobot.com/yyyK0XGlqJ" },
+    { text: "Status", url: "/Pages/monitor.html" },
     { text: "Updates", url: "/Pages/updates.html" },
-    { text: "Sponsors", url: "/Pages/sponsors.html" },
-    { text: "App Info", url: "/Pages/app-info.html", appOnly: true }
   ];
 
   const bottomBar = document.createElement("div");
@@ -28,16 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const inner = document.createElement("div");
   inner.className = "bottom-bar-inner";
 
-  links.forEach((link, index) => {
-    // Hide links depending on app state
+  links.forEach((link) => {
     if (isApp && ["Downloads", "Status", "Sponsors"].includes(link.text)) return;
     if (!isApp && link.appOnly) return;
 
     if (inner.children.length > 0) {
-      const sep = document.createElement("span");
-      sep.className = "sep";
-      sep.textContent = "✦";
-      inner.appendChild(sep);
+     const sep = document.createElement("span");
+sep.className = "sep";
+sep.textContent = "•";
+inner.appendChild(sep);
     }
 
     const a = document.createElement("a");
@@ -49,9 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
   bottomBar.appendChild(inner);
   document.body.appendChild(bottomBar);
 
-  // --------------------------
-  // AMETHYST THEMED STYLES
-  // --------------------------
   const style = document.createElement("style");
   style.textContent = `
 #bottom-bar {
@@ -65,13 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
   text-align: center;
   font-size: 18px;
 
-  background: transparent;
+  /* Mostly transparent glass */
+  background: rgba(255, 255, 255, 0);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 
-  border-top: 1px solid rgba(216, 180, 254, 0.25);
-  box-shadow: 0 -6px 20px rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(209, 213, 219, 0);
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
 
   box-sizing: border-box;
   z-index: 999;
@@ -83,15 +72,15 @@ document.addEventListener("DOMContentLoaded", function () {
   padding: 0 10px;
 }
 
-/* spacing */
+/* Links */
 .bottom-bar-inner a {
   margin: 0 10px;
 
   background: linear-gradient(
     145deg,
-    var(--amethyst-light),
-    var(--amethyst-mid),
-    var(--amethyst-base)
+    var(--amethyst-light, #f3f4f6),
+    var(--amethyst-mid, #9ca3af),
+    var(--amethyst-base, #4b5563)
   );
 
   -webkit-background-clip: text;
@@ -103,42 +92,54 @@ document.addEventListener("DOMContentLoaded", function () {
   display: inline-block;
   position: relative;
 
-  transition: transform 0.18s ease, filter 0.18s ease, text-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    text-shadow 0.18s ease;
 }
 
-/* ✨ hover = float + glow + pulse */
+/* Hover */
 .bottom-bar-inner a:hover {
   transform: translateY(-3px) scale(1.05);
   filter: brightness(1.15);
-  text-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+
+  text-shadow:
+    0 0 14px var(--amethyst-base, rgba(156, 163, 175, 0.5));
+
   animation: amethystPulse 1.2s ease-in-out infinite;
 }
 
-/* 👇 click = press down feel */
+/* Click */
 .bottom-bar-inner a:active {
   transform: translateY(1px) scale(0.97);
   filter: brightness(0.95);
-  text-shadow: 0 0 6px rgba(168, 85, 247, 0.3);
+
+  text-shadow:
+    0 0 6px var(--amethyst-mid, rgba(156, 163, 175, 0.3));
 }
 
-/* separators */
+/* Separators */
 #bottom-bar .sep {
   margin: 0 4px;
-  color: var(--amethyst-mid);
-  opacity: 0.6;
+
+  color: var(--amethyst-mid, #9ca3af);
+
+  opacity: 0.7;
   user-select: none;
 }
 
-/* 💜 glow breathing animation */
+/* Glow */
 @keyframes amethystPulse {
   0% {
-    text-shadow: 0 0 10px rgba(168, 85, 247, 0.35);
+    text-shadow: 0 0 10px rgba(156, 163, 175, 0.35);
   }
+
   50% {
-    text-shadow: 0 0 18px rgba(216, 180, 254, 0.6);
+    text-shadow: 0 0 18px rgba(243, 244, 246, 0.6);
   }
+
   100% {
-    text-shadow: 0 0 10px rgba(168, 85, 247, 0.35);
+    text-shadow: 0 0 10px rgba(156, 163, 175, 0.35);
   }
 }
 `;

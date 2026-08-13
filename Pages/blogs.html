@@ -1,196 +1,259 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Samson Blogs</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Samson Blogs</title>
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&display=swap');
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Courier+Prime&family=Montserrat&family=Pacifico&display=swap');
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #1F1F1F;
-    margin: 0;
-    padding: 20px;
-  }
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
 
-  .container {
-    max-width: 900px;
-    margin: auto;
-  }
+    a {
+      color: inherit;
+      text-decoration: none;
+      outline: none;
+    }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #B0B0B0;
-  }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0d0e12;
+      margin: 0;
+      padding: 16px;
+      color: #cbd5e1;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  #search {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-  .blog {
-    background: #363636;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-  }
+    h1 {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      color: #f1f5f9;
+      font-weight: 700;
+      font-size: clamp(24px, 5vw, 36px);
+      letter-spacing: -0.5px;
+    }
 
-  .blog:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 24px rgba(0,0,0,0.12);
-  }
+    #search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      border: 1px solid #272a34;
+      background-color: #161920;
+      color: #f1f5f9;
+      font-size: 16px; /* Prevents auto-zoom on iOS safari */
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
 
-  .blog-header {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
+    #search:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
 
-  .blog-title {
-    font-size: 26px;
-    font-weight: bold;
-    color: #B0B0B0;
-    margin-bottom: 5px;
-  }
+    #search::placeholder {
+      color: #64748b;
+    }
 
-  .blog-author {
-    font-style: italic;
-    color: #BFBFBF;
-    margin-bottom: 5px;
-  }
+    .blog {
+      background: #161920;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      border: 1px solid #1e222b;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
 
-  .blog-date {
-    font-size: 13px;
-    color: #C4C2C2;
-    margin-bottom: 15px;
-  }
+    .blog:hover {
+      border-color: #2e3545;
+      box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.4);
+    }
 
-  .blog-content {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #C9C9C9;
-    display: none;
-  }
-</style>
+    .blog-header {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
 
+    @media (min-width: 600px) {
+      body {
+        padding: 24px;
+      }
+      .blog {
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .blog-header {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 16px;
+      }
+    }
+
+    .blog-title {
+      font-size: clamp(18px, 4vw, 24px);
+      font-weight: bold;
+      color: #f8fafc;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .blog-author {
+      font-style: italic;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .blog-date {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .blog-content {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      display: none;
+      padding-top: 14px;
+      margin-top: 14px;
+      border-top: 1px solid #232733;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  </style>
+  <script type="module" src="/js/profile.js"></script>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>Samson Blogs</h1>
-  <input type="text" id="search" placeholder="Search blogs by title, author, or content...">
-  <div id="blogs"></div>
-</div>
+  <div class="container">
+    <h1>Samson Blogs</h1>
+    <input type="text" id="search" placeholder="Search blogs by title, author, or content...">
+    <div id="blogs"></div>
+  </div>
 
-<script>
-let blogData = [];
-let openBlog = null;
-let lastJSONHash = null;
+  <script>
+    let blogData = [];
+    let openBlogId = null;
+    let lastJSONHash = null;
 
-async function fetchBlogs() {
-  try {
-    const res = await fetch('/json/blogs.json', { cache: "no-store" });
-    const data = await res.json();
+    async function fetchBlogs() {
+      try {
+        const res = await fetch('/json/blogs.json', { cache: "no-store" });
+        const data = await res.json();
 
-    const hash = JSON.stringify(data);
+        const hash = JSON.stringify(data);
 
-    // Only update if JSON changed
-    if (hash !== lastJSONHash) {
-      lastJSONHash = hash;
+        // Only update DOM if underlying JSON changed
+        if (hash !== lastJSONHash) {
+          lastJSONHash = hash;
 
-      blogData = data;
-      blogData.sort((a, b) => b.id - a.id);
+          blogData = data;
+          blogData.sort((a, b) => b.id - a.id);
 
-      renderBlogs(blogData);
+          filterAndRender();
+        }
+
+      } catch (err) {
+        console.warn('blogs.json not loaded:', err);
+      }
     }
 
-  } catch (err) {
-    console.warn('blogs.json not loaded:', err);
-  }
-}
+    function startLiveUpdates() {
+      fetchBlogs(); // initial load
 
-function startLiveUpdates() {
-  fetchBlogs(); // initial load
+      setInterval(() => {
+        fetchBlogs();
+      }, 1000);
+    }
 
-  setInterval(() => {
-    fetchBlogs();
-  }, 1000);
-}
+    function filterAndRender() {
+      const term = document.getElementById('search').value.toLowerCase().trim();
 
-function renderBlogs(blogs) {
-  const container = document.getElementById('blogs');
-  container.innerHTML = '';
+      const filtered = blogData.filter(blog =>
+        (blog.title && blog.title.toLowerCase().includes(term)) ||
+        (blog.author && blog.author.toLowerCase().includes(term)) ||
+        (blog.content && blog.content.toLowerCase().includes(term))
+      );
 
-  blogs.forEach(blog => {
-    const div = document.createElement('div');
-    div.className = 'blog';
+      renderBlogs(filtered);
+    }
 
-    div.innerHTML = `
-      <div class="blog-header">
-        <div>
-          <div class="blog-title">${blog.title}</div>
-          <div class="blog-author">By ${blog.author}</div>
-        </div>
-        <div class="blog-date">${blog.date}</div>
-      </div>
+    function renderBlogs(blogs) {
+      const container = document.getElementById('blogs');
+      container.innerHTML = '';
 
-      <div class="blog-content">
-        ${blog.content}
-      </div>
-    `;
+      if (blogs.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 40px 0; color: #64748b;">No blogs found matching your search.</div>';
+        return;
+      }
 
-    div.addEventListener('click', () => toggleBlog(div));
-    container.appendChild(div);
-  });
-}
+      blogs.forEach(blog => {
+        const div = document.createElement('div');
+        div.className = 'blog';
+        div.dataset.id = blog.id;
 
-function toggleBlog(blogEl) {
-  const content = blogEl.querySelector('.blog-content');
+        const isOpen = (openBlogId === blog.id);
 
-  // close previously open blog
-  if (openBlog && openBlog !== blogEl) {
-    const prevContent = openBlog.querySelector('.blog-content');
-    prevContent.style.display = 'none';
-  }
+        div.innerHTML = `
+          <div class="blog-header">
+            <div>
+              <div class="blog-title">${blog.title}</div>
+              <div class="blog-author">By ${blog.author}</div>
+            </div>
+            <div class="blog-date">${blog.date}</div>
+          </div>
 
-  const isOpen = content.style.display === 'block';
+          <div class="blog-content" style="display: ${isOpen ? 'block' : 'none'};">
+            ${blog.content}
+          </div>
+        `;
 
-  if (isOpen) {
-    content.style.display = 'none';
-    openBlog = null;
-  } else {
-    content.style.display = 'block';
-    openBlog = blogEl;
-  }
-}
+        div.addEventListener('click', () => toggleBlog(blog.id));
+        container.appendChild(div);
+      });
+    }
 
-document.getElementById('search').addEventListener('input', (e) => {
-  const term = e.target.value.toLowerCase();
+    function toggleBlog(id) {
+      if (openBlogId === id) {
+        openBlogId = null;
+      } else {
+        openBlogId = id;
+      }
+      filterAndRender();
+    }
 
-  const filtered = blogData.filter(blog =>
-    blog.title.toLowerCase().includes(term) ||
-    blog.author.toLowerCase().includes(term) ||
-    blog.content.toLowerCase().includes(term)
-  );
+    document.getElementById('search').addEventListener('input', filterAndRender);
 
-  renderBlogs(filtered);
-});
+    startLiveUpdates();
+  </script>
 
-startLiveUpdates();
-</script>
-
-<script src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/Bottom-bar.js"></script>
 
 </body>
+
 </html>

@@ -5,7 +5,7 @@
     "difficulty": "Medium",
     "servings": "6–8",
     "images": [
-      "/Images/no-image.png"
+      "https://nova-labs-code.github.io/SamsonRecipesImages/no-image.png"
     ],
     "time_breakdown": {
       "prep_time": "1800",

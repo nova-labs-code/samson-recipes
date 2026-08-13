@@ -1,129 +1,198 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Samson Recipes – Guidelines, Terms of Service &amp; Privacy</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <title>Samson Recipes – Guidelines, Terms of Service &amp; Privacy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Baskerville:wght@700&display=swap"
+    rel="stylesheet">
 
-<style>
-:root {
-  --bg: #f4f6f9;
-  --card-bg: #ffffff;
-  --primary: #111827;
-  --text: #374151;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --accent: #2563eb;
-}
+  <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.85;
-}
+    html::-webkit-scrollbar {
+      display: none;
+    }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
+    :root {
+      --bg: #0f1117;
+      --card-bg: #181c24;
+      --primary: #f8fafc;
+      --text: #d1d5db;
+      --muted: #9ca3af;
+      --border: #2d3748;
+      --accent: #f4c542;
+    }
 
-h1 {
-  font-family: 'Libre Baskerville', serif;
-  font-size: 2.8rem;
-  text-align: center;
-  margin-bottom: 32px;
-  color: var(--primary);
-}
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.85;
+    }
 
-h2 {
-  font-size: 1.5rem;
-  color: var(--primary);
-  margin-top: 40px;
-  margin-bottom: 16px;
-}
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px 20px;
+    }
 
-p {
-  margin: 14px 0;
-  font-size: 1.06rem;
-}
+    h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 32px;
+      color: var(--primary);
+    }
 
-ul {
-  margin: 12px 0 12px 32px;
-}
+    h2 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+    }
 
-li {
-  margin: 8px 0;
-}
+    p {
+      margin: 14px 0;
+      font-size: 1.06rem;
+      color: var(--text);
+    }
 
-.card {
-  background: var(--card-bg);
-  background-color: rgba(0, 0, 255, 0);
-  padding: 36px;
-  border-radius: 16px;
-  margin: 32px 0;
-  box-shadow: 0 30px 30px rgba(0,0,0,0.20), 0 4px 10px rgba(0,0,0,0.2);
-}
+    ul {
+      margin: 12px 0 12px 32px;
+    }
 
-footer {
-  color: black;
-  text-align: center;
-  margin-top: 60px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  font-size: 0.95rem;
-}
-</style>
+    li {
+      margin: 8px 0;
+      color: var(--text);
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 36px;
+      border-radius: 18px;
+      margin: 32px 0;
+      border: 1px solid var(--border);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    strong {
+      color: var(--primary);
+    }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    ::selection {
+      background: rgba(244, 197, 66, 0.25);
+      color: #fff;
+    }
+  </style>
+  <script type="module" src="/js/profile.js"></script>
 </head>
+
 <body>
 
-<div class="container">
-<h1>Guidelines, Terms of Service &amp; Privacy</h1>
+  <div class="container">
+    <h1>Guidelines, Terms of Service &amp; Privacy</h1>
 
-<div class="card">
-<h2>Terms of Service</h2>
-<p>By using Samson Recipes, you agree to abide by all rules, policies, and guidelines described herein. All content must be safe, respectful, and suitable for users of all ages. The platform strictly prohibits content that is harmful, misleading, discriminatory, adult-oriented, or otherwise unsafe.</p>
+    <div class="card">
+      <h2>Terms of Service</h2>
+      <p>By using Samson Recipes, you agree to abide by all rules, policies, and guidelines described herein. All
+        content must be safe, respectful, and suitable for users of all ages. The platform strictly prohibits content
+        that is harmful, misleading, discriminatory, adult-oriented, or otherwise unsafe.</p>
 
-<p>Samson Recipes reserves the right to review, modify, or remove content and accounts at its discretion, without prior notice, to maintain a secure and professional environment. If behavior violates these terms or poses a risk to the platform, we may disable recipe submissions or account creation for specific users, including issuing IP-based restrictions. Users are responsible for their actions, and any misuse of the platform may result in suspension or termination of access. Continued use of the platform indicates acknowledgment and acceptance of these terms.</p>
-</div>
-<div class="card">
-<h2>Privacy Policy</h2>
-<p>Your privacy is a priority. Any personal information collected, including account information, submissions, or communications, is securely stored and used solely for operational, safety, or legal purposes. We do not sell or share your data with third parties without explicit consent unless legally required.</p>
+      <p>Samson Recipes reserves the right to review, modify, or remove content and accounts at its discretion, without
+        prior notice, to maintain a secure and professional environment. If behavior violates these terms or poses a
+        risk to the platform, we may disable recipe submissions or account creation for specific users, including
+        issuing IP-based restrictions. Users are responsible for their actions, and any misuse of the platform may
+        result in suspension or termination of access. Continued use of the platform indicates acknowledgment and
+        acceptance of these terms.</p>
+    </div>
+    <div class="card">
+      <h2>Privacy Policy</h2>
+      <p>Your privacy is a priority. Any personal information collected, including account information, submissions, or
+        communications, is securely stored and used solely for operational, safety, or legal purposes. We do not sell or
+        share your data with third parties without explicit consent unless legally required.</p>
 
-<p>Cookies or analytics may be used to improve functionality, but this data does not compromise your privacy. Users under 18 should use the platform under parental supervision, particularly when creating accounts or submitting content.</p>
-</div>
+      <p>Cookies or analytics may be used to improve functionality, but this data does not compromise your privacy.
+        Users under 18 should use the platform under parental supervision, particularly when creating accounts or
+        submitting content.</p>
+    </div>
 
-<div class="card">
-<h2>Terms of Security</h2>
-<p>Samson Recipes is committed to protecting user accounts and data. Users must take responsibility for safeguarding their login credentials and immediately report any unauthorized access. The platform implements industry-standard security measures, including encrypted storage and secure connections, to protect personal information.</p>
+    <div class="card">
+      <h2>Terms of Security</h2>
+      <p>Samson Recipes is committed to protecting user accounts and data. Users must take responsibility for
+        safeguarding their login credentials and immediately report any unauthorized access. The platform implements
+        industry-standard security measures, including encrypted storage and secure connections, to protect personal
+        information.</p>
 
-<p>Users must not attempt to bypass security measures, access other accounts without permission, or introduce malware or other harmful content. Any breach or suspicious activity may result in immediate account suspension, IP-based restrictions, or legal action. The platform reserves the right to disable recipe submissions or new account creation for users or networks that pose a security or policy risk.</p>
-</div>
+      <p>Users must not attempt to bypass security measures, access other accounts without permission, or introduce
+        malware or other harmful content. Any breach or suspicious activity may result in immediate account suspension,
+        IP-based restrictions, or legal action. The platform reserves the right to disable recipe submissions or new
+        account creation for users or networks that pose a security or policy risk.</p>
+    </div>
 
-<div class="card">
-<h2>Recipe Submission Guidelines</h2>
-<p>All recipe submissions must adhere to the following standards to ensure clarity, safety, and usability:</p>
-<ul>
-<li>Include the number of servings.</li>
-<li>Specify preparation time, cook time, chill time (if applicable), and total time.</li>
-<li>Provide a clear and accurate ingredient list with precise amounts.</li>
-<li>Write step-by-step instructions that are easy to follow.</li>
-<li>Ensure content is safe, family-friendly, and suitable for all audiences.</li>
-</ul>
-<p>Submissions are reviewed before publication to ensure compliance. Non-compliant content may be rejected or returned for revision.</p>
-</div>
+    <div class="card">
+      <h2>Recipe Submission Guidelines</h2>
+      <p>All recipe submissions must adhere to the following standards to ensure clarity, safety, and usability:</p>
+      <ul>
+        <li>Include the number of servings.</li>
+        <li>Specify preparation time, cook time, chill time (if applicable), and total time.</li>
+        <li>Provide a clear and accurate ingredient list with precise amounts.</li>
+        <li>Write step-by-step instructions that are easy to follow.</li>
+        <li>Ensure content is safe, family-friendly, and suitable for all audiences.</li>
+      </ul>
+      <p>Submissions are reviewed before publication to ensure compliance. Non-compliant content may be rejected or
+        returned for revision.</p>
+    </div>
 
-<footer>
-Thank you for following these guidelines and helping keep Samson Recipes safe, secure, and enjoyable.<br>
-<strong>Samson Recipes</strong>
-</footer>
+    <footer>
+      Thank you for following these guidelines and helping keep Samson Recipes safe, secure, and enjoyable.<br>
+      <strong>Samson Recipes</strong>
+    </footer>
 
-</div>
+  </div>
 </body>
-<script src="/js/disable-zoom.js"></script>
-<script src="/js/Tier.js"></script>
+<script type="module" src="/js/disable-zoom.js"></script>
+<script type="module" src="/js/Bottom-bar.js"></script>
+
 </html>

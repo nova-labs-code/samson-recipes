@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #2a2a2a;
+            margin: 0;
+            color: #e8e8e8;
+            padding-bottom: 15px;
+        }
+
+        .settings-wrap {
+            max-width: 650px;
+            width: 92%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1d1d1d;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+
+        h2,
+        h3 {
+            color: #acadc2;
+            border-bottom: 2px solid #696969;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 10px;
+            border: 1px solid #141414;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background: #1e1e1e;
+            color: #9d97b3;
+        }
+
+        .btn {
+            background: #e67e22;
+            color: #fff;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #d35400;
+        }
+
+        .btn-sec {
+            background: #7f8c8d;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .social-auth-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .social-auth-wrap .btn {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .btn-google {
+            background: #4285F4;
+        }
+
+        .btn-google:hover {
+            background: #357ae8;
+        }
+
+        .btn-github {
+            background: #24292e;
+        }
+
+        .btn-github:hover {
+            background: #1a1e22;
+        }
+
+        .nested-method-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            background: #2b2b2b;
+            border: 1px solid #383838;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .nested-method-item .unlink-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .toggle-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .card {
+            padding: 15px;
+            border: 3px solid #212122;
+            border-radius: 8px;
+            background: #1e1e1e;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .status-box {
+            display: none;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-success {
+            background: #1e251f;
+            color: #81c784;
+            border: 1px solid #2e7d32;
+        }
+
+        .status-error {
+            background: #2c1a1a;
+            color: #ef9a9a;
+            border: 1px solid #c62828;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-box {
+            background: #222222;
+            border: 1px solid #3d3d3d;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+            color: #e8e8e8;
+            box-sizing: border-box;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3a3a3a;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .header-actions h2 {
+            border-bottom: none;
+            margin: 0;
+            padding-bottom: 0;
+            font-size: 1.25rem;
+        }
+
+        @media(min-width: 480px) {
+            .settings-wrap {
+                margin: 50px auto;
+                padding: 25px;
+            }
+            .toggle-group {
+                flex-direction: row;
+                gap: 20px;
+            }
+            .btn-danger {
+                width: auto;
+            }
+            .nested-method-item {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .nested-method-item .unlink-btn {
+                width: auto;
+            }
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+<body>
+
+    <div class="settings-wrap">
+        <div class="header-actions">
+            <h2>Samson Identity Portal</h2>
+            <button class="btn btn-sec btn-sm" id="btnSignOut" style="display: none;">Sign Out</button>
+        </div>
+
+        <div id="globalStatusBox" class="status-box"></div>
+
+        <div id="unauthenticatedState">
+            <h3>Sign In / Create Account</h3>
+            <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 20px;">
+                Access or create your chef profile seamlessly using your federated secure provider.
+            </p>
+
+            <div class="social-auth-wrap">
+                <button class="btn btn-google" id="googleAuthBtn">Sign In with Google</button>
+                <button class="btn btn-github" id="githubAuthBtn">Sign In with GitHub</button>
+            </div>
+        </div>
+
+        <div id="authenticatedState" style="display:none;">
+            <div class="card">
+                <p><strong>Your Internal Account ID:</strong> <span id="lblAccountId"
+                        style="color:#e67e22; font-size:18px;"></span></p>
+                <p><a id="lnkPublicProfile" href="#" style="color:#e67e22; font-weight:bold;">View Your Public Profile
+                        Page</a></p>
+            </div>
+
+            <h3>Linked Authentication Methods</h3>
+            <div id="nestedMethodsContainer" style="margin-bottom: 25px;">
+            </div>
+
+            <h3>Link Additional Identity Streams</h3>
+            <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px;">
+                Secure alternative entry gateways to your account profile layout.
+            </p>
+            <div class="social-auth-wrap" style="margin-bottom: 30px;">
+                <button class="btn btn-google" id="btnLinkGoogle">Connect Google</button>
+                <button class="btn btn-github" id="btnLinkGitHub">Connect GitHub</button>
+            </div>
+
+            <h3>Profile Information</h3>
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" id="txtProfileName">
+            </div>
+            <button class="btn" id="btnUpdateName">Save Changes</button>
+
+            <h3>Privacy & Permissions Configuration</h3>
+            <div class="toggle-group">
+                <label><input type="checkbox" id="chkProfilePublic"> Allow Public Profile Access</label>
+                <label><input type="checkbox" id="chkRecipesPublic"> Allow Public Recipe Access</label>
+            </div>
+            <br>
+            <button class="btn" id="btnSavePrivacy">Save Privacy States</button>
+
+            <h3 style="margin-top:40px;">Danger Zone</h3>
+            <button class="btn btn-danger" id="btnDeleteAccount">Permanently Delete Account</button>
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <h4 style="margin-top:0; color:#ef9a9a; font-size: 18px;">Confirm Action</h4>
+            <p id="confirmModalText"></p>
+            <div class="modal-actions">
+                <button class="btn btn-sec" id="btnConfirmCancel">No</button>
+                <button class="btn" id="btnConfirmProceed">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import {
+            db, doc, getDoc, updateDoc, setDoc, deleteDoc,
+            auth, googleProvider, githubProvider, signInWithPopup,
+            getAccountIdFromUid, handleUserAuth, hasForbiddenContent
+        } from "/js/firebase.js";
+
+        import {
+            onAuthStateChanged,
+            signOut,
+            deleteUser,
+            linkWithPopup,
+            unlink
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let confirmResolve = null;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    showAuthenticatedUI();
+                } else {
+                    showUnauthenticatedUI();
+                }
+            });
+        });
+
+        function showAuthenticatedUI() {
+            document.getElementById("unauthenticatedState").style.display = "none";
+            document.getElementById("authenticatedState").style.display = "block";
+            document.getElementById("btnSignOut").style.display = "inline-block";
+            loadAccountData();
+        }
+
+        function showUnauthenticatedUI() {
+            document.getElementById("unauthenticatedState").style.display = "block";
+            document.getElementById("authenticatedState").style.display = "none";
+            document.getElementById("btnSignOut").style.display = "none";
+        }
+
+        // Direct redirection to logout page with no alert
+        document.getElementById("btnSignOut").addEventListener("click", () => {
+            window.location.href = "logout.html";
+        });
+
+        function showStatus(text, isError = false) {
+            const el = document.getElementById("globalStatusBox");
+            el.textContent = text;
+            el.className = `status-box ${isError ? 'status-error' : 'status-success'}`;
+            el.style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideStatus() {
+            document.getElementById("globalStatusBox").style.display = "none";
+        }
+
+        function showConfirmModal(text) {
+            document.getElementById("confirmModalText").textContent = text;
+            document.getElementById("customConfirmModal").style.display = "flex";
+            return new Promise((resolve) => { confirmResolve = resolve; });
+        }
+
+        document.getElementById("btnConfirmProceed").addEventListener("click", () => {
+            document.getElementById("customConfirmModal").style.display = "none";
+            if (confirmResolve) confirmResolve(true);
+        });
+        document.getElementById("btnConfirmCancel").addEventListener("click", () => {
+            document.getElementById("customConfirmModal").style.display = "none";
+            if (confirmResolve) confirmResolve(false);
+        });
+
+        async function runSocialAuth(provider) {
+            hideStatus();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                await handleUserAuth(result.user);
+                showStatus("Authenticated successfully!");
+            } catch (err) {
+                console.error("Auth Routine Error:", err);
+                showStatus(err.message, true);
+            }
+        }
+
+        async function linkFederatedProvider(provider, providerId) {
+            hideStatus();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const isAlreadyLinked = user.providerData.some(p => p.providerId === providerId);
+            if (isAlreadyLinked) {
+                return showStatus(`This platform account is already mapped to a ${providerId.split('.')[0]}.`, true);
+            }
+
+            try {
+                await linkWithPopup(user, provider);
+                showStatus("Alternative login synchronized successfully!");
+                loadAccountData();
+            } catch (err) {
+                showStatus(err.message, true);
+            }
+        }
+
+        async function handleUnlinkAction(providerId) {
+            hideStatus();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            if (user.providerData.length <= 1) {
+                return showStatus("Cannot isolate account. You must retain at least one entry vector.", true);
+            }
+
+            if (await showConfirmModal(`Disconnect your ${providerId.split('.')[0]} association?`)) {
+                try {
+                    await unlink(user, providerId);
+                    showStatus("Authentication link detached.");
+                    loadAccountData();
+                } catch (err) {
+                    showStatus(err.message, true);
+                }
+            }
+        }
+
+        document.getElementById("googleAuthBtn").addEventListener("click", () => runSocialAuth(googleProvider));
+        document.getElementById("githubAuthBtn").addEventListener("click", () => runSocialAuth(githubProvider));
+
+        document.getElementById("btnLinkGoogle").addEventListener("click", () => linkFederatedProvider(googleProvider, "google.com"));
+        document.getElementById("btnLinkGitHub").addEventListener("click", () => linkFederatedProvider(githubProvider, "github.com"));
+
+        async function loadAccountData() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const container = document.getElementById("nestedMethodsContainer");
+            container.innerHTML = "";
+
+            const activeProviders = user.providerData.map(p => p.providerId);
+            document.getElementById("btnLinkGoogle").disabled = activeProviders.includes("google.com");
+            document.getElementById("btnLinkGitHub").disabled = activeProviders.includes("github.com");
+
+            user.providerData.forEach((profile) => {
+                const methodItem = document.createElement("div");
+                methodItem.className = "nested-method-item";
+
+                let providerLabel = profile.providerId;
+                if (profile.providerId === "google.com") providerLabel = "Google OAuth";
+                if (profile.providerId === "github.com") providerLabel = "GitHub OAuth";
+
+                methodItem.innerHTML = `
+                    <div>
+                        <strong>${providerLabel}</strong><br>
+                        <span style="font-size:12px; color:#9e9e9e;">${profile.email || "Linked Verification Reference"}</span>
+                    </div>
+                    <button class="btn btn-danger btn-sm unlink-btn" data-provider="${profile.providerId}">Disconnect</button>
+                `;
+                container.appendChild(methodItem);
+            });
+
+            document.querySelectorAll(".unlink-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => handleUnlinkAction(e.target.dataset.provider));
+            });
+
+            try {
+                const assignedId = await getAccountIdFromUid(user.uid);
+                if (assignedId) {
+                    const userDoc = await getDoc(doc(db, "users", assignedId));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        document.getElementById("lblAccountId").textContent = assignedId;
+                        document.getElementById("lnkPublicProfile").href = `profile.html?${assignedId}`;
+                        document.getElementById("txtProfileName").value = data.name || "";
+                        document.getElementById("chkProfilePublic").checked = data.settings?.profilePublic !== false;
+                        document.getElementById("chkRecipesPublic").checked = data.settings?.recipesPublic !== false;
+                    }
+                }
+            } catch (err) {
+                console.error("Error formatting database configuration payloads:", err);
+            }
+        }
+
+        document.getElementById("btnUpdateName").addEventListener("click", async () => {
+            hideStatus();
+            const rawName = document.getElementById("txtProfileName").value.trim();
+
+            if (!rawName) {
+                return showStatus("Display name cannot be empty.", true);
+            }
+
+            // Check if display name contains any forbidden/inappropriate words
+            if (hasForbiddenContent(rawName)) {
+                return showStatus("Error: This display name contains disallowed words. Please choose another name.", true);
+            }
+
+            try {
+                const assignedId = await getAccountIdFromUid(auth.currentUser.uid);
+                await updateDoc(doc(db, "users", assignedId), { name: rawName });
+                
+                showStatus("Display name modified successfully!");
+                loadAccountData();
+            } catch (err) {
+                console.error("Error updating display name:", err);
+                showStatus("Failed to update display name.", true);
+            }
+        });
+
+        document.getElementById("btnSavePrivacy").addEventListener("click", async () => {
+            hideStatus();
+            const assignedId = await getAccountIdFromUid(auth.currentUser.uid);
+            await updateDoc(doc(db, "users", assignedId), {
+                "settings.profilePublic": document.getElementById("chkProfilePublic").checked,
+                "settings.recipesPublic": document.getElementById("chkRecipesPublic").checked
+            });
+            showStatus("Privacy values updated.");
+        });
+
+        document.getElementById("btnDeleteAccount").addEventListener("click", async () => {
+            hideStatus();
+            if (await showConfirmModal("Permanently delete account metrics? This can't be undone.")) {
+                try {
+                    const currentUser = auth.currentUser;
+                    const assignedId = await getAccountIdFromUid(currentUser.uid);
+                    await deleteDoc(doc(db, "users", assignedId));
+                    await deleteUser(currentUser);
+                    window.location.href = "/account-settings.html";
+                } catch (err) {
+                    showStatus(err.message, true);
+                }
+            }
+        });
+    </script>
+</body>
+<script type="module" src="/js/disable-zoom.js" defer></script>
+<script type="module" src="/js/Bottom-bar.js"></script>
+
+</html>

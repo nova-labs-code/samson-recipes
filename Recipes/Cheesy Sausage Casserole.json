@@ -5,10 +5,10 @@
     "difficulty": "Medium",
     "servings": "12",
     "images": [
-      "/Images/Cheesy-Sausage-Casserole1.png",
-      "/Images/Cheesy-Sausage-Casserole2.png",
-      "/Images/Cheesy-Sausage-Casserole3.png",
-      "/Images/Cheesy-Sausage-Casserole4.png"
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Cheesy-Sausage-Casserole1.png",
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Cheesy-Sausage-Casserole2.png",
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Cheesy-Sausage-Casserole3.png",
+      "https://nova-labs-code.github.io/SamsonRecipesImages/Cheesy-Sausage-Casserole4.png"
     ],
     "time_breakdown": {
       "prep_time": "1200",

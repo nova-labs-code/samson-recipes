@@ -1,162 +1,182 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Recipe Not Found</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Not Found</title>
 
-<style>
-:root{
-  --bg1:#07070a;
-  --bg2:#0e0b12;
-  --accent:#ff3b3b;
-}
+  <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
 
-*{box-sizing:border-box;}
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
 
-body{
-  margin:0;
-  height:100vh;
-  overflow:hidden;
-  font-family:system-ui, Arial, sans-serif;
-  color:#e6e6e6;
+    /* For Chrome, Safari, and Opera */
+    .your-container-class::-webkit-scrollbar {
+      display: none;
+    }
 
-  perspective:1000px;
+    :root {
+      --bg1: #07070a;
+      --bg2: #0e0b12;
+      --accent: #ff3b3b;
+    }
 
-  background:
-    radial-gradient(circle at 20% 20%, #1a0f14 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, #120a18 0%, transparent 45%),
-    linear-gradient(120deg,var(--bg1),var(--bg2));
-}
+    * {
+      box-sizing: border-box;
+    }
 
-/* ===== STATIC 3D SCENE ===== */
-.scene{
-  position:fixed;
-  inset:0;
-  transform-style:preserve-3d;
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: system-ui, Arial, sans-serif;
+      color: #e6e6e6;
 
-  /* fixed cinematic tilt (no animation) */
-  transform:rotateX(14deg) rotateY(-12deg);
-}
+      perspective: 1000px;
 
-/* subtle depth fog (static only) */
-.fog{
-  position:absolute;
-  inset:-30%;
-  background:radial-gradient(circle at 50% 50%,
-    rgba(255,60,60,0.06),
-    transparent 65%);
-  transform:translateZ(-300px);
-}
+      background:
+        radial-gradient(circle at 20% 20%, #1a0f14 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, #120a18 0%, transparent 45%),
+        linear-gradient(120deg, var(--bg1), var(--bg2));
+    }
 
-/* center lock */
-.center{
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  transform:translateZ(80px);
-}
+    /* ===== STATIC 3D SCENE ===== */
+    .scene {
+      position: fixed;
+      inset: 0;
+      transform-style: preserve-3d;
 
-/* ===== CARD ===== */
-.card{
-  width:90%;
-  max-width:520px;
+      /* fixed cinematic tilt (no animation) */
+      transform: rotateX(14deg) rotateY(-12deg);
+    }
 
-  padding:28px 22px;
-  border-radius:16px;
+    /* subtle depth fog (static only) */
+    .fog {
+      position: absolute;
+      inset: -30%;
+      background: radial-gradient(circle at 50% 50%,
+          rgba(255, 60, 60, 0.06),
+          transparent 65%);
+      transform: translateZ(-300px);
+    }
 
-  background:rgba(10,10,14,0.75);
-  border:1px solid rgba(255,255,255,0.08);
+    /* center lock */
+    .center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translateZ(80px);
+    }
 
-  box-shadow:
-    0 40px 100px rgba(0,0,0,0.8),
-    0 0 60px rgba(255,40,40,0.12);
+    /* ===== CARD ===== */
+    .card {
+      width: 90%;
+      max-width: 520px;
 
-  backdrop-filter:blur(8px);
+      padding: 28px 22px;
+      border-radius: 16px;
 
-  transform:translateZ(0px);
-}
+      background: rgba(10, 10, 14, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
 
-/* ===== TEXT DEPTH (static only) ===== */
-h1{
-  margin:0;
-  font-size:88px;
-  color:var(--accent);
-  text-shadow:0 25px 50px rgba(0,0,0,0.6);
-  transform:translateZ(40px);
-}
+      box-shadow:
+        0 40px 100px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(255, 40, 40, 0.12);
 
-p{
-  margin:12px 0 18px;
-  line-height:1.6;
-  color:#d6d6d6;
-  transform:translateZ(20px);
-}
+      backdrop-filter: blur(8px);
 
-a{
-  display:inline-block;
-  padding:10px 16px;
-  border-radius:999px;
-  text-decoration:none;
-  font-weight:600;
-  color:white;
+      transform: translateZ(0px);
+    }
 
-  background:linear-gradient(135deg,#ff3b3b,#b3002d);
-  box-shadow:0 10px 30px rgba(255,0,0,0.15);
+    /* ===== TEXT DEPTH (static only) ===== */
+    h1 {
+      margin: 0;
+      font-size: 88px;
+      color: var(--accent);
+      text-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+      transform: translateZ(40px);
+    }
 
-  transform:translateZ(50px);
-}
+    p {
+      margin: 12px 0 18px;
+      line-height: 1.6;
+      color: #d6d6d6;
+      transform: translateZ(20px);
+    }
 
-/* optional: disable motion accessibility safe */
-@media (prefers-reduced-motion: reduce){
-  *{animation:none !important;}
-}
-</style>
+    a {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      color: white;
+
+      background: linear-gradient(135deg, #ff3b3b, #b3002d);
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.15);
+
+      transform: translateZ(50px);
+    }
+
+    /* optional: disable motion accessibility safe */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="scene">
-  <div class="fog"></div>
+  <div class="scene">
+    <div class="fog"></div>
 
-  <div class="center">
-    <div class="card">
-      <h1>404</h1>
-      <p id="msg"></p>
-      <a href="/">← Return</a>
+    <div class="center">
+      <div class="card">
+        <h1>404</h1>
+        <p id="msg"></p>
+        <a href="/">← Return</a>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-const messages = [
-  "A recipe once lived here, but it was erased from the pantry archives long ago.",
-  "You found a burned page where instructions used to be written in ink and steam.",
-  "This dish was never finished — only the echo of measurements remains.",
-  "The cookbook remembers this page, but refuses to show it again.",
-  "Something tried to bake here… the oven never agreed.",
-  "A recipe card was torn out mid-sentence and never replaced.",
-  "You’re standing where flavor used to exist before it faded out.",
-  "This page dissolved into broth before it could be served.",
-  "The kitchen lights went out before this recipe could form.",
-  "A forgotten dish lingers here like smoke in an empty pot.",
-  "The instructions were written, then washed away under boiling water.",
-  "This recipe broke apart while still being measured.",
-  "The page was removed from the recipe index without explanation.",
-  "What you see is the aftertaste of something that never finished cooking.",
-  "A dish tried to exist here, but the timeline skipped the timer.",
-  "This recipe exists only as a stain on the cookbook’s memory.",
-  "You reached a shelf where recipes go to be forgotten.",
-  "The ingredients assembled, but the meaning never arrived.",
-  "A half-written recipe still hums in the background of this page.",
-  "This page is what remains after the last spoon was put down."
-];
+  <script>
+    const messages = [
+      "A recipe once lived here, but it was erased from the pantry archives long ago.",
+      "You found a burned page where instructions used to be written in ink and steam.",
+      "This dish was never finished — only the echo of measurements remains.",
+      "The cookbook remembers this page, but refuses to show it again.",
+      "Something tried to bake here… the oven never agreed.",
+      "A recipe card was torn out mid-sentence and never replaced.",
+      "You’re standing where flavor used to exist before it faded out.",
+      "This page dissolved into broth before it could be served.",
+      "The kitchen lights went out before this recipe could form.",
+      "A forgotten dish lingers here like smoke in an empty pot.",
+      "The instructions were written, then washed away under boiling water.",
+      "This recipe broke apart while still being measured.",
+      "The page was removed from the recipe index without explanation.",
+      "What you see is the aftertaste of something that never finished cooking.",
+      "A dish tried to exist here, but the timeline skipped the timer.",
+      "This recipe exists only as a stain on the cookbook’s memory.",
+      "You reached a shelf where recipes go to be forgotten.",
+      "The ingredients assembled, but the meaning never arrived.",
+      "A half-written recipe still hums in the background of this page.",
+      "This page is what remains after the last spoon was put down."
+    ];
 
-document.getElementById("msg").textContent =
-  messages[Math.floor(Math.random() * messages.length)];
-</script>
-
+    document.getElementById("msg").textContent =
+      messages[Math.floor(Math.random() * messages.length)];
+  </script>
+<script type="module" src="/js/disable-zoom"></script>
 </body>
+
 </html>

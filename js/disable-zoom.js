@@ -1,3 +1,4 @@
+import { isAuthorized } from "/js/security.js";
 // disable-zoom-absolute.js
 // Completely disables all zooming behaviors
 

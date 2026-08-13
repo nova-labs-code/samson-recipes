@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<script type="module" src="/js/security.js"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Studio | Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #12141c;
+            margin: 0;
+            padding: 0;
+            color: #e2e8f0;
+        }
+
+        .profile-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .profile-header {
+            background: #1e2230;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 30px;
+            border-left: 6px solid #e67e22;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: block;
+            object-fit: cover;
+            border: 2px solid #e9d5ff;
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 5px 0;
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .meta-badge {
+            background: #2c1d11;
+            color: #e67e22;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        /* --- Live Badge Styling --- */
+        .follower-badge {
+            background: #151824;
+            border: 1px solid #323952;
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Collaboration Requests Area */
+        .collab-panel {
+            background: #151824;
+            border: 1px solid #323952;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+            display: none;
+        }
+
+        .collab-panel h3 {
+            margin-top: 0;
+            color: #e67e22;
+            font-size: 18px;
+        }
+
+        .collab-item {
+            background: #1e2230;
+            border: 1px solid #2d334a;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .collab-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recipe-count {
+            background: #2d334a;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .recipe-card {
+            background: #1e2230;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2d334a;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #1a2430;
+        }
+
+        .card-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-body h3 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .card-meta {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .card-authors {
+            font-size: 12px;
+            color: #e67e22;
+            margin-bottom: 12px;
+        }
+
+        .studio-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #2d334a;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .btn-create {
+            background: #e67e22;
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .btn-edit {
+            background: #2c1d11;
+            color: #e67e22;
+            flex: 1;
+            border: 1px solid #e67e22;
+        }
+
+        .btn-delete {
+            background: #3b1111;
+            color: #f87171;
+            flex: 1;
+            border: 1px solid #f87171;
+        }
+
+        .btn-accept {
+            background: #14532d;
+            color: #4ade80;
+        }
+
+        .btn-decline {
+            background: #7f1d1d;
+            color: #f87171;
+        }
+
+        .custom-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(8, 9, 13, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .custom-dialog-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .custom-dialog-box {
+            background: #1e2230;
+            border: 1px solid #323952;
+            border-radius: 16px;
+            width: 92%;
+            max-width: 460px;
+            padding: 28px;
+            transform: scale(0.92);
+            transition: transform 0.25s;
+            box-sizing: border-box;
+        }
+
+        .custom-dialog-overlay.active .custom-dialog-box {
+            transform: scale(1);
+        }
+
+        .custom-dialog-title {
+            margin: 0 0 12px 0;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        .confirmation-target-wrapper {
+            background: #151824;
+            border: 1px dashed #475569;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 15px;
+            color: #f87171;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .dialog-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #323952;
+            background: #151824;
+            color: #ffffff;
+            box-sizing: border-box;
+            margin-bottom: 24px;
+        }
+
+        .custom-dialog-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .custom-dialog-footer .btn {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #2d334a;
+            color: #e2e8f0;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 18px;
+            color: #94a3b8;
+        }
+
+        /* --- MOBILE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .profile-container {
+                margin: 10px auto;
+                padding: 15px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+                padding: 20px;
+                border-left: none;
+                border-top: 6px solid #e67e22;
+            }
+
+            .btn-create {
+                width: 100%;
+                text-align: center;
+            }
+
+            .collab-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .collab-buttons {
+                width: 100%;
+            }
+
+            .collab-buttons .btn {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-main {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .recipe-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .custom-dialog-box {
+                padding: 20px;
+            }
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div id="profileStatus" class="loading-state">
+            Opening Creator Studio dashboard and syncing real-time data...
+        </div>
+
+        <div id="profileContent" style="display: none;">
+            <div class="profile-header">
+                <div class="header-main">
+                    <img class="avatar" id="userAvatar" src="" alt="Profile Avatar">
+                    <div class="profile-info">
+                        <h1 id="userName">Loading Studio</h1>
+                        <p id="userMeta">Creator Engine Mode</p>
+                        <div class="meta-badge" id="accountIdBadge">ID: --------</div>
+                        <div class="follower-badge">
+                            <span class="live-dot"></span>
+                            <span id="followerCount">0</span> Followers
+                        </div>
+                    </div>
+                </div>
+                <a href="/create.html" class="btn btn-create">+ Create New Recipe</a>
+            </div>
+
+            <div id="collabPanel" class="collab-panel">
+                <h3>Incoming Collaboration Invites</h3>
+                <div id="collabRequestsList"></div>
+            </div>
+
+            <div class="section-title">
+                <span>Manage Your Recipes</span>
+                <span class="recipe-count" id="recipeCount">0</span>
+            </div>
+
+            <div class="recipe-grid" id="userRecipeGrid"></div>
+        </div>
+    </div>
+
+    <div id="customDialogOverlay" class="custom-dialog-overlay">
+        <div class="custom-dialog-box">
+            <h3 class="custom-dialog-title" id="customDialogTitle">Action Confirmation</h3>
+            <p id="customDialogDesc">Are you sure you want to proceed?</p>
+            <div id="verificationContainer" style="display: none;">
+                <div class="confirmation-target-wrapper" id="verificationTargetText">Recipe Name</div>
+                <input type="text" class="dialog-input" id="verificationInputField"
+                    placeholder="Type the recipe name exactly to confirm...">
+            </div>
+            <div class="custom-dialog-footer" id="customDialogFooter"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, getAccountIdFromUid } from "/js/firebase.js";
+        import { doc, collection, query, where, deleteDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        let accountId = null;
+        let authorName = "Samson Chef";
+
+        // Unsubscribe handles for live listeners
+        let unsubProfile = null;
+        let unsubRequests = null;
+        let unsubOwnerRecipes = null;
+        let unsubCollabRecipes = null;
+
+        // Dynamic local cache for merged live recipes
+        let ownerRecipesMap = new Map();
+        let collabRecipesMap = new Map();
+
+        function getInitials(name) { return name ? name.trim().split(/\s+/).map(w => w[0]).join("").substring(0, 1).toUpperCase() : "SR"; }
+        function stringToColor(str) { let h = 0; for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h); return `hsl(${Math.abs(h) % 360}, 65%, 45%)`; }
+
+        function createAvatarImage(name) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement("canvas"); canvas.width = 200; canvas.height = 200;
+                const ctx = canvas.getContext("2d");
+                ctx.beginPath(); ctx.arc(100, 100, 100, 0, Math.PI * 2); ctx.fillStyle = stringToColor(name); ctx.fill();
+                ctx.fillStyle = "white"; ctx.font = "900 120px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.fillText(getInitials(name), 100, 108);
+                resolve(canvas.toDataURL("image/png"));
+            });
+        }
+
+        function openSecureDeleteConfirm(recipeId, recipeTitle, onConfirm) {
+            const overlay = document.getElementById("customDialogOverlay");
+            const verifyContainer = document.getElementById("verificationContainer");
+            const inputField = document.getElementById("verificationInputField");
+            const footer = document.getElementById("customDialogFooter");
+
+            document.getElementById("customDialogTitle").innerHTML = `⚠️ Delete Recipe`;
+            document.getElementById("customDialogDesc").textContent = "Type the recipe title down below to delete permanently:";
+            document.getElementById("verificationTargetText").textContent = recipeTitle;
+            inputField.value = ""; verifyContainer.style.display = "block"; footer.innerHTML = "";
+
+            const btnCancel = document.createElement("button"); btnCancel.className = "btn btn-secondary"; btnCancel.textContent = "Cancel"; btnCancel.onclick = closeDialog;
+            const btnDelete = document.createElement("button"); btnDelete.className = "btn btn-delete"; btnDelete.textContent = "Delete Permanently"; btnDelete.disabled = true;
+
+            inputField.oninput = () => { btnDelete.disabled = inputField.value.trim() !== recipeTitle.trim(); };
+            btnDelete.onclick = async () => { btnDelete.disabled = true; await onConfirm(); closeDialog(); };
+
+            footer.appendChild(btnCancel); footer.appendChild(btnDelete);
+            overlay.classList.add("active");
+        }
+
+        function closeDialog() { document.getElementById("customDialogOverlay").classList.remove("active"); }
+
+        // --- LIVE USER PROFILE & FOLLOWER LISTENERS ---
+        function listenToUserProfile(userId) {
+            if (unsubProfile) unsubProfile();
+            const userRef = doc(db, "users", userId);
+
+            unsubProfile = onSnapshot(userRef, async (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    authorName = data.name || "Samson Chef";
+
+                    document.getElementById("userName").textContent = authorName;
+                    document.getElementById("accountIdBadge").textContent = `ID: ${userId}`;
+                    document.getElementById("userAvatar").src = await createAvatarImage(authorName);
+
+                    let followerCount = 0;
+                    if (Array.isArray(data.followers)) {
+                        followerCount = data.followers.length;
+                    } else if (typeof data.followerCount === "number") {
+                        followerCount = data.followerCount;
+                    }
+                    document.getElementById("followerCount").textContent = followerCount.toLocaleString();
+                }
+            });
+        }
+
+        // --- LIVE COLLABORATION REQUESTS LISTENER ---
+        function listenToCollaborationRequests(userId) {
+            if (unsubRequests) unsubRequests();
+
+            const q = query(
+                collection(db, "collaboration_requests"),
+                where("receiverId", "==", userId),
+                where("status", "==", "pending")
+            );
+
+            unsubRequests = onSnapshot(q, (snapshot) => {
+                const listContainer = document.getElementById("collabRequestsList");
+                const panel = document.getElementById("collabPanel");
+                listContainer.innerHTML = "";
+
+                if (snapshot.empty) {
+                    panel.style.display = "none";
+                    return;
+                }
+
+                panel.style.display = "block";
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const reqId = docSnap.id;
+
+                    const item = document.createElement("div");
+                    item.className = "collab-item";
+                    item.innerHTML = `
+                        <div>
+                            <strong>${data.recipeName}</strong> <span style="color:#94a3b8;">(ID: ${data.recipeId})</span><br>
+                            <small style="color:#94a3b8;">Invited by: ${data.senderName} (${data.senderId})</small>
+                        </div>
+                        <div class="collab-buttons">
+                            <button class="btn btn-accept" data-id="${reqId}" data-recipe="${data.recipeId}">Accept</button>
+                            <button class="btn btn-decline" data-id="${reqId}">Decline</button>
+                        </div>
+                    `;
+
+                    item.querySelector(".btn-accept").onclick = async (e) => {
+                        const rId = e.target.getAttribute("data-recipe");
+                        const rDocRef = doc(db, "recipes", rId);
+
+                        await updateDoc(rDocRef, {
+                            collaborators: arrayUnion(userId)
+                        });
+
+                        await deleteDoc(doc(db, "collaboration_requests", reqId));
+                    };
+
+                    item.querySelector(".btn-decline").onclick = async () => {
+                        await deleteDoc(doc(db, "collaboration_requests", reqId));
+                    };
+
+                    listContainer.appendChild(item);
+                });
+            });
+        }
+
+        // --- LIVE RECIPES GRID LISTENERS ---
+        function listenToUserRecipes(userId) {
+            if (unsubOwnerRecipes) unsubOwnerRecipes();
+            if (unsubCollabRecipes) unsubCollabRecipes();
+
+            const qOwner = query(collection(db, "recipes"), where("ownerId", "==", userId));
+            const qCollab = query(collection(db, "recipes"), where("collaborators", "array-contains", userId));
+
+            unsubOwnerRecipes = onSnapshot(qOwner, (snapshot) => {
+                ownerRecipesMap.clear();
+                snapshot.forEach(d => ownerRecipesMap.set(d.id, { id: d.id, data: d.data(), isOwner: true }));
+                renderMergedRecipes();
+            });
+
+            unsubCollabRecipes = onSnapshot(qCollab, (snapshot) => {
+                collabRecipesMap.clear();
+                snapshot.forEach(d => collabRecipesMap.set(d.id, { id: d.id, data: d.data(), isOwner: false }));
+                renderMergedRecipes();
+            });
+        }
+
+        function renderMergedRecipes() {
+            const grid = document.getElementById("userRecipeGrid");
+            grid.innerHTML = "";
+
+            // Combine owner and collab recipes seamlessly
+            const combinedDocsMap = new Map([...ownerRecipesMap, ...collabRecipesMap]);
+            const combinedDocs = Array.from(combinedDocsMap.values());
+
+            document.getElementById("recipeCount").textContent = combinedDocs.length;
+
+            if (combinedDocs.length === 0) {
+                grid.innerHTML = '<div class="loading-state">No recipes found. Click create above to start!</div>';
+                return;
+            }
+
+            combinedDocs.forEach(({ id, data, isOwner }) => {
+                const rObj = data.recipeData?.recipe || data.recipeData || data;
+                const card = document.createElement("div");
+                card.className = "recipe-card";
+
+                card.innerHTML = `
+                    <img class="card-img" src="${data.image || "/Images/placeholder.png"}" alt="${data.name}">
+                    <div class="card-body">
+                        <h3>${data.name}</h3>
+                        <div class="card-meta">Servings: ${rObj.servings || "4"} | ${data.difficulty || 'Easy'}</div>
+                        <div class="card-authors" style="color: ${isOwner ? '#e67e22' : '#4ade80'}">
+                            ${isOwner ? `By You` : `Shared Collaboration`}
+                        </div>
+                        <div class="studio-actions">
+                            <a href="create.html?edit=${id}" class="btn btn-edit">Edit</a>
+                            <button class="btn btn-delete" data-id="${id}" data-title="${data.name}" ${!isOwner ? 'disabled' : ''}>Delete</button>
+                        </div>
+                    </div>
+                `;
+
+                if (isOwner) {
+                    card.querySelector(".btn-delete").onclick = (e) => {
+                        const targetId = e.target.getAttribute("data-id");
+                        const title = e.target.getAttribute("data-title");
+                        openSecureDeleteConfirm(targetId, title, async () => {
+                            await deleteDoc(doc(db, "recipes", targetId));
+                        });
+                    };
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        // --- AUTH INITIALIZATION ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                accountId = await getAccountIdFromUid(user.uid);
+                if (accountId) {
+                    // Start all live listeners
+                    listenToUserProfile(accountId);
+                    listenToCollaborationRequests(accountId);
+                    listenToUserRecipes(accountId);
+
+                    document.getElementById("profileStatus").style.display = "none";
+                    document.getElementById("profileContent").style.display = "block";
+                }
+            } else { 
+                window.location.href = "account-settings.html"; 
+            }
+        });
+    </script>
+</body>
+<script type="module" src="/js/disable-zoom.js"></script>
+</html>

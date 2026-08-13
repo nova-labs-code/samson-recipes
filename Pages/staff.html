@@ -1,17 +1,28 @@
 <!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json">
   <title>Staff | Samson Recipes</title>
   <style>
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      /* For Internet Explorer and Edge */
+      -ms-overflow-style: none;
+    }
+
     :root {
-      --bg: #f6f6f6;
-      --card: #ffffff;
-      --text: #2a2a2a;
-      --muted: #6b6b6b;
-      --border: #e6e6e6;
-      --accent: #d96b2f;
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #e0e0e0;
+      --muted: #a0a0a0;
+      --border: #2d2d2d;
+      --accent: #f27a35;
+      --accent-dim: rgba(242, 122, 53, 0.15);
     }
 
     body {
@@ -37,6 +48,7 @@
       margin: 0;
       font-size: 40px;
       letter-spacing: 1px;
+      color: #ffffff;
     }
 
     .grid {
@@ -49,10 +61,14 @@
     .card {
       background: var(--card);
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       padding: 25px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card::before {
@@ -62,51 +78,92 @@
       right: -50px;
       width: 120px;
       height: 120px;
-      background: rgba(217, 107, 47, 0.12);
+      background: var(--accent-dim);
       border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
     }
 
     .profile {
       display: flex;
       align-items: center;
       gap: 15px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Interactive Avatar Link Base Styling */
+    .avatar-link {
+      text-decoration: none;
+      outline: none;
     }
 
     .avatar {
       width: 70px;
       height: 70px;
       border-radius: 50%;
+      display: block;
+      object-fit: cover;
       background: var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: var(--muted);
+      border: 3px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+    }
+
+    .avatar:active {
+      transform: scale(0.95);
+    }
+
+    .avatar.clicked {
+      animation: avatarClick .3s ease;
+    }
+
+    @keyframes avatarClick {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(0.9) rotate(-5deg);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
 
     .card h2 {
       margin: 0;
-      font-size: 22px;
+      font-size: 20px;
       letter-spacing: 0.5px;
-      color: var(--text);
+      color: var(--accent);
     }
 
     .card h3 {
-      margin: 12px 0 8px;
+      margin: 4px 0 0;
       font-size: 18px;
-      color: var(--text);
+      color: #ffffff;
     }
 
     .subtitle {
       color: var(--muted);
       font-size: 14px;
-      margin-top: 5px;
+      margin-top: 15px;
+      line-height: 1.5;
     }
 
     ul {
-      margin: 10px 0 0;
+      margin: 15px 0 0;
       padding-left: 20px;
       color: var(--text);
+      line-height: 1.6;
     }
 
     .footer {
@@ -114,7 +171,7 @@
       margin-top: 40px;
       padding-top: 20px;
       border-top: 1px solid var(--border);
-      color: darkgrey;
+      color: var(--muted);
       font-size: 14px;
     }
 
@@ -124,22 +181,15 @@
       margin-top: 12px;
     }
 
-    /* Icons */
-    .icon {
-      width: 18px;
-      height: 18px;
-      margin-right: 8px;
-      vertical-align: middle;
-      fill: var(--accent);
-    }
-
     @media (max-width: 600px) {
       header h1 {
         font-size: 32px;
       }
     }
   </style>
+  <script type="module" src="/js/profile.js"></script>
 </head>
+
 <body>
 
   <div class="container">
@@ -149,65 +199,81 @@
 
     <div class="grid">
       <div class="card">
-        <div class="profile">
-          <div class="avatar">ES</div>
-          <div>
-            <h2>Founder & Creator</h2>
-            <h3>Elisha Samson</h3>
+        <div>
+          <div class="profile" data-name="Elisha Samson">
+            <a class="avatar-link" href="/profile?1">
+              <img class="avatar" alt="Elisha Samson">
+            </a>
+            <div>
+              <h2>Founder & Creator</h2>
+              <h3>Elisha Samson</h3>
+            </div>
           </div>
+          <p class="subtitle">
+            I’m Elisha Samson, the founder and creator behind this recipe site. I manage the creative direction and
+            handle
+            the majority of the site’s content.
+          </p>
+          <ul>
+            <li>Developing and testing recipes</li>
+            <li>Writing all recipe content and scripts</li>
+            <li>Managing the website and content updates</li>
+            <li>Overseeing production and quality control</li>
+            <li>Taking some of the photos featured on the site</li>
+          </ul>
         </div>
-        <p class="subtitle">
-          I’m Elisha Samson, the founder and creator behind this recipe site. I manage the creative direction and handle the majority of the site’s content.
-        </p>
-        <ul>
-          <li>Developing and testing recipes</li>
-          <li>Writing all recipe content and scripts</li>
-          <li>Managing the website and content updates</li>
-          <li>Overseeing production and quality control</li>
-          <li>Taking some of the photos featured on the site</li>
-        </ul>
       </div>
 
       <div class="card">
-        <div class="profile">
-          <div class="avatar">AS</div>
-          <div>
-            <h2>Head Chef</h2>
-            <h3>Ella</h3>
+        <div>
+          <div class="profile" data-name="Ella">
+            <a class="avatar-link" href="/profile?0">
+              <img class="avatar" alt="Ella">
+            </a>
+            <div>
+              <h2>Head Chef</h2>
+              <h3>Ella</h3>
+            </div>
           </div>
+          <p class="subtitle">
+            Ella leads recipe development and helps refine every dish.
+          </p>
+          <ul>
+            <li>Leading recipe development</li>
+            <li>Improving recipes (flavors, ingredients, and presentation)</li>
+            <li>Providing feedback on taste, texture, and ingredients</li>
+            <li>Taking some of the photos featured on the site</li>
+          </ul>
         </div>
-        <p class="subtitle">
-          Ella leads recipe development and helps refine every dish.
-        </p>
-        <ul>
-          <li>Leading recipe development</li>
-          <li>Improving recipes (flavors, ingredients, and presentation)</li>
-          <li>Providing feedback on taste, texture, and ingredients</li>
-          <li>Taking some of the photos featured on the site</li>
-        </ul>
       </div>
 
       <div class="card">
-        <div class="profile">
-          <div class="avatar">I</div>
-          <div>
-            <h2>Secondary Chef</h2>
-            <h3>Ivan</h3>
+        <div>
+          <div class="profile" data-name="Ivan">
+            <a class="avatar-link" href="/profile?0">
+              <img class="avatar" alt="Ivan">
+            </a>
+            <div>
+              <h2>Secondary Chef</h2>
+              <h3>Ivan</h3>
+            </div>
           </div>
+          <p class="subtitle">
+            Ivan supports recipe development and testing.
+          </p>
+          <ul>
+            <li>Brainstorming recipe ideas</li>
+            <li>Testing recipes</li>
+            <li>Providing feedback on taste and presentation</li>
+          </ul>
         </div>
-        <p class="subtitle">
-          Ivan supports recipe development and testing.
-        </p>
-        <ul>
-          <li>Brainstorming recipe ideas</li>
-          <li>Testing recipes</li>
-          <li>Providing feedback on taste and presentation</li>
-        </ul>
       </div>
 
-      <div class="card">
-        <h2>Recipe Testing</h2>
-        <p>Some recipes are still in the testing phase. We aim to test every recipe before publishing, but some are published while still being refined.</p>
+      <div class="card" style="justify-content: flex-start;">
+        <h2 style="color: #ffffff; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px;">
+          Recipe Testing</h2>
+        <p style="line-height: 1.5;">Some recipes are still in the testing phase. We aim to test every recipe before
+          publishing, but some are published while still being refined.</p>
         <p class="note">Note: Recipes will be updated as testing is completed.</p>
       </div>
     </div>
@@ -216,10 +282,98 @@
       © 2026 Samson Recipes by Nova Labs Food
     </div>
   </div>
-  <script src="/js/disable-zoom.js"></script>
-  <script src="/js/Tier.js" defer></script>
-  <script src="/js/Bottom-bar.js"></script>
-  
+
+  <script>
+    function stringToColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const hue = Math.abs(hash) % 360;
+      return `hsl(${hue}, 65%, 45%)`;
+    }
+
+    function getContrastAccent(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const hue = Math.abs(hash) % 360;
+      return `hsl(${hue}, 85%, 65%)`;
+    }
+
+    function getInitials(name) {
+      if (!name) return "SR";
+      return name
+        .trim()
+        .split(/\s+/)
+        .map(word => word[0])
+        .join("")
+        .substring(0, 1)
+        .toUpperCase();
+    }
+
+    function createAvatarImage(name) {
+      return new Promise(resolve => {
+        const initials = getInitials(name);
+        const color = stringToColor(name);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 200;
+        canvas.height = 200;
+
+        const ctx = canvas.getContext("2d");
+
+        // Background circle
+        ctx.beginPath();
+        ctx.arc(100, 100, 100, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        // Initial
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 120px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(initials, 100, 108);
+
+        resolve(canvas.toDataURL("image/png"));
+      });
+    }
+
+    document.querySelectorAll(".profile").forEach(async profile => {
+      const name = profile.dataset.name;
+      const avatarLink = profile.querySelector(".avatar-link");
+      const avatar = profile.querySelector(".avatar");
+
+      if (avatar && name) {
+        avatar.src = await createAvatarImage(name);
+        avatar.alt = name;
+
+        const dynamicAccent = getContrastAccent(name);
+
+        avatarLink.addEventListener("mouseenter", () => {
+          avatar.style.borderColor = dynamicAccent;
+        });
+
+        avatarLink.addEventListener("mouseleave", () => {
+          avatar.style.borderColor = "var(--border)";
+        });
+
+        avatarLink.addEventListener("click", () => {
+          avatar.classList.add("clicked");
+        });
+
+        avatar.addEventListener("animationend", () => {
+          avatar.classList.remove("clicked");
+        });
+      }
+    });
+  </script>
+
+  <script type="module" src="/js/disable-zoom.js"></script>
+  <script type="module" src="/js/Bottom-bar.js"></script>
 
 </body>
+
 </html>

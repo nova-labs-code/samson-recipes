@@ -1,145 +1,546 @@
-body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #111;
-      background: #fff;
-    }
+/* ==========================================================================
+   0. ROOT VARIABLES & GLOBAL SETUP
+   ========================================================================== */
+:root {
+  color-scheme: dark;
+  
+  /* Core Colors */
+  --bg-main: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-elevated: #2a2a2a;
+  --bg-active: #333333;
+  
+  /* Text Colors */
+  --text-main: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --text-disabled: #666666;
+  --text-inv: #121212;
+  
+  /* Accent Colors */
+  --accent: #bb86fc;
+  --accent-hover: #d7b4ff;
+  --accent-bg: rgba(187, 134, 252, 0.15);
+  
+  /* Borders & Rules */
+  --border-main: #333333;
+  --border-focus: #bb86fc;
+  
+  /* Status Colors */
+  --success: #03dac6;
+  --error: #cf6679;
+}
 
-    html { scroll-behavior: smooth; }
+/* Base text selection */
+::selection {
+  background-color: var(--accent);
+  color: var(--text-inv);
+}
 
-    h1 {
-      text-align: center;
-      font-family: "Comic Sans MS";
-      font-size: 26px;
-      margin: 1em 0;
-    }
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-main);
+  border-radius: 6px;
+  border: 3px solid var(--bg-main);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-disabled);
+}
 
-    p {
-      text-align: center;
-      font-size: 20px;
-      margin: 0.5em 0;
-    }
+/* ==========================================================================
+   1. GLOBAL & LAYOUT ELEMENTS
+   ========================================================================== */
+html, body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
 
-    hr { margin: 20px 0; }
+main, header, footer, nav, section, article, aside, div {
+  background-color: transparent; /* Allows nesting without compounding opacity */
+  border-color: var(--border-main);
+}
 
-    li {
-      font-size: 21px;
-      margin-bottom: 0.4em;
-      margin-left: .5em;
-    }
+/* ==========================================================================
+   2. HEADINGS & TYPOGRAPHY
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
 
-    ol { list-style-type: decimal-leading-zero; }
+p, span, label, small, strong, b, em, i, u, s, time, address {
+  color: var(--text-main);
+}
 
-    img {
-      display: block;
-      margin: 0 auto;
-      border-radius: 25px;
-      width: 285px;
-      height: 285px;
-      object-fit: cover;
-      max-width: 90vw;
-      max-height: 90vw;
-    }
+small {
+  color: var(--text-muted);
+}
 
-    #imageGallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin: 10px 0;
-    }
+strong, b {
+  color: #ffffff;
+}
 
-    #imageGallery img {
-      width: 220px;
-      height: 220px;
-      border-radius: 14px;
-      object-fit: cover;
-    }
+/* Highlights & Markers */
+mark {
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  padding: 0.1em 0.3em;
+}
 
-    /* 🎠 CAROUSEL */
-    .carousel-container { position: relative; }
+abbr[title], acronym[title] {
+  text-decoration: underline dotted var(--text-muted);
+  cursor: help;
+}
 
-    .carousel-images img {
-      display: none;
-      width: 220px;
-      height: 220px;
-      border-radius: 14px;
-      object-fit: cover;
-    }
+cite, q, blockquote {
+  font-style: italic;
+  color: var(--text-muted);
+}
 
-    .carousel-images img.active {
-      display: block;
-      margin: 0 auto;
-    }
+blockquote {
+  border-left: 4px solid var(--border-main);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  background-color: var(--bg-surface);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
 
-    .carousel-dots {
-      text-align: center;
-      margin-top: 10px;
-    }
+/* Inserts and Deletes */
+ins {
+  background-color: rgba(3, 218, 198, 0.15);
+  color: var(--success);
+  text-decoration: none;
+}
 
-    .carousel-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      margin: 0 4px;
-      border-radius: 50%;
-      background: #bbb;
-      cursor: pointer;
-    }
+del, strike {
+  background-color: rgba(207, 102, 121, 0.15);
+  color: var(--error);
+  text-decoration: line-through;
+}
 
-    .carousel-dot.active {
-      background: #111;
-    }
+hr {
+  border: 0;
+  border-top: 1px solid var(--border-main);
+  margin: 2rem 0;
+}
 
-    /* ⏱️ TIME GRID (RESTORED) */
-    .time-grid {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: none;
-      text-align: center;
-    }
+/* ==========================================================================
+   3. HYPERLINKS
+   ========================================================================== */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
 
-    .time-box {
-      min-width: 110px;
-      padding: 10px;
-    }
+a:visited {
+  color: #9a66d4;
+}
 
-    .time-box h1 {
-      font-size: 18px;
-      margin: 0;
-    }
+a:hover, a:focus {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
 
-    .page-nav {
-      text-align: center;
-      margin: 1em 0;
-      font-size: 20px;
-    }
+a:active {
+  color: #ffffff;
+}
 
-    .page-nav a {
-      margin: 0 10px;
-      text-decoration: underline;
-      font-weight: bold;
-      color: black;
-      cursor: pointer;
-    }
+/* ==========================================================================
+   4. CODE & PREFORMATTED TEXT
+   ========================================================================== */
+code, pre, kbd, samp, var, tt, listing, plaintext, xmp {
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: var(--bg-surface);
+  color: #ff79c6; /* Soft pink for universal code highlight viability */
+  border-radius: 4px;
+}
 
-    #backToTop {
-      position: fixed;
-      bottom: 10px;
-      right: 15px;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      opacity: 0;
-      visibility: hidden;
-      transition: 0.2s;
-      z-index: 9999;
-    }
+code, kbd, samp, var {
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+}
 
-    #backToTop.show {
-      opacity: 1;
-      visibility: visible;
-    }
+pre {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--border-main);
+}
+
+pre code {
+  padding: 0;
+  font-size: 100%;
+  color: var(--text-main);
+  background-color: transparent;
+}
+
+kbd {
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+  border: 1px solid var(--border-main);
+  box-shadow: 0 2px 0 var(--border-main);
+}
+
+/* ==========================================================================
+   5. LISTS
+   ========================================================================== */
+ul, ol, li, dl, dt, dd, dir {
+  color: var(--text-main);
+}
+
+dt {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+dd {
+  margin-left: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   6. TABLES
+   ========================================================================== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+}
+
+thead, tfoot {
+  background-color: var(--bg-elevated);
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-main);
+}
+
+th {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+caption {
+  padding: 0.5rem;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+colgroup, col {
+  border-color: var(--border-main);
+}
+
+/* ==========================================================================
+   7. FORMS & CONTROLS
+   ========================================================================== */
+form, fieldset {
+  border: 1px solid var(--border-main);
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: var(--bg-surface);
+}
+
+legend {
+  color: #ffffff;
+  padding: 0 0.5rem;
+  font-weight: bold;
+}
+
+/* All inputs, selects, textareas, and buttons */
+input, textarea, select, button {
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Interactive States */
+input:focus, textarea:focus, select:focus, button:focus,
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-bg);
+}
+
+input:disabled, textarea:disabled, select:disabled, button:disabled {
+  background-color: var(--bg-main);
+  color: var(--text-disabled);
+  border-color: var(--border-main);
+  cursor: not-allowed;
+}
+
+/* Placeholders */
+::placeholder, input::placeholder, textarea::placeholder {
+  color: var(--text-disabled);
+  opacity: 1;
+}
+
+/* Form Validation styling */
+input:required {
+  border-left: 3px solid var(--accent);
+}
+input:invalid:not(:placeholder-shown) {
+  border-color: var(--error);
+}
+input:valid:not(:placeholder-shown) {
+  border-color: var(--success);
+}
+
+/* Specific Input Tweaks */
+input[type="radio"], input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: auto;
+  height: auto;
+  cursor: pointer;
+}
+
+input[type="color"] {
+  padding: 0.2rem;
+  cursor: pointer;
+  height: 40px;
+}
+
+input[type="file"] {
+  background-color: transparent;
+  border: none;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  background: transparent;
+}
+
+/* Textareas and Selects */
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select, optgroup, option {
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+}
+
+option:checked {
+  background-color: var(--accent-bg) !important;
+  color: var(--accent) !important;
+}
+
+/* Buttons */
+button, input[type="submit"], input[type="button"], input[type="reset"] {
+  cursor: pointer;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-weight: 500;
+}
+
+button:active:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+/* Specialized Form Elements */
+output {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 12px;
+  border: 1px solid var(--border-main);
+  background-color: var(--bg-main);
+  border-radius: 6px;
+  overflow: hidden;
+}
+progress::-webkit-progress-bar {
+  background-color: var(--bg-main);
+}
+progress::-webkit-progress-value {
+  background-color: var(--accent);
+}
+progress::-moz-progress-bar {
+  background-color: var(--accent);
+}
+
+meter {
+  width: 100%;
+  height: 12px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-main);
+  border-radius: 6px;
+}
+meter::-webkit-meter-bar { background: var(--bg-main); }
+meter::-webkit-meter-optimum-value { background: var(--success); }
+meter::-webkit-meter-suboptimum-value { background: #ffb74d; }
+meter::-webkit-meter-even-less-good-value { background: var(--error); }
+
+/* ==========================================================================
+   8. MEDIA & CONTAINERS (Ensuring asset content is never obscured)
+   ========================================================================== */
+img, picture, svg, canvas, video, audio, iframe, object, embed {
+  max-width: 100%;
+  height: auto;
+  background-color: transparent; /* Prevent background bleeding behind alpha channels */
+}
+
+svg {
+  fill: currentColor;
+}
+
+/* Audio / Video controls color adaptation */
+audio {
+  background-color: var(--bg-elevated);
+  border-radius: 4px;
+}
+
+figure {
+  margin: 1.5rem 0;
+  padding: 0.5rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+figcaption {
+  color: var(--text-muted);
+  font-size: 85%;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* ==========================================================================
+   9. INTERACTIVE & SEMANTIC CONSTRUCTS
+   ========================================================================== */
+details {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  color: #ffffff;
+}
+
+summary:focus {
+  outline: none;
+  color: var(--accent);
+}
+
+/* Native Dialog boxes */
+dialog {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-focus);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+/* Ruby syntax */
+ruby, rt, rp {
+  color: var(--text-main);
+}
+rt {
+  color: var(--accent);
+  font-size: 70%;
+}
+
+/* Templates (Hidden naturally, but styled here for integrity if exposed) */
+template, slot {
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   10. OBSOLETE, DEPRECATED & LEGACY ELEMENTS
+   ========================================================================== */
+center {
+  text-align: center;
+}
+
+font {
+  color: inherit !important; /* Forces over-ridden inline color tags if encountered */
+}
+
+big {
+  font-size: 125%;
+  color: #ffffff;
+}
+
+blink {
+  text-decoration: blink; /* Legacy support */
+}
+
+marquee {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  padding: 0.25rem;
+}
+
+basefont {
+  color: var(--text-main);
+}
+
+applet, nobr {
+  color: var(--text-main);
+}
+
+/* Generics fallback for pseudo-elements */
+*::before, *::after {
+  box-sizing: border-box;
+  border-color: var(--border-main);
+}
+
+div {
+  /* Keeps the original transparency behavior but tints it dark */
+  background-color: rgba(18, 18, 18, 0.6) !important;
+  
+  /* Modern CSS that darkens everything behind the div layer */
+  backdrop-filter: brightness(0.4);
+  -webkit-backdrop-filter: brightness(0.4);
+  
+  /* Ensures borders match the dark theme */
+  border-color: rgba(255, 255, 255, 0.1);
+}

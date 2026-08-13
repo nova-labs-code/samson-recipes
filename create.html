@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<script src="/js/security.js" type="module"></script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create - Samson Recipes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #121214;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .wrapper {
+            max-width: 750px;
+            margin: 0 auto;
+            background: #1a1a1e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2a2a30;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        h2 {
+            color: #e67e22;
+            margin-top: 0;
+            font-size: 22px;
+        }
+
+        /* Responsive Grid Settings */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: #252529;
+            border: 1px solid #3a3a42;
+            border-radius: 6px;
+            box-sizing: border-box;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #e67e22;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #718096;
+        }
+
+        textarea {
+            height: 140px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        select option {
+            background: #252529;
+            color: #fff;
+        }
+
+        /* Action Buttons */
+        .btn {
+            background: #e67e22;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .btn:hover {
+            background: #d35400;
+        }
+
+        .btn-secondary {
+            background: #34495e;
+            border: 1px solid #455a64;
+        }
+
+        .btn-secondary:hover {
+            background: #2c3e50;
+        }
+
+        .shield-layer {
+            text-align: center;
+            padding: 40px 10px;
+        }
+
+        .action-bar {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-bar-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-success {
+            background: #0f2d24;
+            color: #2ecc71;
+            border: 1px solid #27ae60;
+        }
+
+        .status-error {
+            background: #3a2214;
+            color: #e67e22;
+            border: 1px solid #d35400;
+        }
+
+        .collab-tray {
+            margin-top: 15px;
+            display: none;
+            background: #222227;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #3a3a42;
+            box-sizing: border-box;
+        }
+
+        .collab-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- MOBILE INTERFACE RULES --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .wrapper {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .collab-input-group {
+                flex-direction: column;
+            }
+
+            .collab-input-group .btn {
+                width: 100%;
+            }
+
+            .action-bar {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .action-bar-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .action-bar-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script type="module" src="/js/profile.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div id="shieldContainer" class="shield-layer">
+            <h2>Access Restricted</h2>
+            <p id="shieldText">You must be authenticated to use the Recipe Creator Engine.</p>
+            <br><a href="account-settings.html" id="shieldLink" class="btn">Go To Authentication Gateway</a>
+        </div>
+
+        <div id="creatorContainer" style="display:none;">
+            <h2 id="formActionTitle">Create New Recipe</h2>
+            <form id="recipeForm" onsubmit="return false;">
+                <div class="grid">
+                    <div class="field"><label>Recipe URL Identifier Slug</label><input type="text" id="recId"
+                            placeholder="e.g., cheesy-sausage-casserole"></div>
+                    <div class="field"><label>Recipe Name</label><input type="text" id="recTitle" required></div>
+                </div>
+                <div class="grid">
+                    <div class="field"><label>Categories (Comma separated)</label><input type="text" id="recCategories"
+                            placeholder="dinner, breakfast"></div>
+                    <div class="field"><label>Tags (Comma separated)</label><input type="text" id="recTags"
+                            placeholder="sausage, cheese, hearty"></div>
+                </div>
+                <div class="grid">
+                    <div class="field"><label>Collections (Comma separated)</label><input type="text"
+                            id="recCollections" placeholder="comfort food, family meals"></div>
+                    <div class="field"><label>Difficulty Complexity</label>
+                        <select id="recDiff">
+                            <option value="">Select Difficulty</option>
+                            <option>Mild</option>
+                            <option>Easy</option>
+                            <option>Intermediate</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="field"><label>Publishing Site Venue</label><input type="text" id="recSite"
+                            value="Samson Recipes"></div>
+                    <div class="field"><label>Yield Servings</label><input type="text" id="recServings" value="4"></div>
+                </div>
+                <div class="grid">
+                    <div class="field"><label>Image Resource URLs (Comma split)</label><input type="text" id="recImages"
+                            placeholder="https://github.com/nova-labs-code/SamsonRecipesImages/raw/main/placeholder.png"></div>
+                    <div class="field"><label>Prep Duration (Seconds)</label><input type="text" id="recPrep"
+                            value="600"></div>
+                </div>
+                <div class="grid">
+                    <div class="field"><label>Cook Duration (Seconds)</label><input type="text" id="recCook"
+                            value="1800"></div>
+                    <div class="field"><label>Storage Management Notes</label><input type="text" id="recStorage"></div>
+                </div>
+
+                <div class="field">
+                    <label>Ingredients (Supports optional group headers syntax matching: ## Protein)</label>
+                    <textarea id="recIngredients"
+                        placeholder="## Protein&#10;3 lb chicken&#10;&#10;## Dairy&#10;2 cups cheese"></textarea>
+                </div>
+
+                <div class="field">
+                    <label>Instructions (Supports optional group headers syntax matching: ## Step Setup)</label>
+                    <textarea id="recInstructions"
+                        placeholder="Mix ingredients thoroughly.&#10;Bake until done."></textarea>
+                </div>
+
+                <div class="field"><label>Serving Suggestions</label><input type="text" id="recSuggestions"></div>
+
+                <div id="collabTray" class="collab-tray">
+                    <label>Invite Collaborator by User ID</label>
+                    <div class="collab-input-group">
+                        <input type="text" id="collabInput" placeholder="Enter target User ID">
+                        <button type="button" class="btn" id="btnSendInvite">Invite</button>
+                    </div>
+                    <div id="collabStatus" style="margin-top: 8px; font-size: 13px; font-weight: 600;"></div>
+                </div>
+
+                <div id="uiStatusMessage" class="status-message"></div>
+
+                <div class="action-bar">
+                    <a href="studio.html"
+                        style="color: #a0aec0; text-decoration: none; font-size: 14px; padding: 10px 0;">Cancel &
+                        Return</a>
+                    <div class="action-bar-buttons">
+                        <button class="btn" id="btnSubmitRecipe">Publish Recipe</button>
+                        <button type="button" class="btn btn-secondary" id="btnToggleCollab">Invite
+                            Collaborators</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Added saveRecipeWithModeration helper import directly from your config script
+        import { db, auth, getAccountIdFromUid, onAuthStateChanged, saveRecipeWithModeration } from "/js/firebase.js";
+        import { doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const adminAccounts = ["1"];
+        let accountId = null;
+        let authorName = "Samson Chef";
+        let editingId = null;
+        let isAuthorizedToEdit = true;
+
+        // Fallback local screening check cloned directly from your configuration model logic
+        const forbiddenWords = ["nsfw", "porn", "porno", "pornography", "hentai", "onlyfans", "fansly", "xvideos", "xnxx", "redtube", "sex", "sexual", "sexy", "nude", "nudes", "naked", "boob", "boobs", "breast", "breasts", "penis", "vagina", "genitals", "cum", "ejaculate", "orgasm", "masturbate", "masturbation", "hookup", "hookups", "hookingup", "fwb", "horny", "kik", "telegram", "address", "zipcode", "postcode", "school", "snapchat", "snap", "instagram", "discord", "whatsapp", "phone", "number", "selfie", "location", "gps", "coordinate", "coordinates"];
+        const forbiddenPhrases = ["send nudes", "send nude", "trade nudes", "swap nudes", "show me your body", "want to have sex", "wanna have sex", "meet for sex", "friends with benefits", "one night stand", "watch porn", "share porn", "buy onlyfans", "subscribe to onlyfans", "meet me", "come meet me", "meet in person", "come over", "hang out alone", "come to my house", "come to your house", "what is your address", "where do you live", "where are you staying", "what city do you live in", "send your address", "give me your address", "drop your address", "what school do you go to", "where do you go to school", "what is your phone number", "give me your phone number", "send me your phone number", "what is your snapchat", "what is your snap", "add me on snapchat", "what is your instagram", "add me on instagram", "what is your discord", "add me on discord", "what is your tiktok", "what is your whatsapp", "send me a picture of yourself", "send me a selfie", "how old are you", "are you home alone", "are your parents home", "are you alone", "what is your full name"];
+        const allForbidden = [...forbiddenWords, ...forbiddenPhrases].sort((a, b) => b.length - a.length);
+
+        function runBackwardsCipher(str) {
+            if (!str) return "";
+            return str.split('').map(char => {
+                const code = char.charCodeAt(0);
+                if (code >= 65 && code <= 90) return String.fromCharCode(90 - (code - 65));
+                if (code >= 97 && code <= 122) return String.fromCharCode(122 - (code - 97));
+                return char;
+            }).join('');
+        }
+
+        function objectContainsForbidden(obj) {
+            if (obj === null || obj === undefined) return false;
+
+            if (typeof obj === 'string') {
+                const plainText = obj.toLowerCase();
+
+                // 1. Create a version of the text with spaces stripped out to capture "s p a c e d" variants
+                const condensedText = plainText.replace(/\s+/g, '');
+
+                const decodedTextAttempt = runBackwardsCipher(obj).toLowerCase();
+                const condensedDecodedAttempt = decodedTextAttempt.replace(/\s+/g, '');
+
+                return allForbidden.some(item => {
+                    const lowerItem = item.toLowerCase();
+                    const escapedItem = lowerItem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                    // Standard word boundary validation
+                    const boundaryRegex = new RegExp(`\\b${escapedItem}\\b`, "i");
+
+                    // Check direct inclusion in standard, condensed, and decoded formats
+                    if (boundaryRegex.test(plainText) || plainText.includes(lowerItem) || condensedText.includes(lowerItem)) {
+                        return true;
+                    }
+
+                    if (boundaryRegex.test(decodedTextAttempt) || decodedTextAttempt.includes(lowerItem) || condensedDecodedAttempt.includes(lowerItem)) {
+                        return true;
+                    }
+
+                    return false;
+                });
+            }
+
+            if (Array.isArray(obj)) return obj.some(item => objectContainsForbidden(item));
+            if (typeof obj === 'object') return Object.values(obj).some(val => objectContainsForbidden(val));
+            return false;
+        }
+        function showUIStatus(text, isError = false) {
+            const statusEl = document.getElementById("uiStatusMessage");
+            statusEl.textContent = text;
+            statusEl.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+            statusEl.style.display = "block";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                accountId = await getAccountIdFromUid(user.uid);
+                if (accountId) {
+                    const uDoc = await getDoc(doc(db, "users", accountId));
+                    if (uDoc.exists()) authorName = uDoc.data().name;
+
+                    await checkForUrlEditParams();
+
+                    if (isAuthorizedToEdit) {
+                        document.getElementById("shieldContainer").style.display = "none";
+                        document.getElementById("creatorContainer").style.display = "block";
+                    }
+                }
+            }
+        });
+
+        async function checkForUrlEditParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("edit")) {
+                editingId = params.get("edit");
+                const rSnap = await getDoc(doc(db, "recipes", editingId));
+                if (rSnap.exists()) {
+                    const recData = rSnap.data();
+                    const isAdmin = adminAccounts.includes(accountId);
+                    const isCreator = recData.ownerId === accountId;
+                    const isCollab = recData.collaborators && recData.collaborators.includes(accountId);
+
+                    if (!isAdmin && !isCreator && !isCollab) {
+                        isAuthorizedToEdit = false;
+                        document.getElementById("shieldText").textContent = "RESTRICTED ACCESS: You do not possess modification flags for this recipe.";
+                        document.getElementById("shieldLink").href = "studio.html";
+                        document.getElementById("shieldLink").textContent = "Return to Studio Portfolio";
+                        return;
+                    }
+
+                    document.getElementById("recId").value = editingId;
+                    document.getElementById("recId").disabled = true;
+                    document.getElementById("formActionTitle").textContent = "Modify Extant Recipe Entry";
+                    hydrateFormFields(rSnap);
+                }
+            }
+        }
+
+        function hydrateFormFields(rSnap) {
+            const data = rSnap.data();
+            const rObj = data.recipeData?.recipe || data.recipeData || data;
+            document.getElementById("recTitle").value = data.name || rObj.title || "";
+            document.getElementById("recCategories").value = data.categories ? data.categories.join(", ") : "";
+            document.getElementById("recTags").value = data.tags ? data.tags.join(", ") : "";
+            document.getElementById("recCollections").value = data.collections ? data.collections.join(", ") : "";
+            document.getElementById("recDiff").value = data.difficulty || rObj.difficulty || "";
+            document.getElementById("recSite").value = data.site || "Samson Recipes";
+            document.getElementById("recServings").value = rObj.servings || "4";
+            document.getElementById("recImages").value = data.image ? data.image : (rObj.images ? rObj.images.join(", ") : "");
+            document.getElementById("recPrep").value = rObj.time_breakdown?.prep_time || "";
+            document.getElementById("recCook").value = rObj.time_breakdown?.cook_time || "";
+            document.getElementById("recStorage").value = rObj.storage ? rObj.storage.join("\n") : "";
+            document.getElementById("recIngredients").value = flattenArrayOrGroup(rObj.ingredients);
+            document.getElementById("recInstructions").value = flattenArrayOrGroup(rObj.instructions);
+        }
+
+        function flattenArrayOrGroup(arr) {
+            if (!arr) return "";
+            return arr.map(element => {
+                if (typeof element === "object" && element.title) {
+                    return `## ${element.title}\n` + element.items.join("\n");
+                }
+                return element;
+            }).join("\n\n");
+        }
+
+        function parseStructuredInput(rawText) {
+            const lines = rawText.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+            const structure = [];
+            let currentGroup = null;
+            for (let line of lines) {
+                if (line.startsWith("##")) {
+                    if (currentGroup) structure.push(currentGroup);
+                    currentGroup = { title: line.replace(/^##\s*/, ""), items: [] };
+                } else {
+                    if (currentGroup) { currentGroup.items.push(line); } else { structure.push(line); }
+                }
+            }
+            if (currentGroup) structure.push(currentGroup);
+            return structure;
+        }
+
+        function splitCommaString(str) { return str.split(",").map(i => i.trim()).filter(i => i.length > 0); }
+
+        document.getElementById("btnToggleCollab").addEventListener("click", () => {
+            const tray = document.getElementById("collabTray");
+            tray.style.display = tray.style.display === "block" ? "none" : "block";
+        });
+
+        document.getElementById("btnSendInvite").addEventListener("click", async () => {
+            const targetUserId = document.getElementById("collabInput").value.trim();
+            const status = document.getElementById("collabStatus");
+            const recipeTitle = document.getElementById("recTitle").value.trim();
+
+            if (!editingId) {
+                status.style.color = "#e67e22";
+                status.textContent = "Please save/publish the recipe first before sending access invites.";
+                return;
+            }
+            if (!targetUserId) {
+                status.style.color = "#e67e22";
+                status.textContent = "Please offer a valid user ID.";
+                return;
+            }
+
+            try {
+                status.style.color = "#e67e22";
+                status.textContent = "Sending request...";
+
+                await addDoc(collection(db, "collaboration_requests"), {
+                    recipeId: editingId,
+                    recipeName: recipeTitle || "Untitled Recipe",
+                    senderId: accountId,
+                    senderName: authorName,
+                    receiverId: targetUserId,
+                    status: "pending",
+                    timestamp: new Date().toISOString()
+                });
+
+                status.style.color = "#2ecc71";
+                status.textContent = `Invitation successfully logged to database for user [${targetUserId}].`;
+                document.getElementById("collabInput").value = "";
+            } catch (err) {
+                status.style.color = "#e74c3c";
+                status.textContent = "Database communication error.";
+            }
+        });
+
+        document.getElementById("btnSubmitRecipe").addEventListener("click", async () => {
+            const title = document.getElementById("recTitle").value;
+            if (!title) { showUIStatus("Recipe Name is required.", true); return; }
+
+            const defaultSlug = title.toLowerCase().replace(/[^a-z0-9-_]/g, "-");
+            let targetId = document.getElementById("recId").value.trim() || defaultSlug;
+
+            if (!editingId) {
+                let collisionCounter = 0; let finalId = targetId; let exists = true;
+                while (exists) {
+                    const checkDoc = await getDoc(doc(db, "recipes", finalId));
+                    if (checkDoc.exists()) { collisionCounter++; finalId = `${targetId}-${collisionCounter}`; } else { exists = false; targetId = finalId; }
+                }
+            }
+
+            const currentDoc = await getDoc(doc(db, "recipes", targetId));
+            let existingCollabs = [];
+            if (currentDoc.exists()) {
+                existingCollabs = currentDoc.data().collaborators || [];
+            }
+
+            const documentWrapper = {
+                name: title,
+                url: title,
+                categories: splitCommaString(document.getElementById("recCategories").value),
+                tags: splitCommaString(document.getElementById("recTags").value),
+                collections: splitCommaString(document.getElementById("recCollections").value),
+                difficulty: document.getElementById("recDiff").value,
+                image: splitCommaString(document.getElementById("recImages").value)[0] || "",
+                ownerId: accountId,
+                collaborators: existingCollabs,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                recipeData: {
+                    title: title,
+                    site: document.getElementById("recSite").value,
+                    recipe: {
+                        difficulty: document.getElementById("recDiff").value,
+                        servings: document.getElementById("recServings").value,
+                        images: splitCommaString(document.getElementById("recImages").value),
+                        time_breakdown: {
+                            prep_time: document.getElementById("recPrep").value,
+                            cook_time: document.getElementById("recCook").value,
+                            total_time: (parseInt(document.getElementById("recPrep").value || 0) + parseInt(document.getElementById("recCook").value || 0)).toString()
+                        },
+                        ingredients: parseStructuredInput(document.getElementById("recIngredients").value),
+                        instructions: parseStructuredInput(document.getElementById("recInstructions").value),
+                        storage: document.getElementById("recStorage").value ? [document.getElementById("recStorage").value] : [],
+                        recipe_by: authorName
+                    }
+                }
+            };
+
+            // MODERATION SCREENING PIPELINE
+            if (objectContainsForbidden(documentWrapper)) {
+                showUIStatus("Submission Rejected: Input contains restricted terms or contact data.", true);
+                console.warn(`Block: Attempted to save forbidden content in recipe [${targetId}].`);
+                return;
+            }
+
+            showUIStatus("Committing changes to the database", false);
+
+            // Leverages your secure backend wrapper function
+            const success = await saveRecipeWithModeration(targetId, documentWrapper);
+            if (success) {
+                setTimeout(() => { window.location.href = "studio.html"; }, 800);
+            } else {
+                showUIStatus("Submission cleared from backend nodes due to compliance flag violation.", true);
+            }
+        });
+    </script>
+</body>
+<script src="/js/disable-zoom.js" type="module"></script>
+<script src="/js/Bottom-bar.js" type="module"></script>
+<script src="/js/noprint.js" type="module"></script>
+
+</html>

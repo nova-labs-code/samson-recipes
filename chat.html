@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<script type="module" src="/js/security.js"></script>
+<html lang="en">
+<head>
+
+<meta property="og:title" content="Group Invitation">
+
+    <meta property="og:description" content="You have been invited to join a group chat on Samson.">
+
+    <meta property="og:url" content="https://samson-recipes.neocities.org/chat.html">
+
+    <meta property="og:type" content="website">
+
+    
+
+    <meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+
+    <meta property="og:image:width" content="1">
+
+    <meta property="og:image:height" content="1">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chat | Samson Recipes</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-chat: #111827;
+            --bg-header: #1f2937;
+            --primary: #4f46e5;
+            --primary-hover: #6366f1;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --success: #10b981;
+            --success-hover: #059669;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            height: 100vh;
+            /* Support for mobile address bars */
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        html, body {
+            height: 100%;
+        }
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            /* Flex items default to min-height/min-width: auto, which lets
+               content push past the container instead of scrolling inside
+               it. min-height/min-width: 0 forces this container (and the
+               chain of flex children below) to actually shrink so their
+               own overflow:auto areas can scroll. */
+            min-height: 0;
+            min-width: 0;
+            max-width: 1280px;
+            width: 100%;
+            margin: 16px auto;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .hidden {
+            display: none !important;
+        }
+        aside {
+            width: 320px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(15, 23, 42, 0.5);
+            position: relative;
+            flex-shrink: 0;
+            min-height: 0;
+        }
+        .auth-header {
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+        }
+        .auth-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .auth-header p {
+            font-size: 0.75rem;
+            color: #c7d2fe;
+        }
+        .search-box {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px; /* Marginally increased for better mobile typing */
+            font-size: 16px; /* Prevents auto-zoom on iOS safari browsers */
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+        .search-box input:focus {
+            border-color: var(--primary-hover);
+        }
+        .list-container {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 8px;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile iOS */
+        }
+        .section-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary-hover);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+        .btn-danger-link {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-danger-link:hover {
+            text-decoration: underline;
+        }
+        .chat-item-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            margin-bottom: 4px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--text-main);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .chat-item-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .chat-item-btn.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .chat-meta-pane {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .chat-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chat-time {
+            font-size: 0.625rem;
+            color: var(--text-muted);
+        }
+        .chat-preview {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-chat);
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+        }
+        .chat-fallback {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            padding: 32px;
+            text-align: center;
+        }
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        header {
+            padding: 16px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .mobile-back-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 8px;
+            margin: -8px 0 -8px -8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .mobile-back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .msg-search-input {
+            padding: 6px 12px;
+            font-size: 16px; /* 16px to prevent zoom on focus */
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            width: 140px;
+            transition: width 0.2s;
+        }
+        .msg-search-input:focus {
+            width: 180px;
+            border-color: var(--primary);
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .header-actions button {
+            background-color: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header-actions button:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+        .header-actions button.success-btn {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .header-actions button.success-btn:hover {
+            background-color: var(--success);
+            color: white;
+        }
+        .messages-container {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .msg-row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .msg-row.me {
+            align-items: flex-end;
+        }
+        .msg-row.them {
+            align-items: flex-start;
+        }
+        .bubble {
+            width: fit-content;
+            max-width: 75%; /* Changed from 44ch to 75% for seamless scaling across different mobile viewports */
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            cursor: pointer;
+            /* Stop iOS's native text-selection/callout bubble from popping
+               up and fighting with our custom long-press context menu. */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .msg-row.me .bubble {
+            background-color: var(--primary);
+            color: white;
+            border-top-right-radius: 0;
+        }
+        .msg-row.them .bubble {
+            background-color: var(--bg-header);
+            color: var(--text-main);
+            border-top-left-radius: 0;
+            border: 1px solid var(--border-color);
+        }
+        .msg-sender {
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--primary-hover);
+            margin-bottom: 4px;
+        }
+        .msg-time {
+            font-size: 0.5rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+        form {
+            padding: 12px;
+            background-color: var(--bg-header);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            /* Keep the composer clear of the iOS home-indicator / gesture bar */
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+        form input {
+            flex: 1;
+            padding: 12px 16px; /* Taller touch targets */
+            font-size: 16px; /* No iOS auto-zoom */
+            background-color: var(--bg-chat);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+        }
+        form button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: var(--primary-hover);
+        }
+        .context-menu {
+            position: absolute;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 4px;
+            min-width: 140px;
+        }
+        .context-menu button {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            padding: 10px 12px; /* Larger tap targets */
+            font-size: 0.875rem;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .context-menu button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .context-menu button.delete-btn {
+            color: var(--danger);
+        }
+        .context-menu button.delete-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .auth-guard {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            max-height: 85vh;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            padding: 12px;
+            background-color: var(--bg-header);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .btn-modal-cancel {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-modal-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+        .btn-modal-submit {
+            background-color: var(--success);
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-modal-submit:hover {
+            background-color: var(--success-hover);
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 16px;
+            background-color: var(--bg-chat);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+        .checkbox-container {
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-chat);
+            border-radius: 6px;
+            padding: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .checkbox-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .blocked-user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+        .kick-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 4px;
+            text-transform: uppercase;
+            padding: 4px;
+        }
+        .kick-btn:hover {
+            text-decoration: underline;
+        }
+        .system-message-row {
+            align-self: center;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background-color: rgba(148, 163, 184, 0.08);
+            padding: 4px 12px;
+            border-radius: 999px;
+            max-width: 85%;
+        }
+        /* --- VOICE CALL (LiveKit) --- */
+        .call-panel {
+            padding: 10px 16px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .call-participants {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .call-participant {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 56px;
+        }
+        .call-participant .avatar {
+            width: 40px;
+            height: 40px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+        }
+        /* The blue "speaking" stroke */
+        .call-participant.speaking .avatar {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+        }
+        .call-participant-name {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            max-width: 56px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .call-participant.speaking .call-participant-name {
+            color: #93c5fd;
+        }
+        .call-participant-badges {
+            display: flex;
+            gap: 2px;
+        }
+        .call-mic-icon {
+            font-size: 0.6rem;
+        }
+        .call-mic-icon.muted {
+            color: var(--danger);
+        }
+        .call-controls {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .call-mute-btn,
+        .call-leave-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .call-mute-btn.active {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .call-leave-btn {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .call-leave-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .header-actions button.call-btn {
+            border-color: var(--primary);
+            color: var(--primary-hover);
+        }
+        .header-actions button.call-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        .header-actions button.call-btn.in-call {
+            background-color: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+        .header-actions button.call-btn.join-call {
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+        .header-actions button.call-btn.join-call:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .sidebar-join-call-btn {
+            margin-top: 6px;
+            padding: 4px 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 5px;
+            border: 1px solid #3b82f6;
+            background-color: rgba(59, 130, 246, 0.12);
+            color: #93c5fd;
+            cursor: pointer;
+            width: fit-content;
+        }
+        .sidebar-join-call-btn:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        /* --- MOBILE RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            body {
+                /* iOS Safari address bar shrink/grow handling */
+                height: 100dvh;
+            }
+            .app-container {
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                height: 100%;
+                height: 100dvh;
+                flex-direction: column;
+            }
+            aside {
+                width: 100%;
+                border-right: none;
+                height: 100%;
+            }
+            main {
+                width: 100%;
+            }
+            /* Show ONE panel at a time on mobile: the conversation list by
+               default, and the active chat once one has been opened. This
+               is toggled via the "chat-open" class on #app (see JS). */
+            #app.chat-open aside {
+                display: none;
+            }
+            #app:not(.chat-open) main {
+                display: none;
+            }
+            .mobile-back-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            /* Collapse text inputs layout on header for tiny mobile devices */
+            header {
+                padding: 12px;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .header-controls {
+                gap: 8px;
+            }
+            .msg-search-input {
+                width: 100px;
+            }
+            .msg-search-input:focus {
+                width: 130px;
+            }
+            .bubble {
+                max-width: 85%; /* Let chat bubbles use more space on small screen layers */
+            }
+            /* Context menus should never render wider than the viewport
+               and should stay reachable by touch */
+            .context-menu {
+                max-width: calc(100vw - 24px);
+            }
+            .context-menu button {
+                padding: 12px 14px;
+                font-size: 0.95rem;
+            }
+        }
+        @media (max-width: 380px) {
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .msg-search-input {
+                width: 90px;
+            }
+            .msg-search-input:focus {
+                width: 120px;
+            }
+        }
+        
+        a{color: white !important}
+    </style>
+</head>
+<body>
+    <div id="app" class="app-container hidden">
+        <aside id="aside-panel">
+            <div class="auth-header">
+                <h2 id="my-name">Loading Profile...</h2>
+                <p id="my-id"></p>
+            </div>
+            <div class="search-box">
+                <input type="text" id="user-search" placeholder="Search users by name or ID...">
+            </div>
+            <div class="list-container custom-scrollbar">
+                <div id="search-results-section" class="hidden"
+                    style="background: rgba(245, 158, 11, 0.05); padding: 8px; border-bottom: 1px solid var(--border-color);">
+                    <p class="section-title" style="color: #fbbf24; margin-bottom: 4px;">Global Search Results</p>
+                    <div id="search-results-list"></div>
+                </div>
+                <div>
+                    <div class="section-title-row">
+                        <p class="section-title">Active Conversations</p>
+                        <button id="open-gc-modal" class="btn-link">+ New Group</button>
+                    </div>
+                    <div class="sidebar">
+                        <div id="chats-list"></div>
+                        <div class="sidebar-divider"
+                            style="margin: 15px 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                        <div class="blocked-sidebar-section" style="padding: 0 8px;">
+                            <div class="section-title-row"
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <p class="section-title"
+                                    style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin: 0;">
+                                    Privacy Management</p>
+                            </div>
+                            <div id="blocked-directory-list" style="max-height: 200px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+        </aside>
+        <main id="chat-main-area">
+            <div id="chat-fallback" class="chat-fallback">
+                <p style="font-size: 1.125rem; font-weight: 500;">Select an active thread or search for a profile to
+                    begin messaging.</p>
+            </div>
+            <div id="chat-active-window" class="chat-window hidden">
+                <header>
+                    <button id="mobile-back-btn" class="mobile-back-btn" type="button" aria-label="Back to conversations">&larr;</button>
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 id="active-chat-name">...</h3>
+                        <p id="active-chat-meta"
+                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+                    </div>
+                    <div class="header-controls">
+                        <input type="text" id="msg-search" class="msg-search-input" placeholder="Search messages...">
+                        <div class="header-actions" id="chat-header-actions"></div>
+                    </div>
+                </header>
+                <div id="call-panel" class="call-panel hidden">
+                    <div id="call-participants" class="call-participants"></div>
+                    <div class="call-controls">
+                        <button id="call-mute-btn" type="button" class="call-mute-btn">Mute</button>
+                        <button id="call-leave-btn" type="button" class="call-leave-btn">Leave Call</button>
+                    </div>
+                </div>
+                <div id="messages-container" class="messages-container custom-scrollbar"></div>
+                <form id="message-form">
+                    <input type="text" id="message-input" autocomplete="off" placeholder="Type your message here...">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <div id="auth-guard" class="auth-guard">
+        <h2>Validating Account Context...</h2>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Please verify that account
+            initialization was successfully executed before loading chat components.</p>
+    </div>
+    <div id="gc-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="gc-modal-title" style="font-weight: 700;">Create New Group Chat</h3>
+                <button id="close-gc-modal" class="btn-link" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="gc-create-hint" class="hidden" style="font-size: 0.75rem; color: var(--text-muted);">
+                    Tip: you don't have to add anyone right now — you can create the group by itself and invite
+                    people later with a shareable invite link.
+                </p>
+                <div class="form-group" id="gc-name-form-group">
+                    <label>Group Thread Title</label>
+                    <input type="text" id="gc-name-input" placeholder="e.g., Recipe Testers Guild">
+                </div>
+                <div class="form-group">
+                    <label>Filter & Select Members (optional)</label>
+                    <input type="text" id="gc-user-search" placeholder="Type name to filter eligible members..."
+                        style="margin-bottom: 8px;">
+                    <div id="gc-users-checkboxes" class="checkbox-container custom-scrollbar"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-gc-btn" class="btn-modal-cancel">Cancel</button>
+                <button id="submit-gc-btn" class="btn-modal-submit">Build Group</button>
+            </div>
+        </div>
+    </div>
+    <div id="invite-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 style="font-weight: 700;">Group Invite Link</h3>
+                <button id="close-invite-modal" class="btn-link" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.8rem; color: var(--text-muted);">
+                    Anyone with this link can join the group directly — share it only with people you trust.
+                </p>
+                <div class="form-group">
+                    <label>Shareable Link</label>
+                    <input type="text" id="invite-link-input" readonly>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button id="revoke-invite-btn" class="btn-danger-link"
+                    style="border: 1px solid var(--danger); padding: 10px 16px; border-radius: 6px;">Revoke Link</button>
+                <div style="display:flex; gap:8px;">
+                    <button id="regenerate-invite-btn" class="btn-modal-cancel">Regenerate</button>
+                    <button id="copy-invite-btn" class="btn-modal-submit">Copy Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="active-context-menu" class="context-menu hidden"></div>
+    <script type="module">
+        import {
+            auth, onAuthStateChanged, getAccountIdFromUid, getUserByAccountId, getAllUsersList,
+            createOrGetDmChat, createGroupChat, sendChatMessage, rtdb,
+            listenToUserChats, listenToChatMeta, listenToMessages,
+            toggleBlockUserInDb, listenToBlockedUsers, kickGroupMember, addMembersToGroup
+        } from "/js/firebase.js";
+        import { ref, update, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import * as VoiceChat from "/js/voice-chat.js";
+        // ============================================================
+        // 🔒 GLOBAL DISABLE SWITCH
+        // ============================================================
+        // Hardcoded kill switch: flip to true and redeploy to instantly
+        // disable chat for every user (no DB round-trip required).
+        const CHAT_GLOBALLY_DISABLED = false;
+        // Optional remote kill switch: reads config/chatDisabled from
+        // Realtime Database at startup, so you can toggle chat off/on
+        // live without shipping new code. Set REMOTE_KILL_SWITCH_PATH
+        // to null to skip the DB check entirely.
+        const REMOTE_KILL_SWITCH_PATH = "config/chatDisabled";
+        const DISABLED_MESSAGE = "Chat is temporarily unavailable while we work to keep everyone safe.";
+        async function isChatDisabledRemotely() {
+            if (!REMOTE_KILL_SWITCH_PATH) return false;
+            try {
+                const snap = await get(ref(rtdb, REMOTE_KILL_SWITCH_PATH));
+                return snap.exists() && snap.val() === true;
+            } catch (err) {
+                console.error("Failed to check remote chat-disabled flag:", err);
+                return false; // fail open on read errors so an outage doesn't cause a false lockout
+            }
+        }
+        // ============================================================
+        let currentAccount = null;
+        let globalUsersCache = [];
+        let activeChatId = null;
+        let activePeerUserId = null;
+        let blockedUsersList = [];
+        let unsubMessages = null;
+        let unsubMeta = null;
+        let userChatsCache = [];
+        let messagesCache = [];
+        let modalIsAddMemberMode = false;
+        let isRedirecting = false; // Add this lock at the top of your script scope
+        // Live presence map ({accountId: {name, joinedAt}}) for whoever is
+        // currently in a call in the chat that's open right now. Comes
+        // straight from chats/{chatId}/activeCall via listenToChatMeta, so
+        // it updates in real time as people join/leave — this is what lets
+        // the header button say "Join Call" instead of "Start Call" when
+        // someone else already started one.
+        let currentChatActiveCall = null;
+        const appContainer = document.getElementById("app");
+        const authGuard = document.getElementById("auth-guard");
+        const myNameEl = document.getElementById("my-name");
+        const myIdEl = document.getElementById("my-id");
+        const asidePanel = document.getElementById("aside-panel");
+        const userSearchInput = document.getElementById("user-search");
+        const searchSection = document.getElementById("search-results-section");
+        const searchResultsList = document.getElementById("search-results-list");
+        const chatsList = document.getElementById("chats-list");
+        const chatMainArea = document.getElementById("chat-main-area");
+        const chatFallback = document.getElementById("chat-fallback");
+        const chatActiveWindow = document.getElementById("chat-active-window");
+        const activeChatName = document.getElementById("active-chat-name");
+        const activeChatMeta = document.getElementById("active-chat-meta");
+        const chatHeaderActions = document.getElementById("chat-header-actions");
+        const messagesContainer = document.getElementById("messages-container");
+        const messageForm = document.getElementById("message-form");
+        const messageInput = document.getElementById("message-input");
+        const msgSearchInput = document.getElementById("msg-search");
+        const mobileBackBtn = document.getElementById("mobile-back-btn");
+        const gcModal = document.getElementById("gc-modal");
+        const gcModalTitle = document.getElementById("gc-modal-title");
+        const gcNameFormGroup = document.getElementById("gc-name-form-group");
+        const gcCreateHint = document.getElementById("gc-create-hint");
+        const openGcModalBtn = document.getElementById("open-gc-modal");
+        const closeGcModalBtn = document.getElementById("close-gc-modal");
+        const cancelGcBtn = document.getElementById("cancel-gc-btn");
+        const submitGcBtn = document.getElementById("submit-gc-btn");
+        const gcNameInput = document.getElementById("gc-name-input");
+        const gcUserSearch = document.getElementById("gc-user-search");
+        const gcCheckboxesContainer = document.getElementById("gc-users-checkboxes");
+        const blockModalList = document.getElementById("block-modal-list");
+        const contextMenu = document.getElementById("active-context-menu");
+        // --- INVITE LINK MODAL ELEMENTS ---
+        const inviteModal = document.getElementById("invite-modal");
+        const closeInviteModalBtn = document.getElementById("close-invite-modal");
+        const inviteLinkInput = document.getElementById("invite-link-input");
+        const copyInviteBtn = document.getElementById("copy-invite-btn");
+        const regenerateInviteBtn = document.getElementById("regenerate-invite-btn");
+        const revokeInviteBtn = document.getElementById("revoke-invite-btn");
+        // --- VOICE CALL (LiveKit) ELEMENTS ---
+        const callPanel = document.getElementById("call-panel");
+        const callParticipantsEl = document.getElementById("call-participants");
+        const callMuteBtn = document.getElementById("call-mute-btn");
+        const callLeaveBtn = document.getElementById("call-leave-btn");
+        // --- AVATAR PNG GENERATOR COPIED FROM DIRECTORY SYSTEM ---
+        function getInitials(name) {
+            if (!name) return "SR";
+            return name.trim().split(/\s+/).map(word => word[0]).join("").substring(0, 1).toUpperCase();
+        }
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `hsl(${hue}, 65%, 45%)`;
+        }
+        function createAvatarImage(name) {
+            return new Promise((resolve) => {
+                const initials = getInitials(name);
+                const color = stringToColor(name || "Group");
+                const canvas = document.createElement("canvas");
+                canvas.width = 100;
+                canvas.height = 100;
+                const ctx = canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.arc(50, 50, 50, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.font = "900 55px system-ui, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(initials, 50, 54);
+                resolve(canvas.toDataURL("image/png"));
+            });
+        }
+        // --- MESSAGE LINK SUPPORT ---
+        // Escapes text for safe HTML insertion. Messages were previously
+        // dropped straight into innerHTML unescaped — this closes that gap
+        // and gives linkifyText() safe, already-escaped text to work with.
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.textContent = str || "";
+            return div.innerHTML;
+        }
+        // Turns bare URLs (http://, https://, or www.) inside already-escaped
+        // text into clickable links that open in a new tab. Must only ever
+        // be called on text that has already been through escapeHtml().
+        function linkifyText(escapedText) {
+            const urlPattern = /(\bhttps?:\/\/[^\s<]+|\bwww\.[^\s<]+)/gi;
+            return escapedText.replace(urlPattern, (match) => {
+                // Trim common trailing punctuation that's usually not part
+                // of the URL itself (e.g. "check this out: example.com.")
+                let trailing = "";
+                const trailingMatch = match.match(/[.,!?;:)\]]+$/);
+                let core = match;
+                if (trailingMatch) {
+                    trailing = trailingMatch[0];
+                    core = match.slice(0, match.length - trailing.length);
+                }
+                const href = /^https?:\/\//i.test(core) ? core : `https://${core}`;
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color: #93c5fd; text-decoration: underline; word-break: break-all;">${core}</a>${trailing}`;
+            });
+        }
+        // Detects whether a URL points at a provider we know how to embed
+        // or preview, and returns the data needed to render it. Returns
+        // null for anything else (falls back to a plain clickable link).
+        function getEmbedForUrl(rawUrl) {
+    let url;
+    try {
+        url = new URL(/^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`);
+    } catch (e) {
+        return null;
+    }
+    const host = url.hostname.replace(/^www\./i, "").replace(/^m\./i, "").toLowerCase();
+    
+    // --- YouTube: has a genuine public no-auth iframe embed ---
+    if (host === "youtube.com") {
+        let videoId = url.searchParams.get("v");
+        if (!videoId) {
+            const shortsMatch = url.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]{6,20})/);
+            if (shortsMatch) videoId = shortsMatch[1];
+        }
+        if (videoId && /^[a-zA-Z0-9_-]{6,20}$/.test(videoId)) {
+            return { type: "youtube", videoId };
+        }
+        return null;
+    }
+    if (host === "youtu.be") {
+        const videoId = url.pathname.slice(1).split("/")[0];
+        if (videoId && /^[a-zA-Z0-9_-]{6,20}$/.test(videoId)) {
+            return { type: "youtube", videoId };
+        }
+        return null;
+    }
+    
+    // --- Facebook: embeds require an App ID + their JS SDK, which
+    // this app doesn't have, so this also renders a preview card ---
+    if (host === "facebook.com" || host === "fb.watch") {
+        return { type: "facebook", url: url.href };
+    }
+    return null;
+}
+
+function escapeAttr(str) {
+    return (str || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+}
+
+function buildEmbedHtml(embed) {
+    if (!embed) return "";
+    
+    if (embed.type === "youtube") {
+        return `
+            <div class="link-embed" style="margin-top: 8px; width: 100%; max-width: 320px; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #000;">
+                <iframe width="100%" height="100%" style="display: block; border: 0;" src="https://www.youtube.com/embed/${embed.videoId}" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>`;
+    }
+    
+    if (embed.type === "facebook") {
+        return `
+            <a href="${escapeAttr(embed.url)}" target="_blank" rel="noopener noreferrer" class="link-embed" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 10px; max-width: 320px; background: rgba(0,0,0,0.25); border: 1px solid #3b5998; border-radius: 8px; text-decoration: none; color: inherit;">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: #3b5998; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0;">F</div>
+                <div style="min-width: 0;">
+                    <div style="font-size: 0.65rem; font-weight: 700; color: #8b9dc3; letter-spacing: 0.05em;">FACEBOOK</div>
+                    <div style="font-size: 0.85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Open on Facebook</div>
+                </div>
+            </a>`;
+    }
+    
+    return "";
+}
+
+        // --- INVITE LINK HELPERS ---
+        // Generates a short, URL-safe random code. Not cryptographically
+        // guaranteed unique, but collision odds are negligible for this
+        // use case; ensureInviteLink() re-reads/writes atomically enough
+        // for a chat app's needs.
+        function generateInviteCode() {
+            return `${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+        }
+        function buildInviteUrl(code) {
+            return `${window.location.origin}${window.location.pathname}?invite=${code}`;
+        }
+        // Returns the current invite code for a chat, creating one (and an
+        // `invites/{code}` lookup record) if none exists yet or if
+        // forceNew is requested (regeneration also invalidates the old code).
+        async function ensureInviteLink(chatId, forceNew = false) {
+            const codeSnap = await get(ref(rtdb, `chats/${chatId}/inviteCode`));
+            let code = codeSnap.exists() ? codeSnap.val() : null;
+            if (!code || forceNew) {
+                if (code) {
+                    await remove(ref(rtdb, `invites/${code}`));
+                }
+                code = generateInviteCode();
+                const updates = {};
+                updates[`chats/${chatId}/inviteCode`] = code;
+                updates[`invites/${code}`] = {
+                    chatId,
+                    createdBy: currentAccount.accountId,
+                    active: true,
+                    createdAt: Date.now()
+                };
+                await update(ref(rtdb), updates);
+            }
+            return code;
+        }
+        async function openInviteModal(chatId, isOwner) {
+            inviteModal.dataset.chatId = chatId;
+            inviteLinkInput.value = "Generating link...";
+            revokeInviteBtn.classList.toggle("hidden", !isOwner);
+            inviteModal.classList.remove("hidden");
+            try {
+                const code = await ensureInviteLink(chatId);
+                inviteLinkInput.value = buildInviteUrl(code);
+            } catch (err) {
+                console.error("Failed to prepare invite link:", err);
+                inviteLinkInput.value = "Could not generate a link. Please try again.";
+            }
+        }
+        // Called when the app loads with ?invite=CODE in the URL. Resolves
+        // the code to a chat, adds the current user as a member if they
+        // aren't one already, and opens the thread. Returns the chatId on
+        // success (or null) so processIncomingUrlParameters can highlight it.
+        async function handleInviteLinkJoin(code) {
+            try {
+                const inviteSnap = await get(ref(rtdb, `invites/${code}`));
+                if (!inviteSnap.exists() || inviteSnap.val().active === false) {
+                    alert("This invite link is invalid or has been revoked.");
+                    window.history.replaceState({}, "", window.location.pathname);
+                    return null;
+                }
+                const { chatId } = inviteSnap.val();
+                const chatSnap = await get(ref(rtdb, `chats/${chatId}`));
+                if (!chatSnap.exists()) {
+                    alert("This group chat no longer exists.");
+                    window.history.replaceState({}, "", window.location.pathname);
+                    return null;
+                }
+                const chatData = chatSnap.val();
+                const members = chatData.members || {};
+                if (!members[currentAccount.accountId]) {
+                    await addMembersToGroup(chatId, [{ accountId: currentAccount.accountId, name: currentAccount.name }]);
+                }
+                isRedirecting = true;
+                window.history.replaceState({}, "", `${window.location.pathname}?chat=${chatId}`);
+                switchChatThread(chatId, false);
+                isRedirecting = false;
+                return chatId;
+            } catch (err) {
+                console.error("Failed to join group via invite link:", err);
+                alert("Something went wrong joining this group. Please try again.");
+                return null;
+            }
+        }
+        onAuthStateChanged(auth, async (user) => {
+            // 🔒 Hard-coded kill switch check — bail before touching auth/account logic
+            if (CHAT_GLOBALLY_DISABLED) {
+                lockdownAndShowDisabledMessage(DISABLED_MESSAGE);
+                return;
+            }
+            // 🔒 Remote (database-driven) kill switch check
+            if (await isChatDisabledRemotely()) {
+                lockdownAndShowDisabledMessage(DISABLED_MESSAGE);
+                return;
+            }
+            if (user) {
+                const accountId = await getAccountIdFromUid(user.uid);
+                if (accountId) currentAccount = await getUserByAccountId(accountId);
+                if (currentAccount) initApp();
+                else showAuthError("Your authenticated user is missing an internal Samson Account ID.");
+            } else {
+                showAuthError("Please log in first to access the chat dashboard.");
+            }
+        });
+        function showAuthError(message) {
+            authGuard.innerHTML = `<p style="color: #f87171; font-weight: 600; margin-bottom: 8px;">Access Denied</p><p style="font-size: 0.875rem; color: var(--text-muted);">${message}</p>`;
+        }
+        // Fully tears down the page for the global kill switch: removes every
+        // other element from the DOM (app container, modals, context menu)
+        // so nothing lingers in the background, then shows just the message.
+        function lockdownAndShowDisabledMessage(message) {
+            document.querySelectorAll("body > *").forEach(el => {
+                if (el !== authGuard) el.remove();
+            });
+            authGuard.classList.remove("hidden");
+            authGuard.innerHTML = `<p style="color: #f87171; font-weight: 600; margin-bottom: 8px;">Chat Disabled</p><p style="font-size: 0.875rem; color: var(--text-muted);">${message}</p>`;
+        }
+        async function initApp() {
+            myNameEl.textContent = currentAccount.name;
+            myIdEl.textContent = `ID: ${currentAccount.accountId}`;
+            authGuard.classList.add("hidden");
+            appContainer.classList.remove("hidden");
+            globalUsersCache = await getAllUsersList();
+            userSearchInput.addEventListener("input", handleUserFiltering);
+            msgSearchInput.addEventListener("input", filterMessagesInView);
+            gcUserSearch.addEventListener("input", filterModalUserList);
+            messageInput.addEventListener("keydown", handleInputFieldSpacing);
+            document.addEventListener("click", () => contextMenu.classList.add("hidden"));
+            if (mobileBackBtn) {
+                mobileBackBtn.addEventListener("click", () => {
+                    // Just switch the mobile view back to the conversation list;
+                    // keep listeners/activeChatId alive so re-opening is instant.
+                    appContainer.classList.remove("chat-open");
+                });
+            }
+            // --- VOICE CALL (LiveKit) wiring ---
+            VoiceChat.setParticipantsChangedHandler(renderCallPanel);
+            callMuteBtn.addEventListener("click", () => VoiceChat.toggleSelfMute());
+            callLeaveBtn.addEventListener("click", () => leaveCurrentCall());
+            // Run this immediately after currentAccount is populated on login
+            // Locate your login setup routine where listenToBlockedUsers gets declared:
+            listenToBlockedUsers(currentAccount.accountId, (updatedBlockList) => {
+                // 1. Sync the live database snapshot data into your local variable cache
+                blockedUsersList = updatedBlockList || [];
+                // 2. Re-filter messages currently visible in the active viewport
+                if (typeof filterMessagesInView === "function") {
+                    filterMessagesInView();
+                }
+                // 3. Re-render your sidebar blocked list directory view
+                if (typeof renderBlockedUsersDirectory === "function") {
+                    renderBlockedUsersDirectory();
+                }
+                // ============================================================
+                // CRITICAL FIX: Tell the header action buttons to update text!
+                // ============================================================
+                if (typeof updateHeaderActions === "function") {
+                    updateHeaderActions();
+                }
+            });
+            listenToUserChats(currentAccount.accountId, (chats) => {
+                userChatsCache = chats || [];
+                // Skip sidebar UI paint cycles if a deep link parsing lock is currently running
+                if (!isRedirecting) {
+                    renderUserChatsList(userChatsCache);
+                }
+                if (!activeChatId) {
+                    processIncomingUrlParameters();
+                }
+            });
+            setupModalListeners();
+        }
+        function handleInputFieldSpacing(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                executeFormMessageDispatch();
+            }
+        }
+        async function toggleBlockUser(targetId) {
+            if (!targetId) return;
+            const isBlocked = blockedUsersList.includes(targetId);
+            try {
+                await toggleBlockUserInDb(currentAccount.accountId, targetId, isBlocked);
+            } catch (err) {
+                console.error("Failed to alter block modification record state.", err);
+            }
+        }
+        // --- VOICE CALL (LiveKit) helpers ---
+        async function joinCurrentChatCall() {
+            try {
+                await VoiceChat.joinCall(activeChatId, currentAccount.accountId, currentAccount.name);
+            } catch (err) {
+                console.error("Failed to join call:", err);
+                alert("Couldn't join the call. Please try again.");
+            }
+            updateHeaderActions();
+        }
+        async function leaveCurrentCall() {
+            await VoiceChat.leaveCall();
+            updateHeaderActions();
+        }
+        function renderCallPanel(participants) {
+            // Only show the panel while viewing the chat that's actually in the call.
+            const inThisChat = VoiceChat.isInCall() && VoiceChat.getCurrentCallChatId() === activeChatId;
+            callPanel.classList.toggle("hidden", !inThisChat);
+            if (!inThisChat) return;
+
+            callParticipantsEl.innerHTML = "";
+            participants.forEach((p) => {
+                const tile = document.createElement("div");
+                tile.className = `call-participant ${p.speaking ? "speaking" : ""}`;
+
+                const avatarWrap = document.createElement("div");
+                avatarWrap.className = "avatar";
+                avatarWrap.style.display = "flex";
+                avatarWrap.style.alignItems = "center";
+                avatarWrap.style.justifyContent = "center";
+                avatarWrap.style.fontSize = "0.75rem";
+                avatarWrap.style.fontWeight = "700";
+                avatarWrap.textContent = getInitials(p.name);
+                avatarWrap.style.backgroundColor = stringToColor(p.name || p.identity);
+                avatarWrap.style.color = "white";
+                avatarWrap.title = p.isLocal ? `${p.name} (you)` : p.name;
+
+                // Click a remote tile to toggle "mute for me" (local-only silence).
+                if (!p.isLocal) {
+                    avatarWrap.addEventListener("click", () => {
+                        VoiceChat.toggleLocalMuteForParticipant(p.sid);
+                    });
+                }
+
+                const nameEl = document.createElement("div");
+                nameEl.className = "call-participant-name";
+                nameEl.textContent = p.isLocal ? "You" : p.name;
+
+                const badges = document.createElement("div");
+                badges.className = "call-participant-badges";
+                if (p.muted) {
+                    const micIcon = document.createElement("span");
+                    micIcon.className = "call-mic-icon muted";
+                    micIcon.textContent = "🔇";
+                    badges.appendChild(micIcon);
+                }
+                if (!p.isLocal && p.locallyMuted) {
+                    const localMuteIcon = document.createElement("span");
+                    localMuteIcon.className = "call-mic-icon muted";
+                    localMuteIcon.title = "Muted for you only";
+                    localMuteIcon.textContent = "🔇";
+                    badges.appendChild(localMuteIcon);
+                }
+
+                // Group-owner-only force mute (everyone hears silence, not just you).
+                const targetChat = userChatsCache.find((c) => c.chatId === activeChatId);
+                const isOwner = targetChat && targetChat.type === "group" && targetChat.createdBy === currentAccount.accountId;
+                if (isOwner && !p.isLocal && !p.muted) {
+                    const forceMuteBtn = document.createElement("button");
+                    forceMuteBtn.textContent = "Mute";
+                    forceMuteBtn.style.fontSize = "0.55rem";
+                    forceMuteBtn.style.padding = "1px 4px";
+                    forceMuteBtn.style.border = "1px solid var(--danger)";
+                    forceMuteBtn.style.color = "var(--danger)";
+                    forceMuteBtn.style.background = "none";
+                    forceMuteBtn.style.borderRadius = "4px";
+                    forceMuteBtn.style.cursor = "pointer";
+                    forceMuteBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        await VoiceChat.requestForceMute(activeChatId, p.identity);
+                    };
+                    badges.appendChild(forceMuteBtn);
+                }
+
+                tile.appendChild(avatarWrap);
+                tile.appendChild(nameEl);
+                tile.appendChild(badges);
+                callParticipantsEl.appendChild(tile);
+            });
+
+            callMuteBtn.textContent = VoiceChat.isSelfMuted() ? "Unmute" : "Mute";
+            callMuteBtn.classList.toggle("active", VoiceChat.isSelfMuted());
+        }
+        function updateHeaderActions() {
+            chatHeaderActions.innerHTML = "";
+            if (!activeChatId) return;
+            const targetChat = userChatsCache.find(c => c.chatId === activeChatId);
+            if (activePeerUserId) {
+                // Check if the user is currently in our blocked list
+                const isBlocked = blockedUsersList.includes(activePeerUserId);
+                // --- Call button (DM) — anyone can start or join ---
+                const dmCallBtn = document.createElement("button");
+                dmCallBtn.className = "call-btn";
+                const dmInThisCall = VoiceChat.isInCall() && VoiceChat.getCurrentCallChatId() === activeChatId;
+                const dmOthersInCall = currentChatActiveCall && Object.keys(currentChatActiveCall).length > 0;
+                dmCallBtn.classList.toggle("in-call", dmInThisCall);
+                dmCallBtn.classList.toggle("join-call", !dmInThisCall && dmOthersInCall);
+                if (dmInThisCall) {
+                    dmCallBtn.textContent = "Leave Call";
+                } else if (dmOthersInCall) {
+                    dmCallBtn.textContent = `🔵 Join Call (${Object.keys(currentChatActiveCall).length})`;
+                } else {
+                    dmCallBtn.textContent = "📞 Start Call";
+                }
+                dmCallBtn.onclick = () => (dmInThisCall ? leaveCurrentCall() : joinCurrentChatCall());
+                chatHeaderActions.appendChild(dmCallBtn);
+                const blockBtn = document.createElement("button");
+                blockBtn.textContent = isBlocked ? "Unblock User" : "Block User";
+                blockBtn.style.border = isBlocked ? "1px solid var(--text-muted)" : "1px solid var(--danger)";
+                blockBtn.style.color = isBlocked ? "var(--text-muted)" : "var(--danger)";
+                // MODIFIED ONCLICK: Pass the explicit correct toggle state to Firebase
+                blockBtn.onclick = async () => {
+                    try {
+                        if (isBlocked) {
+                            // If already blocked, pass 'false' to unblock (removes node)
+                            await toggleBlockUserInDb(currentAccount.accountId, activePeerUserId, false);
+                            console.log(`Successfully unblocked user: ${activePeerUserId}`);
+                        } else {
+                            // If not blocked, pass 'true' to block (creates node)
+                            await toggleBlockUserInDb(currentAccount.accountId, activePeerUserId, true);
+                            console.log(`Successfully blocked user: ${activePeerUserId}`);
+                        }
+                    } catch (error) {
+                        console.error("Failed to toggle block status from header:", error);
+                    }
+                };
+                chatHeaderActions.appendChild(blockBtn);
+            }
+            else if (targetChat && targetChat.type === 'group') {
+                const isOwner = targetChat.createdBy === currentAccount.accountId;
+                // --- Call button (Group) — any member can start or join ---
+                const groupCallBtn = document.createElement("button");
+                groupCallBtn.className = "call-btn";
+                const groupInThisCall = VoiceChat.isInCall() && VoiceChat.getCurrentCallChatId() === activeChatId;
+                const groupOthersInCall = currentChatActiveCall && Object.keys(currentChatActiveCall).length > 0;
+                groupCallBtn.classList.toggle("in-call", groupInThisCall);
+                groupCallBtn.classList.toggle("join-call", !groupInThisCall && groupOthersInCall);
+                if (groupInThisCall) {
+                    groupCallBtn.textContent = "Leave Call";
+                } else if (groupOthersInCall) {
+                    groupCallBtn.textContent = `🔵 Join Call (${Object.keys(currentChatActiveCall).length})`;
+                } else {
+                    groupCallBtn.textContent = "📞 Start Call";
+                }
+                groupCallBtn.onclick = () => (groupInThisCall ? leaveCurrentCall() : joinCurrentChatCall());
+                chatHeaderActions.appendChild(groupCallBtn);
+                const inviteBtn = document.createElement("button");
+                inviteBtn.className = "success-btn";
+                inviteBtn.textContent = "Invite Link";
+                inviteBtn.onclick = () => openInviteModal(activeChatId, isOwner);
+                chatHeaderActions.appendChild(inviteBtn);
+                if (isOwner) {
+                    const addMemberBtn = document.createElement("button");
+                    addMemberBtn.className = "success-btn";
+                    addMemberBtn.textContent = "+ Add Member";
+                    addMemberBtn.onclick = () => openGroupChatModalForAdditions(targetChat);
+                    chatHeaderActions.appendChild(addMemberBtn);
+                }
+                const leaveBtn = document.createElement("button");
+                leaveBtn.textContent = "Leave Group";
+                leaveBtn.onclick = () => handleLeaveGroupAction(activeChatId);
+                chatHeaderActions.appendChild(leaveBtn);
+            }
+        }
+        async function handleLeaveGroupAction(chatId) {
+            if (confirm("Are you sure you want to remove yourself from this group chat?")) {
+                if (VoiceChat.getCurrentCallChatId() === chatId) {
+                    await VoiceChat.leaveCall();
+                }
+                await kickGroupMember(chatId, currentAccount.accountId);
+                if (activeChatId === chatId) {
+                    activeChatId = null;
+                    window.history.pushState({}, "", window.location.pathname);
+                    chatActiveWindow.classList.add("hidden");
+                    chatFallback.classList.remove("hidden");
+                    appContainer.classList.remove("chat-open");
+                }
+            }
+        }
+        function renderBlockedUsersDirectory() {
+            const directoryContainer = document.getElementById("blocked-directory-list");
+            if (!directoryContainer) return;
+            directoryContainer.innerHTML = "";
+            if (!blockedUsersList || blockedUsersList.length === 0) {
+                directoryContainer.innerHTML = `
+            <div style="font-size: 0.75rem; color: var(--text-muted); padding: 8px; text-align: center;">
+                No blocked users.
+            </div>`;
+                return;
+            }
+            blockedUsersList.forEach(blockedId => {
+                const profile = typeof globalUsersCache !== 'undefined'
+                    ? globalUsersCache.find(u => u.accountId === blockedId)
+                    : null;
+                const displayName = profile && profile.name ? profile.name : `User (${blockedId})`;
+                const row = document.createElement("div");
+                row.className = "blocked-user-sidebar-row";
+                // Compact sidebar styling
+                row.style.display = "flex";
+                row.style.justifyContent = "space-between";
+                row.style.alignItems = "center";
+                row.style.padding = "6px 4px";
+                row.style.fontSize = "0.8rem";
+                row.innerHTML = `
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;">
+                ${displayName}
+            </span>
+            <button class="sidebar-unblock-btn" style="background: none; border: none; color: var(--accent-color, #ff4a4a); cursor: pointer; font-size: 0.75rem; padding: 2px 6px;">
+                Unblock
+            </button>
+        `;
+                // ACTUALLY UNBLOCK THEM IN THE DATABASE
+                row.querySelector(".sidebar-unblock-btn").onclick = async () => {
+                    try {
+                        // Passing false removes them from the database block list tree
+                        await toggleBlockUserInDb(currentAccount.accountId, blockedId, false);
+                        console.log(`Unblocked ${blockedId}`);
+                    } catch (err) {
+                        console.error("Failed to unblock user from sidebar:", err);
+                    }
+                };
+                directoryContainer.appendChild(row);
+            });
+        }
+        // --- UPDATED INTEGRATION FOR ?Open-DM=userid / ?invite=code DEEP LINK HANDLING ---
+        async function processIncomingUrlParameters() {
+            const currentSearch = window.location.search;
+            if (!currentSearch) return;
+            const standardParams = new URLSearchParams(currentSearch);
+            const openDmUserId = standardParams.get("Open-DM");
+            const standardChatId = standardParams.get("chat");
+            const inviteCode = standardParams.get("invite");
+            let targetChatId = null;
+            if (inviteCode) {
+                targetChatId = await handleInviteLinkJoin(inviteCode);
+            } else if (openDmUserId) {
+                if (openDmUserId === currentAccount.accountId) return;
+                const existingDm = userChatsCache.find(c => c.type === 'dm' && c.peerId === openDmUserId);
+                if (existingDm) {
+                    targetChatId = existingDm.chatId;
+                    switchChatThread(targetChatId, true);
+                } else {
+                    const targetProfile = globalUsersCache.find(u => u.accountId === openDmUserId) || await getUserByAccountId(openDmUserId);
+                    if (targetProfile) {
+                        isRedirecting = true;
+                        const cid = await createOrGetDmChat(currentAccount.accountId, currentAccount.name, targetProfile.accountId, targetProfile.name);
+                        if (cid) {
+                            targetChatId = cid;
+                            switchChatThread(cid, true);
+                        }
+                        isRedirecting = false;
+                    }
+                }
+            } else if (standardChatId) {
+                const existingChat = userChatsCache.find(c => c.chatId === standardChatId);
+                if (existingChat) {
+                    targetChatId = standardChatId;
+                    switchChatThread(standardChatId, false);
+                }
+            }
+            // FIX: Using a macro-task delay (setTimeout) guarantees that the asynchronous 
+            // rendering loop in renderUserChatsList has finished appending elements to the DOM.
+            if (targetChatId) {
+                setTimeout(() => {
+                    const activeBtn = chatsList.querySelector(`[data-chat-id="${targetChatId}"]`);
+                    if (activeBtn) {
+                        activeBtn.classList.add('active');
+                    }
+                }, 50);
+            }
+        }
+        async function handleUserFiltering() {
+            const queryText = userSearchInput.value.trim().toLowerCase();
+            if (!queryText) {
+                searchSection.classList.add("hidden");
+                searchResultsList.innerHTML = "";
+                return;
+            }
+            const filtered = globalUsersCache.filter(user =>
+                user.accountId !== currentAccount.accountId &&
+                !blockedUsersList.includes(user.accountId) &&
+                (user.accountId.toLowerCase().includes(queryText) || user.name.toLowerCase().includes(queryText))
+            );
+            searchResultsList.innerHTML = "";
+            searchSection.classList.remove("hidden");
+            if (filtered.length === 0) {
+                searchResultsList.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); padding: 8px;">No matching profiles found.</p>`;
+                return;
+            }
+            for (const user of filtered) {
+                const btn = document.createElement("button");
+                btn.className = "chat-item-btn";
+                btn.style.padding = "6px 8px";
+                const avatarPngData = await createAvatarImage(user.name);
+                btn.innerHTML = `
+                    <div class="avatar">
+                        <img class="avatar-img" src="${avatarPngData}" alt="avatar">
+                    </div>
+                    <div class="chat-meta-pane">
+                        <p class="chat-name" style="font-size: 0.75rem;">${user.name}</p>
+                        <p class="chat-preview" style="font-size: 0.65rem;">ID: ${user.accountId}</p>
+                    </div>
+                `;
+                btn.onclick = async () => {
+                    userSearchInput.value = "";
+                    searchSection.classList.add("hidden");
+                    const cid = await createOrGetDmChat(currentAccount.accountId, currentAccount.name, user.accountId, user.name);
+                    if (cid) switchChatThread(cid, true);
+                };
+                searchResultsList.appendChild(btn);
+            }
+        }
+        async function renderUserChatsList(chats) {
+            chatsList.innerHTML = "";
+            const visibleChats = chats.filter(chat => {
+                if (chat.type === 'dm') {
+                }
+                return true;
+            });
+            if (visibleChats.length === 0) {
+                chatsList.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 16px;">No active conversations.</p>`;
+                return;
+            }
+            for (const chat of visibleChats) {
+                const isActive = chat.chatId === activeChatId;
+                const lastMsgText = chat.lastMessage
+                    ? escapeHtml(`${chat.lastMessage.senderName}: ${chat.lastMessage.text}`)
+                    : "No messages yet";
+                const element = document.createElement("button");
+                element.className = `chat-item-btn ${isActive ? 'active' : ''}`;
+                // CRITICAL FIX: Set the tracking ID attribute immediately on creation / load
+                element.setAttribute('data-chat-id', chat.chatId);
+                // 1. Resolve the correct display name for the icon
+                let avatarDisplayName = chat.name;
+                if (!avatarDisplayName) {
+                    if (chat.type === 'group') {
+                        avatarDisplayName = "Group";
+                    } else if (chat.type === 'dm') {
+                        // Try to find the user in the local global cache
+                        const peerProfile = globalUsersCache.find(u => u.accountId === chat.peerId);
+                        if (peerProfile && peerProfile.name) {
+                            avatarDisplayName = peerProfile.name;
+                        } else if (chat.peerName) {
+                            // Fallback to a peerName property if stored on the chat node
+                            avatarDisplayName = chat.peerName;
+                        } else if (chat.lastMessage && chat.lastMessage.senderId !== currentAccount.accountId) {
+                            // Fallback to the last message sender name
+                            avatarDisplayName = chat.lastMessage.senderName;
+                        } else {
+                            // If all lookups fail before cache loads, use a clean fallback 
+                            // instead of anything that generates "SR"
+                            avatarDisplayName = "User";
+                        }
+                    }
+                }
+                // 2. Pass the final name to generate the single letter and unique color
+                const avatarPngData = await createAvatarImage(avatarDisplayName);
+                element.innerHTML = `
+            <div class="avatar">
+                <img class="avatar-img" src="${avatarPngData}" alt="avatar">
+            </div>
+            <div class="chat-meta-pane">
+                <div class="chat-meta-top">
+                    <p class="chat-name">${escapeHtml(chat.name || "Chat Room")}</p>
+                    <span class="chat-time">${chat.updatedAt ? new Date(chat.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                </div>
+                <p class="chat-preview">${lastMsgText}</p>
+                ${chat.activeCall ? `<button type="button" class="sidebar-join-call-btn">🔵 Call active · Join (${chat.activeCall.count})</button>` : ''}
+            </div>
+        `;
+                element.onclick = () => switchChatThread(chat.chatId, true);
+                const sidebarJoinCallBtn = element.querySelector(".sidebar-join-call-btn");
+                if (sidebarJoinCallBtn) {
+                    sidebarJoinCallBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        switchChatThread(chat.chatId, true);
+                        await joinCurrentChatCall();
+                    };
+                }
+                element.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showSidebarChatContextMenu(e.clientX, e.clientY, chat);
+                });
+                // Mobile equivalent of right-click: press-and-hold.
+                let sidebarTouchTimer = null;
+                let sidebarLongPressFired = false;
+                let sidebarTouchStartX = 0;
+                let sidebarTouchStartY = 0;
+                element.addEventListener("touchstart", (e) => {
+                    sidebarLongPressFired = false;
+                    const touch = e.touches[0];
+                    sidebarTouchStartX = touch.clientX;
+                    sidebarTouchStartY = touch.clientY;
+                    sidebarTouchTimer = setTimeout(() => {
+                        sidebarLongPressFired = true;
+                        if (navigator.vibrate) navigator.vibrate(10);
+                        showSidebarChatContextMenu(touch.clientX, touch.clientY, chat);
+                    }, 500);
+                }, { passive: true });
+                element.addEventListener("touchmove", (e) => {
+                    const touch = e.touches[0];
+                    if (Math.abs(touch.clientX - sidebarTouchStartX) > 10 || Math.abs(touch.clientY - sidebarTouchStartY) > 10) {
+                        clearTimeout(sidebarTouchTimer);
+                    }
+                }, { passive: true });
+                element.addEventListener("touchend", (e) => {
+                    clearTimeout(sidebarTouchTimer);
+                    if (sidebarLongPressFired) {
+                        e.preventDefault();
+                    }
+                });
+                element.addEventListener("touchcancel", () => clearTimeout(sidebarTouchTimer));
+                chatsList.appendChild(element);
+            }
+        }
+        function positionContextMenu(menuEl, clientX, clientY, containerRect) {
+            // Render off-screen first so we can measure its natural size,
+            // then clamp it fully inside the viewport/container bounds.
+            // This prevents the menu from being cut off or unreachable on
+            // narrow mobile screens.
+            menuEl.style.left = "-9999px";
+            menuEl.style.top = "-9999px";
+            menuEl.classList.remove("hidden");
+            const menuRect = menuEl.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            let left = clientX - containerRect.left;
+            let top = clientY - containerRect.top;
+            const maxLeft = viewportWidth - containerRect.left - menuRect.width - 8;
+            const maxTop = viewportHeight - containerRect.top - menuRect.height - 8;
+            left = Math.max(4, Math.min(left, maxLeft));
+            top = Math.max(4, Math.min(top, maxTop));
+            menuEl.style.left = `${left}px`;
+            menuEl.style.top = `${top}px`;
+        }
+        function showSidebarChatContextMenu(x, y, chat) {
+            contextMenu.innerHTML = "";
+            const bounds = asidePanel.getBoundingClientRect();
+            // View Profile / Open link option
+            const viewProfileBtn = document.createElement("button");
+            viewProfileBtn.textContent = "Open Conversation";
+            viewProfileBtn.onclick = () => switchChatThread(chat.chatId, true);
+            contextMenu.appendChild(viewProfileBtn);
+            // Leave Chat option for both types
+            const leaveBtn = document.createElement("button");
+            leaveBtn.className = "delete-btn";
+            leaveBtn.textContent = chat.type === 'group' ? "Leave Group Chat" : "Leave Direct Message";
+            leaveBtn.onclick = async () => {
+                const confirmMsg = chat.type === 'group'
+                    ? "Are you sure you want to remove yourself from this group chat?"
+                    : "Are you sure you want to close this direct message? Your message history remains but the thread will be hidden from view.";
+                if (confirm(confirmMsg)) {
+                    if (VoiceChat.getCurrentCallChatId() === chat.chatId) {
+                        await VoiceChat.leaveCall();
+                    }
+                    if (chat.type === 'group') {
+                        await kickGroupMember(chat.chatId, currentAccount.accountId);
+                    } else {
+                        // For DMs, sever the visible userChat reference connection mapping
+                        await remove(ref(rtdb, `userChats/${currentAccount.accountId}/${chat.chatId}`));
+                    }
+                    // Clean up the main UI view panel if the active chat was just dropped
+                    if (activeChatId === chat.chatId) {
+                        activeChatId = null;
+                        window.history.pushState({}, "", window.location.pathname);
+                        chatActiveWindow.classList.add("hidden");
+                        chatFallback.classList.remove("hidden");
+                        appContainer.classList.remove("chat-open");
+                    }
+                }
+            };
+            contextMenu.appendChild(leaveBtn);
+            positionContextMenu(contextMenu, x, y, bounds);
+        }
+        function switchChatThread(chatId, shouldUpdateUrlState = true) {
+            if (activeChatId === chatId && !shouldUpdateUrlState) return;
+            if (unsubMessages) unsubMessages();
+            if (unsubMeta) unsubMeta();
+            activeChatId = chatId;
+            activePeerUserId = null;
+            currentChatActiveCall = null;
+            msgSearchInput.value = "";
+            if (shouldUpdateUrlState) {
+                const newUrl = `${window.location.pathname}?chat=${chatId}`;
+                window.history.pushState({ chatId }, "", newUrl);
+            }
+            chatFallback.classList.add("hidden");
+            chatActiveWindow.classList.remove("hidden");
+            // On mobile this swaps the visible panel from the conversation
+            // list over to the chat window (see the @media rules above).
+            appContainer.classList.add("chat-open");
+            messagesContainer.innerHTML = `<div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 16px;">Loading conversation...</div>`;
+            // Re-render the call panel for whichever chat we just switched to
+            // (it should only be visible if THIS chat is the one in-call).
+            renderCallPanel(VoiceChat.getParticipantsInfo());
+            // FIX: Instead of rebuilding the whole list, just update active states in the DOM instantly
+            const chatButtons = chatsList.querySelectorAll('.chat-item-btn');
+            chatButtons.forEach(btn => {
+                // We'll store a custom data attribute on creation to match easily
+                if (btn.getAttribute('data-chat-id') === chatId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            unsubMeta = listenToChatMeta(chatId, async (meta) => {
+                // If the chat meta doesn't exist anymore, clean up the client view
+                if (!meta) {
+                    handleForcedChatExit(chatId);
+                    return;
+                }
+                const activeMembersArray = Object.keys(meta.members || {});
+                const totalMemberCount = activeMembersArray.length;
+                // ========================================================
+                // RULE 1: Direct Message Auto-Leave Rule
+                // ========================================================
+                if (meta.type === 'dm') {
+                    // A valid active DM requires both users. If one drops, the other auto-leaves
+                    if (totalMemberCount < 2) {
+                        console.log("The other participant left this DM. Auto-leaving...");
+                        // Silently drop your user shortcut index link
+                        await remove(ref(rtdb, `userChats/${currentAccount.accountId}/${chatId}`));
+                        // Clear the main text display pane back to defaults
+                        handleForcedChatExit(chatId);
+                        return;
+                    }
+                }
+                // ========================================================
+                // RULE 2: Group Chat Empty-Group Deletion Rule
+                // ========================================================
+                // Groups can now be created with just the creator (no
+                // pre-added members), so a count of 1 is a normal, valid
+                // state — NOT grounds for deletion. Only delete once the
+                // group is truly empty (the creator has also left).
+                if (meta.type === 'group') {
+                    if (totalMemberCount === 0) {
+                        console.log("This group chat is now empty. Deleting completely...");
+                        // 1. Remove your personal index tree element node
+                        await remove(ref(rtdb, `userChats/${currentAccount.accountId}/${chatId}`));
+                        // 2. Erase the global room parameters and history indexes permanently
+                        await remove(ref(rtdb, `chats/${chatId}`));
+                        // 3. Clean up any invite code pointing at this now-deleted chat
+                        if (meta.inviteCode) {
+                            await remove(ref(rtdb, `invites/${meta.inviteCode}`));
+                        }
+                        handleForcedChatExit(chatId);
+                        return;
+                    }
+                }
+                // --- Live call presence for this chat (who's already in a call) ---
+                currentChatActiveCall = meta.activeCall || null;
+                // --- Your existing rendering logic continues unchanged below ---
+                activeChatName.textContent = meta.name || (meta.type === 'dm' ? Object.values(meta.memberNames).find(n => n !== currentAccount.name) : "Group Thread");
+                if (meta.type === "group") {
+                    const isOwner = meta.createdBy === currentAccount.accountId;
+                    activeChatMeta.innerHTML = `Group Chat • ${totalMemberCount} members: `;
+                    Object.entries(meta.memberNames).forEach(([id, name], idx, arr) => {
+                        if (!meta.members[id]) return; // Skip displaying members who left
+                        const span = document.createElement("span");
+                        span.textContent = name + (idx < arr.length - 1 ? ", " : "");
+                        if (isOwner && id !== currentAccount.accountId) {
+                            const kickBtn = document.createElement("button");
+                            kickBtn.className = "kick-btn";
+                            kickBtn.textContent = "(Kick)";
+                            kickBtn.onclick = async (e) => {
+                                e.stopPropagation();
+                                if (confirm(`Are you sure you want to remove ${name} from this group?`)) {
+                                    await kickGroupMember(chatId, id);
+                                }
+                            };
+                            span.appendChild(kickBtn);
+                        }
+                        activeChatMeta.appendChild(span);
+                    });
+                    activePeerUserId = null;
+                } else {
+                    const structuralPeerId = Object.keys(meta.members).find(id => id !== currentAccount.accountId);
+                    activeChatMeta.textContent = `Direct Message • ID: ${structuralPeerId || 'N/A'}`;
+                    activePeerUserId = structuralPeerId;
+                }
+                updateHeaderActions();
+            });
+            unsubMessages = listenToMessages(chatId, (messages) => {
+                messagesCache = messages || [];
+                filterMessagesInView();
+            });
+        }
+        function filterMessagesInView() {
+            const queryText = msgSearchInput.value.trim().toLowerCase();
+            let filtered = messagesCache.filter(msg => !blockedUsersList.includes(msg.senderId));
+            if (queryText) {
+                filtered = filtered.filter(msg => msg.text.toLowerCase().includes(queryText));
+            }
+            renderMessages(filtered);
+        }
+        function handleForcedChatExit(chatId) {
+            if (activeChatId === chatId) {
+                if (VoiceChat.getCurrentCallChatId() === chatId) {
+                    VoiceChat.leaveCall();
+                }
+                if (unsubMessages) unsubMessages();
+                if (unsubMeta) unsubMeta();
+                activeChatId = null;
+                activePeerUserId = null;
+                // Clear parameter tags in the address bar
+                window.history.pushState({}, "", window.location.pathname);
+                // Hide the presentation column components 
+                chatActiveWindow.classList.add("hidden");
+                chatFallback.classList.remove("hidden");
+                appContainer.classList.remove("chat-open");
+            }
+        }
+        function renderMessages(visibleMessages) {
+            messagesContainer.innerHTML = "";
+            if (visibleMessages.length === 0) {
+                messagesContainer.innerHTML = `<div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 32px;">No matching messages found.</div>`;
+                return;
+            }
+            visibleMessages.forEach(msg => {
+                if (msg.system) {
+                    const sysRow = document.createElement("div");
+                    sysRow.className = "system-message-row";
+                    sysRow.textContent = msg.text;
+                    messagesContainer.appendChild(sysRow);
+                    return;
+                }
+                const isMe = msg.senderId === currentAccount.accountId;
+                const wrapper = document.createElement("div");
+                wrapper.className = `msg-row ${isMe ? 'me' : 'them'}`;
+                const cleanText = (msg.text || "")
+                    .trim()
+                    .replace(/[\r\n]{3,}/g, '\n\n')
+                    .replace(/[ \t]{2,}/g, ' ');
+                const safeSenderName = escapeHtml(msg.senderName || "");
+                const safeMessageHtml = linkifyText(escapeHtml(cleanText)).replace(/\n/g, "<br>");
+                // Only the first embeddable link in a message gets a
+                // rich preview, to keep long messages from turning into a
+                // wall of players/cards.
+                const rawUrlMatches = cleanText.match(/(\bhttps?:\/\/[^\s<]+|\bwww\.[^\s<]+)/gi) || [];
+                let embedHtml = "";
+                for (const rawUrl of rawUrlMatches) {
+                    const embed = getEmbedForUrl(rawUrl);
+                    if (embed) {
+                        embedHtml = buildEmbedHtml(embed);
+                        break;
+                    }
+                }
+                const bubble = document.createElement("div");
+                bubble.className = "bubble";
+                bubble.innerHTML = `
+                    ${!isMe ? `<p class="msg-sender">${safeSenderName}</p>` : ''}
+                    <p>${safeMessageHtml}</p>
+                    ${embedHtml}
+                `;
+                if (isMe) {
+                    bubble.addEventListener("contextmenu", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        showBubbleContextMenu(e.clientX, e.clientY, msg.id, cleanText);
+                    });
+                    // Mobile: right-click has no equivalent gesture on touch
+                    // screens, so a press-and-hold (500ms) opens the same
+                    // menu. We track whether the hold actually fired so we
+                    // can swallow the synthetic "click" that fires right
+                    // after touchend — otherwise the global "click anywhere
+                    // closes the menu" listener would close it instantly.
+                    let touchTimer = null;
+                    let longPressFired = false;
+                    let touchStartX = 0;
+                    let touchStartY = 0;
+                    bubble.addEventListener("touchstart", (e) => {
+                        longPressFired = false;
+                        const touch = e.touches[0];
+                        touchStartX = touch.clientX;
+                        touchStartY = touch.clientY;
+                        touchTimer = setTimeout(() => {
+                            longPressFired = true;
+                            if (navigator.vibrate) navigator.vibrate(10);
+                            showBubbleContextMenu(touch.clientX, touch.clientY, msg.id, cleanText);
+                        }, 500);
+                    }, { passive: true });
+                    bubble.addEventListener("touchmove", (e) => {
+                        const touch = e.touches[0];
+                        // Cancel the hold if the finger drifts (i.e. the user is scrolling)
+                        if (Math.abs(touch.clientX - touchStartX) > 10 || Math.abs(touch.clientY - touchStartY) > 10) {
+                            clearTimeout(touchTimer);
+                        }
+                    }, { passive: true });
+                    bubble.addEventListener("touchend", (e) => {
+                        clearTimeout(touchTimer);
+                        if (longPressFired) {
+                            // Swallow the click synthesized from this touch so it
+                            // doesn't immediately dismiss the menu we just opened.
+                            e.preventDefault();
+                        }
+                    });
+                    bubble.addEventListener("touchcancel", () => clearTimeout(touchTimer));
+                }
+                wrapper.appendChild(bubble);
+                const timeSpan = document.createElement("span");
+                timeSpan.className = "msg-time";
+                timeSpan.textContent = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                wrapper.appendChild(timeSpan);
+                messagesContainer.appendChild(wrapper);
+            });
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        function showBubbleContextMenu(x, y, msgId, currentText) {
+            contextMenu.innerHTML = "";
+            const bounds = chatMainArea.getBoundingClientRect();
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit Message";
+            editBtn.onclick = () => {
+                const newText = prompt("Edit your message:", currentText);
+                if (newText !== null && newText.trim() !== "") {
+                    const cleaned = newText.trim().replace(/[\r\n]{3,}/g, '\n\n').replace(/[ \t]{2,}/g, ' ');
+                    update(ref(rtdb, `chats/${activeChatId}/messages/${msgId}`), { text: cleaned });
+                }
+            };
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.textContent = "Delete";
+            deleteBtn.onclick = () => {
+                if (confirm("Delete this message? This action is permanent.")) {
+                    remove(ref(rtdb, `chats/${activeChatId}/messages/${msgId}`));
+                }
+            };
+            contextMenu.appendChild(editBtn);
+            contextMenu.appendChild(deleteBtn);
+            positionContextMenu(contextMenu, x, y, bounds);
+        }
+        function openGroupChatModalForAdditions(chatNode) {
+            modalIsAddMemberMode = true;
+            gcModalTitle.textContent = "Add Members to Group";
+            gcNameFormGroup.classList.add("hidden");
+            gcCreateHint.classList.add("hidden");
+            submitGcBtn.textContent = "Add Members";
+            gcUserSearch.value = "";
+            gcCheckboxesContainer.innerHTML = "";
+            const existingMembers = chatNode.members ? Object.keys(chatNode.members) : [];
+            const nonMembers = globalUsersCache.filter(u => !existingMembers.includes(u.accountId) && !blockedUsersList.includes(u.accountId));
+            if (nonMembers.length === 0) {
+                gcCheckboxesContainer.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); padding: 8px;">No additional eligible users available.</p>`;
+            } else {
+                nonMembers.forEach(user => {
+                    const div = document.createElement("label");
+                    div.className = "checkbox-item";
+                    div.innerHTML = `
+                        <input type="checkbox" value="${user.accountId}" data-name="${user.name}">
+                        <span>${user.name} <span style="color: var(--text-muted); font-size: 0.75rem;">(${user.accountId})</span></span>
+                    `;
+                    gcCheckboxesContainer.appendChild(div);
+                });
+            }
+            gcModal.classList.remove("hidden");
+        }
+        function filterModalUserList() {
+            const queryText = gcUserSearch.value.trim().toLowerCase();
+            const items = gcCheckboxesContainer.querySelectorAll(".checkbox-item");
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (!queryText || text.includes(queryText)) {
+                    item.classList.remove("hidden");
+                } else {
+                    item.classList.add("hidden");
+                }
+            });
+        }
+        async function executeFormMessageDispatch() {
+            let text = messageInput.value
+                .trim()
+                .replace(/[\r\n]{3,}/g, '\n\n')
+                .replace(/[ \t]{2,}/g, ' ');
+            if (!text || !activeChatId) return;
+            if (activePeerUserId && blockedUsersList.includes(activePeerUserId)) {
+                alert("You cannot dispatch outbound messages to a user you have currently blocked.");
+                return;
+            }
+            messageInput.value = "";
+            await sendChatMessage(activeChatId, currentAccount.accountId, currentAccount.name, text);
+        }
+        messageForm.onsubmit = (e) => {
+            e.preventDefault();
+            executeFormMessageDispatch();
+        };
+        function setupModalListeners() {
+            openGcModalBtn.onclick = () => {
+                modalIsAddMemberMode = false;
+                gcModalTitle.textContent = "Create New Group Chat";
+                gcNameFormGroup.classList.remove("hidden");
+                gcCreateHint.classList.remove("hidden");
+                submitGcBtn.textContent = "Build Group";
+                gcNameInput.value = "";
+                gcUserSearch.value = "";
+                gcCheckboxesContainer.innerHTML = "";
+                const validPeers = globalUsersCache.filter(u => u.accountId !== currentAccount.accountId && !blockedUsersList.includes(u.accountId));
+                if (validPeers.length === 0) {
+                    gcCheckboxesContainer.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); padding: 8px;">No other eligible profiles found — you can still create the group and invite people later with a link.</p>`;
+                } else {
+                    validPeers.forEach(user => {
+                        const div = document.createElement("label");
+                        div.className = "checkbox-item";
+                        div.innerHTML = `
+                            <input type="checkbox" value="${user.accountId}" data-name="${user.name}">
+                            <span>${user.name} <span style="color: var(--text-muted); font-size: 0.75rem;">(${user.accountId})</span></span>
+                        `;
+                        gcCheckboxesContainer.appendChild(div);
+                    });
+                }
+                gcModal.classList.remove("hidden");
+            };
+            const closeGcModalFunc = () => gcModal.classList.add("hidden");
+            closeGcModalBtn.onclick = closeGcModalFunc;
+            cancelGcBtn.onclick = closeGcModalFunc;
+            submitGcBtn.onclick = async () => {
+                const checkedBoxes = gcCheckboxesContainer.querySelectorAll("input[type='checkbox']:checked");
+                const selectedMembers = Array.from(checkedBoxes).map(cb => ({
+                    accountId: cb.value,
+                    name: cb.getAttribute("data-name")
+                }));
+                if (modalIsAddMemberMode) {
+                    // Adding to an existing group still requires picking someone —
+                    // there's nothing to "add" otherwise.
+                    if (selectedMembers.length === 0) {
+                        alert("Please select at least one member to add.");
+                        return;
+                    }
+                    await addMembersToGroup(activeChatId, selectedMembers);
+                    closeGcModalFunc();
+                } else {
+                    // Creating a brand-new group no longer requires pre-selecting
+                    // members — an empty selection just creates a group with only
+                    // the creator in it, and people can be added later via
+                    // "+ Add Member" or the "Invite Link" button in the header.
+                    const groupName = gcNameInput.value.trim();
+                    if (!groupName) {
+                        alert("Please name your group thread before proceeding.");
+                        return;
+                    }
+                    closeGcModalFunc();
+                    const newCid = await createGroupChat(currentAccount.accountId, currentAccount.name, selectedMembers, groupName);
+                    if (newCid) switchChatThread(newCid, true);
+                }
+            };
+            // --- Invite link modal wiring ---
+            closeInviteModalBtn.onclick = () => inviteModal.classList.add("hidden");
+            copyInviteBtn.onclick = async () => {
+                inviteLinkInput.select();
+                inviteLinkInput.setSelectionRange(0, inviteLinkInput.value.length);
+                try {
+                    await navigator.clipboard.writeText(inviteLinkInput.value);
+                } catch (err) {
+                    // Clipboard API can fail (permissions, insecure context, etc.)
+                    // Fall back to the legacy selection-based copy command.
+                    try {
+                        document.execCommand("copy");
+                    } catch (fallbackErr) {
+                        console.error("Failed to copy invite link:", fallbackErr);
+                    }
+                }
+                const originalText = copyInviteBtn.textContent;
+                copyInviteBtn.textContent = "Copied!";
+                setTimeout(() => { copyInviteBtn.textContent = originalText; }, 1500);
+            };
+            regenerateInviteBtn.onclick = async () => {
+                const chatId = inviteModal.dataset.chatId;
+                if (!chatId) return;
+                inviteLinkInput.value = "Generating new link...";
+                try {
+                    const code = await ensureInviteLink(chatId, true);
+                    inviteLinkInput.value = buildInviteUrl(code);
+                } catch (err) {
+                    console.error("Failed to regenerate invite link:", err);
+                    inviteLinkInput.value = "Could not generate a link. Please try again.";
+                }
+            };
+            revokeInviteBtn.onclick = async () => {
+                const chatId = inviteModal.dataset.chatId;
+                if (!chatId) return;
+                if (!confirm("Revoke this invite link? Anyone using the old link will no longer be able to join.")) return;
+                try {
+                    const codeSnap = await get(ref(rtdb, `chats/${chatId}/inviteCode`));
+                    if (codeSnap.exists()) {
+                        const code = codeSnap.val();
+                        const updates = {};
+                        updates[`chats/${chatId}/inviteCode`] = null;
+                        updates[`invites/${code}`] = null;
+                        await update(ref(rtdb), updates);
+                    }
+                    inviteModal.classList.add("hidden");
+                } catch (err) {
+                    console.error("Failed to revoke invite link:", err);
+                    alert("Could not revoke the invite link. Please try again.");
+                }
+            };
+        }
+        window.onpopstate = (e) => {
+            if (window.location.search) {
+                processIncomingUrlParameters();
+            } else {
+                activeChatId = null;
+                chatActiveWindow.classList.add("hidden");
+                chatFallback.classList.remove("hidden");
+                appContainer.classList.remove("chat-open");
+                renderUserChatsList(userChatsCache);
+            }
+        };
+    </script>
+    <script type="module" src="/js/disable-zoom.js"></script>
+    <script type="module" src="/js/Bottom-bar.js"></script>
+    <script type="module" src="/js/noprint.js"></script>
+    <script type="module" src="/js/chatStatus.js"></script>
+    <script type="module" src="/js/profile.js"></script>
+</body>
+</html>
